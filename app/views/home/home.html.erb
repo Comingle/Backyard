@@ -4,7 +4,10 @@
       Your toys
       <ul>
       <% @toys.each do |t| %>
-        <li><%= t.model %></li>
+        <li><%= link_to t.model, t %></li>
       <% end %>
       </ul>
-    <%= link_to 'New Toy', new_toy_path %>
+      <%= link_to 'New Toy', new_toy_path %>
+    </div>
+  </div>
+</div>

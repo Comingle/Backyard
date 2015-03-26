@@ -137,5 +137,8 @@ class Sketch < ActiveRecord::Base
     token
   end
 
+  def find_by_hex(hex)
+  end
+
 end
 

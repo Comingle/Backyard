@@ -3,7 +3,9 @@ Rails.application.routes.draw do
 
   resources :toys
 
-  devise_for :users
+  devise_for :users, controllers: {
+    sessions: 'users/sessions'
+  }
   resources :options
 
   resources :components

@@ -12,6 +12,10 @@
   <% end %>
 
   <%= f.select :color, { "Red" => "Red", "Blue" => "Blue", "Black" => "Black" }, :selected => "Red" %>
+  <br>
+  <%= f.label :nickname %>
+  <%= f.text_field :nickname %>
+
 
   <div class="actions">
     <%= f.submit %>
