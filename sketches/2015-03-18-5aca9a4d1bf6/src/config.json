@@ -1,0 +1,1 @@
+{"toy":{"hid":false,"pattern":{"fade_cos":{},"fadeoffset":{},"flicker":{},"second":{},"third":{},"first":{},"pulse":{},"pulse2":{},"sharp_ramp":{},"weird2":{},"weird3":{}},"id":"ALPHA","click":"Toy.cyclePattern();","longpress":"Toy.decreasePower();","doubleclick":"Toy.increasePower();","serial_console":true,"startup_sequence":["startup_sequence"]}}

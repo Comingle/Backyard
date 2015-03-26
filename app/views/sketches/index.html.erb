@@ -1,0 +1,25 @@
+<p id="notice"><%= notice %></p>
+
+<h1>Listing Sketches</h1>
+
+<table>
+  <thead>
+    <tr>
+      <th colspan="3"></th>
+    </tr>
+  </thead>
+
+  <tbody>
+    <% @sketches.each do |sketch| %>
+      <tr>
+        <td><%= link_to 'Show', sketch %></td>
+        <td><%= link_to 'Edit', edit_sketch_path(sketch) %></td>
+        <td><%= link_to 'Destroy', sketch, method: :delete, data: { confirm: 'Are you sure?' } %></td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
+
+<br>
+
+<%= link_to 'New Sketch', new_sketch_path %>

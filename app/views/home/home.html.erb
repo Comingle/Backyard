@@ -1,0 +1,10 @@
+<div class="container">
+  <div class="row">
+    <div class="col-md-8">
+      Your toys
+      <ul>
+      <% @toys.each do |t| %>
+        <li><%= t.model %></li>
+      <% end %>
+      </ul>
+    <%= link_to 'New Toy', new_toy_path %>

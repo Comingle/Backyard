@@ -1,0 +1,19 @@
+<%= form_for(@toy) do |f| %>
+  <% if @toy.errors.any? %>
+    <div id="error_explanation">
+      <h2><%= pluralize(@toy.errors.count, "error") %> prohibited this toy from being saved:</h2>
+
+      <ul>
+      <% @toy.errors.full_messages.each do |message| %>
+        <li><%= message %></li>
+      <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <%= f.select :color, { "Red" => "Red", "Blue" => "Blue", "Black" => "Black" }, :selected => "Red" %>
+
+  <div class="actions">
+    <%= f.submit %>
+  </div>
+<% end %>

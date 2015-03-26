@@ -1,0 +1,82 @@
+<%= form_for(@sketch) do |f| %>
+  <% if @sketch.errors.any? %>
+    <div id="error_explanation">
+      <h2><%= pluralize(@sketch.errors.count, "error") %> prohibited this sketch from being saved:</h2>
+
+      <ul>
+      <% @sketch.errors.full_messages.each do |message| %>
+        <li><%= message %></li>
+      <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  Available patterns:<br>
+  <ol id="patterns" name="pattern">
+  <% @patterns.each do |p| %>
+  <li class="pattern" id="pat_<%= p.id %>" draggable="true" data-id=<%= p.id %>><%= p.pretty_name %></li>
+  <% end %>
+  </ol>
+
+  Button SINGLE click should:
+  <select id="click" name="click">
+    <option value="cycle_pattern" selected>Move to next pattern</option>
+    <option value="Toy.increasePower();">Increase vibration power</option>
+    <option value="Toy.decreasePower();">Decrease vibration power</option>
+    <option value="Toy.increaseTime();">Slow current pattern down</option>
+    <option value="Toy.decreaseTime();">Speed current pattern up</option>
+    <option value="Toy.stop();">Stop all vibration</option>
+  </select>
+  <br>
+
+  Button DOUBLE click should:
+  <select id="doubleclick" name="doubleclick">
+    <option value="cycle_pattern">Move to next pattern</option>
+    <option value="Toy.increasePower();" selected>Increase vibration power</option>
+    <option value="Toy.decreasePower();">Decrease vibration power</option>
+    <option value="Toy.increaseTime();">Slow current pattern down</option>
+    <option value="Toy.decreaseTime();">Speed current pattern up</option>
+    <option value="Toy.stop();">Stop all vibration</option>
+  </select>
+  <br>
+
+  Button click-and-hold should:
+  <select id="longpressstart" name="longpressstart">
+    <option value="cycle_pattern">Move to next pattern</option>
+    <option value="Toy.increasePower();">Increase vibration power</option>
+    <option value="Toy.decreasePower();" selected>Decrease vibration power</option>
+    <option value="Toy.increaseTime();">Slow current pattern down</option>
+    <option value="Toy.decreaseTime();">Speed current pattern up</option>
+    <option value="Toy.stop();">Stop all vibration</option>
+  </select>
+  <br>
+
+  <span data-toggle="collapse" data-target="#collapseExample" aria-expanded="false" aria-controls="collapseExample">
+    Advanced Settings <span class="caret"></span>
+  </span>
+  <div class="collapse" id="collapseExample">
+    Serial Console: <input type="radio" id="serial_console_true" value="true" checked name="serial_console"><label for="serial_console_true">On</label></input>
+    <input type="radio" id="serial_console_false" value="false" name="serial_console"><label for="serial_console_false">Off</label></input>
+    <br>
+
+    When you turn the Mod on, it should:
+    <select id="startup_sequence" name="startup_sequence">
+      <option value="startup_sequence" selected>Run normal startup sequence</option>
+      <option value="startup_pattern">Run a vibration pattern</option>
+      <option value="false">Nothing</option>
+    </select>
+    <br>
+
+    Toy ID:
+    <select id="toy_id" name="id">
+      <option value="BETA">Mod</option>
+      <option value="ALPHA">Mod Alpha</option>
+    </select>
+
+    <%= f.label :config do %>Config JSON:<% end %><br>
+    <%= f.text_area :config, rows: 20, cols: 80 %><br>
+  </div>
+  <div class="actions">
+    <%= f.submit %>
+  </div>
+<% end %>

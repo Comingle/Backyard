@@ -1,0 +1,14 @@
+
+
+
+
+
+.build/LilyPadUSB/src/sketch.cpp : src/sketch.ino
+	@mkdir -p .build/LilyPadUSB/src
+	@echo [93msrc/sketch.ino[0m
+	@/usr/local/bin/ino preproc  -o $@ $^
+
+
+all : .build/LilyPadUSB/src/sketch.cpp
+	@true
+

@@ -1,0 +1,32 @@
+{
+"toy": {
+  "id": "BETA",
+  "power_scale": 0.2,
+  "time_scale": 0.1,
+  "pattern": {
+    "third": {},
+    "first": { 
+      "motor0": 200 
+    },
+    "second": {
+      "motor1": 100
+    },
+    "pulse": {},
+    "fadeCos": {},
+    "weird3": {},
+    "flicker": {},
+    "weird2": {},
+    "fadeOffset": {},
+    "pulse2": {}
+  },
+  "serial_console": true,
+  "click": "Toy.cyclePattern()",
+  "doubleclick": "Toy.increasePower()",
+  "longpressstart": "Toy.decreasePower()",
+  "startup_sequence": [
+    "startup_pattern",
+    "first"
+  ]
+}
+
+}

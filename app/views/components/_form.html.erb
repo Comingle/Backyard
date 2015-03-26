@@ -1,0 +1,39 @@
+<%= form_for(@component) do |f| %>
+  <% if @component.errors.any? %>
+    <div id="error_explanation">
+      <h2><%= pluralize(@component.errors.count, "error") %> prohibited this component from being saved:</h2>
+
+      <ul>
+      <% @component.errors.full_messages.each do |message| %>
+        <li><%= message %></li>
+      <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <%= f.label :name do %>Component Short Name<% end %>
+  <%= f.text_field :name, :size=>12 %>
+  <br/>
+  <%= f.label :pretty_name do %>Component Pretty Name<% end %>
+  <%= f.text_field :pretty_name, :size=>12 %>
+  <br/>
+  <%= f.label :description do %>Component Description<% end %>
+  <%= f.text_field :description, :size=>20 %>
+  <br/>
+  <%= f.label :category do %>Component Category<% end %>
+  <%= f.select :category, { "general" => "general", "pattern" => "pattern", "blob" => "blob" } %>
+  <br/>
+  <% if (@component.category.match("^pattern$")) %>
+    <%= f.label :period do %>Pattern period: <% end %>
+    <%= f.text_field :period, :size=>12 %><br>
+  <% end %>
+  <%= f.label :global do %>Global Code:<% end %><br>
+  <%= f.text_area :global, rows: 20, cols: 80 %><br>
+  <%= f.label :setup do %>setup() Code:<% end %><br>
+  <%= f.text_area :setup, rows: 20, cols: 80 %><br>
+  <%= f.label :loop do %>loop() Code:<% end %><br>
+  <%= f.text_area :loop, rows: 20, cols: 80 %>
+  <div class="actions">
+    <%= f.submit %>
+  </div>
+<% end %>
