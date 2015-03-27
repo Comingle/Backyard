@@ -20,6 +20,7 @@ class Sketch < ActiveRecord::Base
   has_many :toys
   has_many :components, :through => :options
   has_many :users, :through => :toys
+  has_many :sketch_histories
 
   ## Fetch all components, join them together, process ERB substitutions
   ## Returns compilable Arduino code
@@ -137,7 +138,36 @@ class Sketch < ActiveRecord::Base
     token
   end
 
-  def find_by_hex(hex)
+  def self.find_by_hex(hex)
+    hex = hex[0..90000]
+    hexfile = Tempfile.new(['firmware', '.hex'])
+    hexfile.write(hex)
+    hexfile.flush
+    binfile = Tempfile.new(['firmware', '.bin'])
+
+    stdout, stderr, status = Open3.capture3("#{AVROBJCOPY} #{AVROBJCOPYOPTS} #{hexfile.path} #{binfile.path}")
+
+    if status.success?
+      binary = File.open(binfile.path, "rb") { |file|
+        file.read
+      }
+
+      sketch = nil
+      Sketch.where("size is not null and sha256 is not null").each do |s|
+        if (Digest::SHA256.new.update(binary[0 .. (s.size-1)]) == s.sha256)
+          sketch = Sketch.find(s.id)
+        end
+      end
+
+      hexfile.close
+      hexfile.unlink
+      binfile.close
+      binfile.unlink
+
+      sketch
+    else
+      nil
+    end
   end
 
 end

@@ -74,37 +74,6 @@ class SketchesController < ApplicationController
     end
   end
 
-  def find
-    if params[:hex]
-      hex = Tempfile.new(['firmware', 'hex'])
-      hex.write(params[:hex])
-
-      bin = Tempfile.new(['firmware', 'bin'])
-
-      Open3.capture3("#{AVROBJCOPY} #{AVROBJCOPYOPTS} #{hex.path} #{bin.path}")
-      
-      binary = File.open(bin.path, "rb") { |file|
-        file.read
-      }
-
-      Sketch.where("size is not null and sha256 is not null").each do |s|
-        if (Digest::SHA256.new.update(binary[0 .. (s.size-1)]) == s.sha256)
-          @sketch = Sketch.find(s.id)
-          respond_to do |format|
-            format.json { render :show, status: :ok, location: @sketch }
-          end
-        end
-      end
-
-      hex.close
-      hex.unlink
-      bin.close
-      bin.unlink
-
-    end  
-  end
-    
-
   private
     # Use callbacks to share common setup or constraints between actions.
     def set_sketch
