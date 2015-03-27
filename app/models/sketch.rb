@@ -142,13 +142,17 @@ class Sketch < ActiveRecord::Base
     if (setting.class == Hash)
       setting.each do |k,v|
         Option.new(sketch_id: self.id, component_name: component.name,
-        component_id: component.id, key: k.to_s, value: v.to_s)
+        component_id: component.id, key: k.to_s, value: v.to_s).save!
       end
     elsif setting.class == Array
+      setting.each_with_index do |v,i|
+        Option.new(sketch_id: self.id, component_name: component.name,
+        component_id: component.id, key: i.to_s, value: v.to_s)
+      end
+    else
       Option.new(sketch_id: self.id, component_name: component.name,
-      component_id: component.id, key: k.to_s, value: v.to_s)
-  
-
+      component_id: component.id, key: component.name, value: setting.to_s)
+    end
   end
 
   def self.find_by_hex(hex)
