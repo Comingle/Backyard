@@ -13,6 +13,9 @@ class Users::SessionsController < Devise::SessionsController
     sign_in(resource_name, resource)
     if params[:hex]
       sketch = Sketch.find_by_hex(params[:hex])
+      if !sketch.nil?
+        resource.toys.first.update_sketch(sketch)
+      end
     end
     yield resource if block_given?
     respond_with resource, location: after_sign_in_path_for(resource)

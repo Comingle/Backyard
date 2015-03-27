@@ -4,7 +4,7 @@
       Your toys
       <ul>
       <% @toys.each do |t| %>
-        <li><%= link_to t.model, t %></li>
+        <li><%= link_to t.model, edit_sketch_path(Sketch.find(t.sketch_id)) %></li>
       <% end %>
       </ul>
       <%= link_to 'New Toy', new_toy_path %>

@@ -138,6 +138,19 @@ class Sketch < ActiveRecord::Base
     token
   end
 
+  def create_option(component, setting)
+    if (setting.class == Hash)
+      setting.each do |k,v|
+        Option.new(sketch_id: self.id, component_name: component.name,
+        component_id: component.id, key: k.to_s, value: v.to_s)
+      end
+    elsif setting.class == Array
+      Option.new(sketch_id: self.id, component_name: component.name,
+      component_id: component.id, key: k.to_s, value: v.to_s)
+  
+
+  end
+
   def self.find_by_hex(hex)
     hex = hex[0..90000]
     hexfile = Tempfile.new(['firmware', '.hex'])
