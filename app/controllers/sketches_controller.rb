@@ -1,9 +1,6 @@
 require 'digest'
 require 'open3'
 
-AVROBJCOPY = "/usr/bin/avr-objcopy"
-AVROBJCOPYOPTS = "-I ihex -O binary"
-
 class SketchesController < ApplicationController
   before_action :set_sketch, only: [:show, :edit, :update, :destroy]
 
