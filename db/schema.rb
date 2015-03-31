@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150326191814) do
+ActiveRecord::Schema.define(version: 20150330210915) do
 
   create_table "components", force: :cascade do |t|
     t.string   "name"
@@ -70,8 +70,15 @@ ActiveRecord::Schema.define(version: 20150326191814) do
     t.integer  "num_users"
     t.integer  "total_uses"
     t.string   "config"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.datetime "created_at",       null: false
+    t.datetime "updated_at",       null: false
+    t.string   "model"
+    t.boolean  "hid"
+    t.boolean  "serial_console"
+    t.string   "startup_sequence"
+    t.string   "click"
+    t.string   "doubleclick"
+    t.string   "longpressstart"
   end
 
   create_table "toys", force: :cascade do |t|

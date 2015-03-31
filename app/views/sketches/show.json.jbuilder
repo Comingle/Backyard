@@ -1,1 +1,1 @@
-json.extract! @sketch, :id, :created_at, :updated_at
+json.extract! @sketch, :id, :created_at, :updated_at, :config

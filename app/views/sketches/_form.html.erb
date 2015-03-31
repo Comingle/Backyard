@@ -11,43 +11,53 @@
     </div>
   <% end %>
 
-  Available patterns:<br>
+  Vibration patterns:<br>
   <ol id="patterns" name="pattern">
   <% @patterns.each do |p| %>
-  <li class="pattern" id="pat_<%= p.id %>" draggable="true" data-id=<%= p.id %>><%= p.pretty_name %></li>
+    <li class="pattern" id="pat_<%= p.id %>" draggable="true" data-id=<%= p.id %> data-name=<%= p.name %>>
+      <div class="row">
+        <div class="col-md-3"><%= p.pretty_name %>
+        </div>
+        <div class="col-md-2">
+          <span class="glyphicon glyphicon-play" aria-hidden="true"></span> 
+          <span id="test" class="glyphicon glyphicon-cog" aria-hidden="true"></span> 
+          <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>
+        </div>
+      </div>
+    </li>
   <% end %>
   </ol>
 
-  Button SINGLE click should:
+  Button single click should:
   <select id="click" name="click">
     <option value="cycle_pattern" selected>Move to next pattern</option>
-    <option value="Toy.increasePower();">Increase vibration power</option>
-    <option value="Toy.decreasePower();">Decrease vibration power</option>
-    <option value="Toy.increaseTime();">Slow current pattern down</option>
-    <option value="Toy.decreaseTime();">Speed current pattern up</option>
-    <option value="Toy.stop();">Stop all vibration</option>
+    <option value="increase_power;">Increase vibration power</option>
+    <option value="decrease_power">Decrease vibration power</option>
+    <option value="increase_time">Slow current pattern down</option>
+    <option value="decrease_time">Speed current pattern up</option>
+    <option value="stop">Stop all vibration</option>
   </select>
   <br>
 
-  Button DOUBLE click should:
+  Button double click should:
   <select id="doubleclick" name="doubleclick">
     <option value="cycle_pattern">Move to next pattern</option>
-    <option value="Toy.increasePower();" selected>Increase vibration power</option>
-    <option value="Toy.decreasePower();">Decrease vibration power</option>
-    <option value="Toy.increaseTime();">Slow current pattern down</option>
-    <option value="Toy.decreaseTime();">Speed current pattern up</option>
-    <option value="Toy.stop();">Stop all vibration</option>
+    <option value="increase_power;" selected>Increase vibration power</option>
+    <option value="decrease_power">Decrease vibration power</option>
+    <option value="increase_time">Slow current pattern down</option>
+    <option value="decrease_time">Speed current pattern up</option>
+    <option value="stop">Stop all vibration</option>
   </select>
   <br>
 
   Button click-and-hold should:
   <select id="longpressstart" name="longpressstart">
     <option value="cycle_pattern">Move to next pattern</option>
-    <option value="Toy.increasePower();">Increase vibration power</option>
-    <option value="Toy.decreasePower();" selected>Decrease vibration power</option>
-    <option value="Toy.increaseTime();">Slow current pattern down</option>
-    <option value="Toy.decreaseTime();">Speed current pattern up</option>
-    <option value="Toy.stop();">Stop all vibration</option>
+    <option value="increase_power;">Increase vibration power</option>
+    <option value="decrease_power" selected>Decrease vibration power</option>
+    <option value="increase_time">Slow current pattern down</option>
+    <option value="decrease_time">Speed current pattern up</option>
+    <option value="stop">Stop all vibration</option>
   </select>
   <br>
 

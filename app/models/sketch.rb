@@ -26,22 +26,29 @@ class Sketch < ActiveRecord::Base
   ## Returns compilable Arduino code
   def create_sketch
     header = Component.find_by_name('header')
-    # self.options.new({component_id: header.id,
-    #   component_name: "#{header.category}/#{header.name}"})
     component_list = Array.new
-    component_list.push(Component.find_by_name("header"))
+    ["header", "id", "click", "doubleclick", "longpressstart"].each do |i|
+      component_list.push(Component.find_by_name(i))
+    end
     toy = read_config
-    component_list.push(parse_config(toy, "general"))
-    footer = Component.find_by_name('footer')
-    # self.options.new({component_id: footer.id,
-    #  component_name: "#{footer.category}/#{footer.name}"})
-    component_list.push(Component.find_by_name("footer"))
+    self.model = toy['id']
+    self.hid = toy['hid'].class == TrueClass ? true : false
+    self.serial_console = toy['serial_console'] == FalseClass ? false : true
+    self.startup_sequence = toy['startup_sequence']
+    self.click = toy['click']
+    self.doubleclick = toy['doubleclick']
+    self.longpressstart = toy['longpressstart']
+    component_list.push(parse_config(toy, "pattern"))
+    ["startup_sequence", "footer"].each do |i|
+      component_list.push(Component.find_by_name(i))
+    end
     component_list.flatten!
     global = component_list.map { |g| g.global }.join("")
     setup = component_list.map { |g| g.setup }.join("")
     loop = component_list.map { |g| g.loop }.join("")
     sketch_template = ERB.new([global, setup, loop].join("\n"))
     @sketch = sketch_template.result(toy.send(:binding))
+    puts @sketch
     sketchfile = get_src_dir + "sketch.ino"
     File.open sketchfile, "w" do |file|
         file << @sketch
@@ -50,6 +57,15 @@ class Sketch < ActiveRecord::Base
     File.open configfile, "w" do |file|
       file << self.config
     end
+  end
+
+  def patterns
+    names = read_config['pattern'].keys
+    plist = Array.new
+    names.each do |n|
+      plist.push(Component.find_by_name_and_category(n, "pattern"))
+    end
+    plist
   end
 
   def get_src_dir
@@ -87,21 +103,28 @@ class Sketch < ActiveRecord::Base
     origdir = Dir.getwd
     Dir.chdir(get_build_dir)
     clean_build_dir
-    objdir = get_build_dir + ".build" + TARGETNOHID
-    if (system(INO + " build -m " + TARGETNOHID))
+    if (self.hid)
+      target = TARGET
+    else
+      target = TARGETNOHID
+    end
+    objdir = get_build_dir + ".build" + target
+    stdout, stderr, status = Open3.capture3(INO + " build -m " + target)
+    if status.success?
       @hex = objdir + "firmware.hex"
       @bin = objdir + "firmware.bin"
-      if (system(AVROBJCOPY + " " + AVROBJCOPYOPTS + " #{@hex} #{@bin}"))
+      stdout, stderr, status = Open3.capture3(AVROBJCOPY + " " + AVROBJCOPYOPTS + " #{@hex} #{@bin}")
+      if status.success?
         self.sha256 = Digest::SHA256.file @bin
         self.size = File.size? @bin
         if (!Sketch.where("size = ? AND sha256 = ?", self.size, self.sha256))
           self.save!
         end
       else
-        puts "avr-objcopy failed: #{$?}"
+        puts "avr-objcopy failed: #{stderr}"
       end
     else
-      puts "Build failed: #{$?}"
+      puts "Build failed: #{stderr}"
     end
     Dir.chdir(origdir)
   end
@@ -124,9 +147,14 @@ class Sketch < ActiveRecord::Base
           component = o
         elsif (item[o].class == Array)
           component = item[o]
+        elsif (item[o].class = Hash)
+          component = o
         end
-        list.push(Component.where({name: component, category: category}))
-        puts component
+        if create_option(Component.find_by_name_and_category(o, category), item[o])
+          list.push(Component.where({name: component, category: category}))
+          puts component
+        end
+
       end
     end
     list
@@ -139,21 +167,29 @@ class Sketch < ActiveRecord::Base
   end
 
   def create_option(component, setting)
-    if (setting.class == Hash)
-      setting.each do |k,v|
+    if !Option.find_by(sketch_id: self.id, component_id: component.id)
+      if (setting.class == Hash)
+        if setting.empty?
+          Option.new(sketch_id: self.id, component_name: component.name,
+          component_id: component.id).save!
+        else
+          setting.each do |k,v|
+            Option.new(sketch_id: self.id, component_name: component.name,
+            component_id: component.id, key: k.to_s, value: v.to_s).save!
+          end
+        end
+      elsif setting.class == Array
+        setting.each_with_index do |v,i|
+          Option.new(sketch_id: self.id, component_name: component.name,
+          component_id: component.id, key: i.to_s, value: v.to_s).save!
+        end
+      else
         Option.new(sketch_id: self.id, component_name: component.name,
-        component_id: component.id, key: k.to_s, value: v.to_s).save!
+        component_id: component.id, key: component.name, value: setting.to_s).save!
       end
-    elsif setting.class == Array
-      setting.each_with_index do |v,i|
-        Option.new(sketch_id: self.id, component_name: component.name,
-        component_id: component.id, key: i.to_s, value: v.to_s)
-      end
-    else
-      Option.new(sketch_id: self.id, component_name: component.name,
-      component_id: component.id, key: component.name, value: setting.to_s)
     end
   end
+
 
   def self.find_by_hex(hex)
     hex = hex[0..90000]
@@ -186,6 +222,4 @@ class Sketch < ActiveRecord::Base
       nil
     end
   end
-
 end
-

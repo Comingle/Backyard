@@ -10,6 +10,7 @@ $(function() {
     e.dataTransfer.effectAllowed = 'move';
     e.dataTransfer.setData('text/html', this.innerHTML);
     e.dataTransfer.setData('data-id', this.getAttribute('data-id'));
+    e.dataTransfer.setData('data-name', this.getAttribute('data-name'));
     e.dataTransfer.setData('id', this.id)
   }
 
@@ -44,10 +45,12 @@ $(function() {
       // Set the source column's HTML to the HTML of the column we dropped on.
       dragSrcEl.innerHTML = this.innerHTML;
       dragSrcEl.setAttribute('data-id', this.getAttribute('data-id'));
+      dragSrcEl.setAttribute('data-name', this.getAttribute('data-name'));
       dragSrcEl.id = this.id;
  
       this.innerHTML = e.dataTransfer.getData('text/html');
       this.setAttribute('data-id', e.dataTransfer.getData('data-id'));
+      this.setAttribute('data-name', e.dataTransfer.getData('data-name'));
       this.id = e.dataTransfer.getData('id');
       
     }
@@ -92,10 +95,10 @@ $(function() {
     toy.pattern = {};
     toy.id = $("#toy_id").val();
     $.each($(".pattern"), function(ind,val) { 
-      toy.pattern[$(val).text().toLowerCase()] = {}; 
+      toy.pattern[$(val).attr("data-name")] = {}; 
     });
     toy.click = $("#click").val();
-    toy.longpress = $("#longpressstart").val();
+    toy.longpressstart = $("#longpressstart").val();
     toy.doubleclick = $("#doubleclick").val();
     toy.serial_console = $("#serial_console_true").is(":checked") ? true : false;
     toy.startup_sequence = [$("#startup_sequence").val()];

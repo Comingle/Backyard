@@ -1,0 +1,33 @@
+{
+"id": "BETA",
+"power_scale": 0.2,
+"time_scale": 0.1,
+"serial_console": false,
+"click": "Toy.cyclePattern()",
+"doubleclick": "Toy.increasePower()",
+"longpressstart": "Toy.decreasePower()",
+
+"startup_sequence": {
+  "function": "startup_pattern",
+  "arguments: ""
+}
+
+"patterns" {
+  "third": {},
+  "first": { 
+    "motor0": 200 
+  },
+  "second": {
+    "motor1": 100
+  },
+  "pulse": {},
+  "fadeCos": {},
+  "weird3": {},
+  "flicker": {},
+  "weird2": {},
+  "fadeOffset": {},
+  "pulse2": {}
+}
+
+}
+

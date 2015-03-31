@@ -15,18 +15,24 @@ class SketchesController < ApplicationController
   def show
     respond_to do |format|
       format.json { render :show, status: :created, location: @sketch}
+      format.html { render :show, status: :created, location: @sketch}
     end
   end
 
   # GET /sketches/new
   def new
     @sketch = Sketch.new
-    @patterns = Component.select(:id, :name).where(:category => "pattern")
+    @patterns = Component.select(:id, :name, :pretty_name, :description).where(:category => "pattern")
   end
 
   # GET /sketches/1/edit
   def edit
-    @patterns = Component.select(:id, :name, :pretty_name, :description).where(:category => "pattern")
+    config = JSON.parse(@sketch.config)
+    pattern_names = config['toy']['pattern'].keys
+    @patterns = Array.new
+    pattern_names.each do |n|
+      @patterns.push(Component.select(:id, :name, :pretty_name, :description).find_by_name_and_category(n, "pattern"))
+    end
   end
 
   # POST /sketches
