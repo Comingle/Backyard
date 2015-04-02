@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150330210915) do
+ActiveRecord::Schema.define(version: 20150401041745) do
 
   create_table "components", force: :cascade do |t|
     t.string   "name"
@@ -53,6 +53,25 @@ ActiveRecord::Schema.define(version: 20150330210915) do
   add_index "options", ["component_id"], name: "index_options_on_component_id"
   add_index "options", ["sketch_id"], name: "index_options_on_sketch_id"
 
+  create_table "patterns", force: :cascade do |t|
+    t.string   "global"
+    t.string   "setup"
+    t.string   "loop"
+    t.integer  "motor0"
+    t.integer  "motor1"
+    t.integer  "motor2"
+    t.integer  "on"
+    t.integer  "off"
+    t.integer  "time"
+    t.datetime "created_at",   null: false
+    t.datetime "updated_at",   null: false
+    t.integer  "sketch_id"
+    t.integer  "component_id"
+  end
+
+  add_index "patterns", ["component_id"], name: "index_patterns_on_component_id"
+  add_index "patterns", ["sketch_id"], name: "index_patterns_on_sketch_id"
+
   create_table "sketch_histories", force: :cascade do |t|
     t.integer  "toy_id"
     t.integer  "sketch_id"
@@ -72,13 +91,15 @@ ActiveRecord::Schema.define(version: 20150330210915) do
     t.string   "config"
     t.datetime "created_at",       null: false
     t.datetime "updated_at",       null: false
-    t.string   "model"
-    t.boolean  "hid"
-    t.boolean  "serial_console"
+    t.string   "model",            default: "BETA"
+    t.boolean  "hid",              default: false
+    t.boolean  "serial_console",   default: true
     t.string   "startup_sequence"
     t.string   "click"
     t.string   "doubleclick"
     t.string   "longpressstart"
+    t.float    "time_scale"
+    t.float    "power_scale"
   end
 
   create_table "toys", force: :cascade do |t|

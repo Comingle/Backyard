@@ -28,19 +28,19 @@ class SketchesController < ApplicationController
   # GET /sketches/1/edit
   def edit
     config = JSON.parse(@sketch.config)
-    pattern_names = config['toy']['pattern'].keys
+    #pattern_names = config['toy']['pattern'].keys
     @patterns = Array.new
-    pattern_names.each do |n|
-      @patterns.push(Component.select(:id, :name, :pretty_name, :description).find_by_name_and_category(n, "pattern"))
-    end
+    #pattern_names.each do |n|
+    #  @patterns.push(Component.select(:id, :name, :pretty_name, :description).find_by_name_and_category(n, "pattern"))
+    #end
   end
 
   # POST /sketches
   # POST /sketches.json
   def create
     @sketch = Sketch.new(sketch_params)
-    @sketch.create_sketch
-    @sketch.build_sketch
+    #@sketch.create_sketch
+    #@sketch.build_sketch
 
     respond_to do |format|
       if @sketch.save
@@ -85,7 +85,7 @@ class SketchesController < ApplicationController
 
     # Never trust parameters from the scary internet, only allow the white list through.
     def sketch_params
-      params[:sketch].permit(:config)
+      params[:sketch].permit(:config, :click, :doubleclick, :longpressstart, :serial_console, :startup_sequence, :model)
     end
 
     def get_token

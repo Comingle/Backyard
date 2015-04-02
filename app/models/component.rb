@@ -9,6 +9,7 @@ class Component < ActiveRecord::Base
   
   has_many :options
   has_many :sketches, :through => :options
+  has_many :patterns, :inverse_of => :component
 
   after_validation :build_pattern, if: :is_pattern?
 

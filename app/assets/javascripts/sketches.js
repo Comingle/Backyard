@@ -89,19 +89,10 @@ $(function() {
     console.log('triggered');
   
     root = {};
-    root.toy = {};
-    toy = root.toy;
-    toy.hid = false; // change in the future
-    toy.pattern = {};
-    toy.id = $("#toy_id").val();
+    root.patterns = {};
     $.each($(".pattern"), function(ind,val) { 
-      toy.pattern[$(val).attr("data-name")] = {}; 
+      root.patterns[$(val).attr("data-name")] = {}; 
     });
-    toy.click = $("#click").val();
-    toy.longpressstart = $("#longpressstart").val();
-    toy.doubleclick = $("#doubleclick").val();
-    toy.serial_console = $("#serial_console_true").is(":checked") ? true : false;
-    toy.startup_sequence = [$("#startup_sequence").val()];
     document.getElementById("sketch_config").textContent = JSON.stringify(root);
 
     this.submit();

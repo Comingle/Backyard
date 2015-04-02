@@ -28,61 +28,33 @@
   <% end %>
   </ol>
 
-  Button single click should:
-  <select id="click" name="click">
-    <option value="cycle_pattern" selected>Move to next pattern</option>
-    <option value="increase_power;">Increase vibration power</option>
-    <option value="decrease_power">Decrease vibration power</option>
-    <option value="increase_time">Slow current pattern down</option>
-    <option value="decrease_time">Speed current pattern up</option>
-    <option value="stop">Stop all vibration</option>
-  </select>
+  <%= f.label :click do %>Button single click should:<% end %>
+  <%= f.select :click, { "Move to next pattern" => "cycle_pattern", "Increase vibration power" => "increase_power", "Decrease vibration power" => "decrease_power", "Slow vibration down" => "increase_time", "Speed vibration up" => "decrease_time", "Stop all vibration" => "stop"}, :selected => "cycle_pattern" %>
   <br>
 
-  Button double click should:
-  <select id="doubleclick" name="doubleclick">
-    <option value="cycle_pattern">Move to next pattern</option>
-    <option value="increase_power;" selected>Increase vibration power</option>
-    <option value="decrease_power">Decrease vibration power</option>
-    <option value="increase_time">Slow current pattern down</option>
-    <option value="decrease_time">Speed current pattern up</option>
-    <option value="stop">Stop all vibration</option>
-  </select>
+  <%= f.label :doubleclick do %>Button double click should:<% end %>
+  <%= f.select :doubleclick, { "Move to next pattern" => "cycle_pattern", "Increase vibration power" => "increase_power", "Decrease vibration power" => "decrease_power", "Slow vibration down" => "increase_time", "Speed vibration up" => "decrease_time", "Stop all vibration" => "stop"}, :selected => "cycle_pattern" %>
   <br>
 
-  Button click-and-hold should:
-  <select id="longpressstart" name="longpressstart">
-    <option value="cycle_pattern">Move to next pattern</option>
-    <option value="increase_power;">Increase vibration power</option>
-    <option value="decrease_power" selected>Decrease vibration power</option>
-    <option value="increase_time">Slow current pattern down</option>
-    <option value="decrease_time">Speed current pattern up</option>
-    <option value="stop">Stop all vibration</option>
-  </select>
+  <%= f.label :longpressstart do %>Button click-and-hold should:<% end %>
+  <%= f.select :longpressstart, { "Move to next pattern" => "cycle_pattern", "Increase vibration power" => "increase_power", "Decrease vibration power" => "decrease_power", "Slow vibration down" => "increase_time", "Speed vibration up" => "decrease_time", "Stop all vibration" => "stop"}, :selected => "cycle_pattern" %>
   <br>
 
   <span data-toggle="collapse" data-target="#collapseExample" aria-expanded="false" aria-controls="collapseExample">
     Advanced Settings <span class="caret"></span>
   </span>
   <div class="collapse" id="collapseExample">
-    Serial Console: <input type="radio" id="serial_console_true" value="true" checked name="serial_console"><label for="serial_console_true">On</label></input>
-    <input type="radio" id="serial_console_false" value="false" name="serial_console"><label for="serial_console_false">Off</label></input>
+    Serial Console: <input type="radio" id="serial_console_true" value="true" checked name="sketch[serial_console]"><label for="serial_console_true">On</label></input>
+    <input type="radio" id="serial_console_false" value="false" name="sketch[serial_console]"><label for="serial_console_false">Off</label></input>
     <br>
 
-    When you turn the Mod on, it should:
-    <select id="startup_sequence" name="startup_sequence">
-      <option value="startup_sequence" selected>Run normal startup sequence</option>
-      <option value="startup_pattern">Run a vibration pattern</option>
-      <option value="false">Nothing</option>
-    </select>
+  <%= f.label :startup_sequence do %>When you turn on your Mod, it should:<% end %>
+  <%= f.select :startup_sequence, { "Run the normal startup sequence" => "startup_sequence", "Run a vibration pattern" => "startup_pattern", "Do nothing" => "false"}, :selected => "startup_sequence" %>
     <br>
 
-    Toy ID:
-    <select id="toy_id" name="id">
-      <option value="BETA">Mod</option>
-      <option value="ALPHA">Mod Alpha</option>
-    </select>
-
+  <%= f.label :model do %>Model:<% end %>
+  <%= f.select :model, { "Mod" => "BETA", "Mod Alpha" => "ALPHA" }, :selected => "BETA" %>
+   <br>
     <%= f.label :config do %>Config JSON:<% end %><br>
     <%= f.text_area :config, rows: 20, cols: 80 %><br>
   </div>
