@@ -4,8 +4,13 @@
       <h1>Your Mod</h1>
     </div>
   </div>
-<%= render 'form' %>
+  <div class="row">
+    <div class="col-md-6">
+      <%= render 'form' %>
+    </div>
+  </div>
+     
 
-<%= link_to 'Show', @sketch %> |
-<%= link_to 'Back', sketches_path %>
+  <%= link_to 'Show', @sketch %> |
+  <%= link_to 'Back', sketches_path %>
 </div>

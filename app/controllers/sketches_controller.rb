@@ -28,11 +28,7 @@ class SketchesController < ApplicationController
   # GET /sketches/1/edit
   def edit
     config = JSON.parse(@sketch.config)
-    #pattern_names = config['toy']['pattern'].keys
-    @patterns = Array.new
-    #pattern_names.each do |n|
-    #  @patterns.push(Component.select(:id, :name, :pretty_name, :description).find_by_name_and_category(n, "pattern"))
-    #end
+    @patterns = @sketch.patterns
   end
 
   # POST /sketches

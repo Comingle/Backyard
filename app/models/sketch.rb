@@ -25,30 +25,35 @@ class Sketch < ActiveRecord::Base
   has_many :patterns, :inverse_of => :sketch
   accepts_nested_attributes_for :patterns
 
-  after_save :create_patterns
+  after_validation :get_build_dir
+  before_save :build_sketch
 
   ## Fetch all components, join them together, process ERB substitutions
   ## Returns compilable Arduino code
   def create_sketch
-    header = Component.find_by_name('header')
-    component_list = Array.new
-    component_list.push(Component.find_by_name("header"))
-    toy = read_config
-    component_list.push(parse_config(toy, "general"))
-    component_list.push(Component.find_by_name("footer"))
-    component_list.flatten!
-    global = component_list.map { |g| g.global }.join("")
-    setup = component_list.map { |g| g.setup }.join("")
-    loop = component_list.map { |g| g.loop }.join("")
-    sketch_template = ERB.new([global, setup, loop].join("\n"))
-    @sketch = sketch_template.result(toy.send(:binding))
-    puts @sketch
-    sketchfile = get_src_dir + "sketch.ino"
+    header = Component.find_by_name_and_category("header", "general")
+    footer = Component.find_by_name_and_category("footer", "general")
+
+    template_list = Array.new
+    template_list.push(return_segments(header, nil))
+    template_list.push(gather_components)
+    template_list.push(create_patterns)
+    template_list.push(return_segments(footer, nil))
+    template_list.flatten!
+
+    global = template_list.map { |g| g[:global] }.join("")
+    setup = template_list.map { |g| g[:setup] }.join("")
+    loop = template_list.map { |g| g[:loop] }.join("")
+
+    sketch = [global, setup, loop].join("\n")
+    #puts sketch
+    sketchfile = get_sketch_file
     File.open sketchfile, "w" do |file|
-        file << @sketch
+        file << sketch
     end
     configfile = get_src_dir + "config.json"
     File.open configfile, "w" do |file|
+      file << self.as_json(:only => GENERAL)
       file << self.config
     end
   end
@@ -56,6 +61,12 @@ class Sketch < ActiveRecord::Base
   # Takes "{patterns : { first : {...}, flicker: {...} }" JSON params and
   # produces pattern objects
   def create_patterns
+    # destroy any existing patterns for this sketch
+    if (self.id)
+      Pattern.destroy_all(:sketch_id => self.id)
+    end
+
+    component_list = Array.new
     config_json = JSON.parse(config)
     pattern_list = config_json['patterns']
     pattern_list.each do |pat_name,pat_options|
@@ -68,13 +79,16 @@ class Sketch < ActiveRecord::Base
           :on => pat_options['on'],
           :off => pat_options['off']
         }
-        locals['global'] = Erubis::Eruby.new(pat_component.global).result(locals)
-        locals['setup'] = Erubis::Eruby.new(pat_component.setup).result(locals)
-        locals['loop'] = Erubis::Eruby.new(pat_component.loop).result(locals)
+        segments = return_segments(pat_component, locals)
+        component_list.push(segments)
+        locals['global'] = segments[:global]
+        locals['setup'] = segments[:setup]
+        locals['loop'] = segments[:loop]
         locals['component_id'] = pat_component.id
-        patterns.new(locals).save!
+        patterns.new(locals)
       end
     end
+    component_list
   end
 
   def gather_components
@@ -85,16 +99,15 @@ class Sketch < ActiveRecord::Base
       # Very bad if not..
       field_comp = Component.find_by_name_and_category(comp_name, "general")
       next if !field_comp
-
-      # Default to just including component template with no
-      # ERB substitution context
-      context = self.attributes
+      
+      # Default to including sketch attributes as ERB substitution context
+      context = self.as_json
 
       # Find if our value is a blob referring to another component
       component = Component.find_by_name(self[comp_name])
       if !component.nil?
         if component.category == "blob"
-          self[comp_name] = component.global
+          context[comp_name] = component.global
         end
       end
       component_list.push(return_segments(field_comp, context))
@@ -108,11 +121,16 @@ class Sketch < ActiveRecord::Base
     elsif Component.find_by_name(self.startup_sequence).category == "pattern"
       seq = Component.find_by_name("startup_pattern")
       context = self.startup_sequence
+      # TODO: if we're running a pattern at startup make sure the pattern
+      # itself is actually included.
     end
     component_list.push(return_segments(seq, context))
     component_list
   end
 
+  def get_sketch_file
+    get_src_dir + "sketch.ino"
+  end
 
   def get_src_dir
     get_build_dir + "src"
@@ -133,7 +151,6 @@ class Sketch < ActiveRecord::Base
       src = dir + "src"
       Dir.mkdir src
       self.build_dir = dir
-      self.save!
     end
     Pathname.new(self.build_dir)
   end
@@ -146,6 +163,7 @@ class Sketch < ActiveRecord::Base
   end
 
   def build_sketch
+    if !File.exists?(get_sketch_file) then create_sketch end
     origdir = Dir.getwd
     Dir.chdir(get_build_dir)
     clean_build_dir
@@ -163,9 +181,9 @@ class Sketch < ActiveRecord::Base
       if status.success?
         self.sha256 = Digest::SHA256.file @bin
         self.size = File.size? @bin
-        if (!Sketch.where("size = ? AND sha256 = ?", self.size, self.sha256))
-          self.save!
-        end
+        #if (!Sketch.where("size = ? AND sha256 = ?", self.size, self.sha256))
+        #  self.save!
+        #end
       else
         puts "avr-objcopy failed: #{stderr}"
       end
@@ -182,29 +200,29 @@ class Sketch < ActiveRecord::Base
 
 # Traverse the configuration hash and fetch the global, local and setup segments
 # for each component. Will recurse in to directions named in TRAVERSE
-  def parse_config(item, category)
-    list = Array.new
-    item.keys.each do |o|
-      next if (!item[o])
-      if (CATEGORIES.index(o))
-        list.push(parse_config(item[o], o))
-      else
-        if (item[o].class != FalseClass)
-          component = o
-        elsif (item[o].class == Array)
-          component = item[o]
-        elsif (item[o].class = Hash)
-          component = o
-        end
-        #if create_option(Component.find_by_name_and_category(o, category), item[o])
-          list.push(Component.where({name: component, category: category}))
-          puts component
-        #end
-
-      end
-    end
-    list
-  end
+  #def parse_config(item, category)
+  #  list = Array.new
+  #  item.keys.each do |o|
+  #    next if (!item[o])
+  #    if (CATEGORIES.index(o))
+  #      list.push(parse_config(item[o], o))
+  #    else
+  #      if (item[o].class != FalseClass)
+  #        component = o
+  #      elsif (item[o].class == Array)
+  #        component = item[o]
+  #      elsif (item[o].class = Hash)
+  #        component = o
+  #      end
+  #      #if create_option(Component.find_by_name_and_category(o, category), item[o])
+  #        list.push(Component.where({name: component, category: category}))
+  #        puts component
+  #      #end
+#
+#      end
+#    end
+#    list
+ # end
 
   def get_token
     date = Time.now.strftime("%Y-%m-%d")
@@ -212,29 +230,29 @@ class Sketch < ActiveRecord::Base
     token
   end
 
-  def create_option(component, setting)
-    if !Option.find_by(sketch_id: self.id, component_id: component.id)
-      if (setting.class == Hash)
-        if setting.empty?
-          Option.new(sketch_id: self.id, component_name: component.name,
-          component_id: component.id).save!
-        else
-          setting.each do |k,v|
-            Option.new(sketch_id: self.id, component_name: component.name,
-            component_id: component.id, key: k.to_s, value: v.to_s).save!
-          end
-        end
-      elsif setting.class == Array
-        setting.each_with_index do |v,i|
-          Option.new(sketch_id: self.id, component_name: component.name,
-          component_id: component.id, key: i.to_s, value: v.to_s).save!
-        end
-      else
-        Option.new(sketch_id: self.id, component_name: component.name,
-        component_id: component.id, key: component.name, value: setting.to_s).save!
-      end
-    end
-  end
+#  def create_option(component, setting)
+#    if !Option.find_by(sketch_id: self.id, component_id: component.id)
+#      if (setting.class == Hash)
+#        if setting.empty?
+#          Option.new(sketch_id: self.id, component_name: component.name,
+#          component_id: component.id).save!
+#        else
+#          setting.each do |k,v|
+#            Option.new(sketch_id: self.id, component_name: component.name,
+#            component_id: component.id, key: k.to_s, value: v.to_s).save!
+#          end
+#        end
+#      elsif setting.class == Array
+#        setting.each_with_index do |v,i|
+#          Option.new(sketch_id: self.id, component_name: component.name,
+#          component_id: component.id, key: i.to_s, value: v.to_s).save!
+#        end
+#      else
+#        Option.new(sketch_id: self.id, component_name: component.name,
+#        component_id: component.id, key: component.name, value: setting.to_s).save!
+#      end
+#    end
+#  end
 
 
   def self.find_by_hex(hex)
@@ -275,4 +293,5 @@ class Sketch < ActiveRecord::Base
     loop = Erubis::Eruby.new(component.loop).result(context)
     {:global => global, :setup => setup, :loop => loop}
   end
+
 end

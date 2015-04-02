@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150401041745) do
+ActiveRecord::Schema.define(version: 20150402142951) do
 
   create_table "components", force: :cascade do |t|
     t.string   "name"
@@ -89,9 +89,9 @@ ActiveRecord::Schema.define(version: 20150401041745) do
     t.integer  "num_users"
     t.integer  "total_uses"
     t.string   "config"
-    t.datetime "created_at",       null: false
-    t.datetime "updated_at",       null: false
-    t.string   "model",            default: "BETA"
+    t.datetime "created_at",                       null: false
+    t.datetime "updated_at",                       null: false
+    t.string   "model"
     t.boolean  "hid",              default: false
     t.boolean  "serial_console",   default: true
     t.string   "startup_sequence"

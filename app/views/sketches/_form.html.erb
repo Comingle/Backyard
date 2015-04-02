@@ -11,7 +11,9 @@
     </div>
   <% end %>
 
-  Vibration patterns:<br>
+  <h2>Wiggles</h2>
+
+  Vibration patterns on your Mod:<br>
   <ol id="patterns" name="pattern">
   <% @patterns.each do |p| %>
     <li class="pattern" id="pat_<%= p.id %>" draggable="true" data-id=<%= p.id %> data-name=<%= p.name %>>
@@ -21,12 +23,14 @@
         <div class="col-md-2">
           <span class="glyphicon glyphicon-play" aria-hidden="true"></span> 
           <span id="test" class="glyphicon glyphicon-cog" aria-hidden="true"></span> 
-          <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>
+          <span class="glyphicon glyphicon-remove pattern-remove" aria-hidden="true"></span>
         </div>
       </div>
     </li>
   <% end %>
   </ol>
+
+  <h2>Clicks</h2>
 
   <%= f.label :click do %>Button single click should:<% end %>
   <%= f.select :click, { "Move to next pattern" => "cycle_pattern", "Increase vibration power" => "increase_power", "Decrease vibration power" => "decrease_power", "Slow vibration down" => "increase_time", "Speed vibration up" => "decrease_time", "Stop all vibration" => "stop"}, :selected => "cycle_pattern" %>

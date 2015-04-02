@@ -82,21 +82,24 @@ $(function() {
     formEl = document.getElementsByClassName("edit_sketch")[0];
   }  
   if (formEl) {
-  formEl.addEventListener('submit', function(e) {
-    if (e.preventDefault) {
-      e.preventDefault(); // Necessary. Allows us to drop.
-    }
-    console.log('triggered');
-  
-    root = {};
-    root.patterns = {};
-    $.each($(".pattern"), function(ind,val) { 
-      root.patterns[$(val).attr("data-name")] = {}; 
+    formEl.addEventListener('submit', function(e) {
+      if (e.preventDefault) {
+        e.preventDefault(); 
+      }
+      root = {};
+      root.patterns = {};
+      $.each($(".pattern"), function(ind,val) { 
+        root.patterns[$(val).attr("data-name")] = {}; 
+      });
+      document.getElementById("sketch_config").textContent = JSON.stringify(root);
+      this.submit();
     });
-    document.getElementById("sketch_config").textContent = JSON.stringify(root);
-
-    this.submit();
-  });
   }
+
+  // Preliminary pattern-list deletion
+  $(".pattern-remove").on("click", function() {
+    $(this).parents('li').remove(); 
+  });
+  
 
 });
