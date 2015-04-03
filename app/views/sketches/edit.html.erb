@@ -8,6 +8,37 @@
     <div class="col-md-6">
       <%= render 'form' %>
     </div>
+    <div class="col-md-6" id="pattern_info" >
+      <% @patterns.each_with_index do |p,i| %>
+      <div id="pattern-<%= p.id %>" class="pattern-desc hidden">
+        <div class="row">
+          <div class="col-md-12">
+            <h3>
+              <%= p.pretty_name %>
+              <span class="glyphicon glyphicon-play" aria-hidden="true"></span>
+              <span id="test" class="glyphicon glyphicon-cog" aria-hidden="true"></span>
+            </h3>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-md-12">
+            <h5><%= p.description %></h3>
+          </div>
+        </div>
+        <hr>
+        <div class="row">
+          <div class="col-md-12" id="settings-<%= p.id %>">
+            <% options = @pattern_options[i] %>
+            <% options.each do |opt| %>
+              <%= opt[:name] %>
+              <input type="range" value=<%= opt[:default] %> min=<%= opt[:min] %> max=<%= opt[:max] %> class="slider" id="pattern-<%= p.id %>-<%= opt[:name] %>">
+              <br>
+            <% end %>
+          </div>
+        </div>
+      </div>
+      <% end %>
+    </div>
   </div>
      
 

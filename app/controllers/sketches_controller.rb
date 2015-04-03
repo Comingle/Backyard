@@ -29,14 +29,15 @@ class SketchesController < ApplicationController
   def edit
     config = JSON.parse(@sketch.config)
     @patterns = @sketch.patterns
+    @pattern_options = @patterns.inject(Array.new) { |result, element|
+      result.push(element.options_with_values)
+    }
   end
 
   # POST /sketches
   # POST /sketches.json
   def create
     @sketch = Sketch.new(sketch_params)
-    #@sketch.create_sketch
-    #@sketch.build_sketch
 
     respond_to do |format|
       if @sketch.save
@@ -71,6 +72,15 @@ class SketchesController < ApplicationController
       format.html { redirect_to sketches_url, notice: 'Sketch was successfully destroyed.' }
       format.json { head :no_content }
     end
+  end
+
+  def missing
+    if params[:current_patterns]
+      current_patterns = params[:current_patterns]
+    else
+      current_patterns = @sketch.components.pluck(:name)
+    end
+    Component.patterns.where.not("name in (?)", @sketch.components.pluck(:name))
   end
 
   private

@@ -89,7 +89,15 @@ $(function() {
       root = {};
       root.patterns = {};
       $.each($(".pattern"), function(ind,val) { 
-        root.patterns[$(val).attr("data-name")] = {}; 
+        pattern = root.patterns[$(val).attr("data-name")] = {};
+        var pattern_id = $(val).attr("data-id");
+        var settings = $("#settings-" + pattern_id).children('input'); 
+        
+        for (var i = 0; i < settings.length; i++) {
+          var property = settings[i].id.split("-")[2];
+          var value = settings[i].value
+          pattern[property] = value;
+        }
       });
       document.getElementById("sketch_config").textContent = JSON.stringify(root);
       this.submit();
@@ -98,8 +106,19 @@ $(function() {
 
   // Preliminary pattern-list deletion
   $(".pattern-remove").on("click", function() {
-    $(this).parents('li').remove(); 
+    var parent = $(this).parents('li');
+    var id = parent.attr('data-id');
+    parent.remove(); 
+    $("#pattern-" + id).remove();
   });
-  
+
+  $(".pattern").on("click", function() {
+    var id = $(this).data('id');
+    var dest = "#pattern-" + id;
+    $(".pattern-desc").addClass("hidden");
+    $(dest).removeClass("hidden");
+  });
+
+  // $.each($(".pattern"), function (ind, val) { console.log($(this).attr("data-name")); }) 
 
 });

@@ -1,5 +1,3 @@
-require 'erb'
-
 GCC = "/usr/bin/gcc"
 GCCARGS = "-lm -o"
 PATTERNDIR = Rails.root + "patterns"
@@ -12,6 +10,8 @@ class Component < ActiveRecord::Base
   has_many :patterns, :inverse_of => :component
 
   after_validation :build_pattern, if: :is_pattern?
+
+  scope :patterns, lambda { where(:category => "pattern") }
 
   def build_pattern
     new_pat = global.gsub(/int\s+\w+\s*\(int seq\)/, "int pattern(int seq)")
@@ -38,6 +38,27 @@ class Component < ActiveRecord::Base
 
   def is_pattern?
     category.match("^pattern$")
+  end
+
+  # returns variable name and default value
+  def pat_options
+    if !is_pattern? 
+      return nil
+    end
+    opts_with_vals = Array.new
+    options = global.scan(/%=\s*(\S*)\s*\?.*:\s*(\S+)\s*%>/)
+    # Each 'o' is a [variable name, default value] array
+    options.each do |o|
+      if o[0].match("time")
+        min = 10
+        max = 200
+      else
+        min = 0
+        max = 255
+      end
+      opts_with_vals.push({name: o[0], default: o[1], min: min, max: max})
+    end
+    opts_with_vals
   end
 
 end

@@ -19,7 +19,7 @@ GENERAL = ["model", "serial_console", "click", "doubleclick", "longpressstart", 
 class Sketch < ActiveRecord::Base
   has_many :options
   has_many :toys
-  has_many :components, :through => :options
+  has_many :components, :through => :patterns
   has_many :users, :through => :toys
   has_many :sketch_histories
   has_many :patterns, :inverse_of => :sketch
@@ -287,11 +287,11 @@ class Sketch < ActiveRecord::Base
   end
 
   private
-  def return_segments(component, context)
-    global = Erubis::Eruby.new(component.global).result(context)
-    setup = Erubis::Eruby.new(component.setup).result(context)
-    loop = Erubis::Eruby.new(component.loop).result(context)
-    {:global => global, :setup => setup, :loop => loop}
-  end
+    def return_segments(component, context)
+      global = Erubis::Eruby.new(component.global).result(context)
+      setup = Erubis::Eruby.new(component.setup).result(context)
+      loop = Erubis::Eruby.new(component.loop).result(context)
+      {:global => global, :setup => setup, :loop => loop}
+    end
 
 end

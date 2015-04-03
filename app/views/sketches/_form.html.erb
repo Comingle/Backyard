@@ -15,20 +15,19 @@
 
   Vibration patterns on your Mod:<br>
   <ol id="patterns" name="pattern">
-  <% @patterns.each do |p| %>
+  <% @patterns.each_with_index do |p,i| %>
     <li class="pattern" id="pat_<%= p.id %>" draggable="true" data-id=<%= p.id %> data-name=<%= p.name %>>
       <div class="row">
         <div class="col-md-3"><%= p.pretty_name %>
         </div>
         <div class="col-md-2">
-          <span class="glyphicon glyphicon-play" aria-hidden="true"></span> 
-          <span id="test" class="glyphicon glyphicon-cog" aria-hidden="true"></span> 
           <span class="glyphicon glyphicon-remove pattern-remove" aria-hidden="true"></span>
         </div>
       </div>
     </li>
   <% end %>
   </ol>
+  <span id="add_patterns">Add more patterns...</span>
 
   <h2>Clicks</h2>
 
