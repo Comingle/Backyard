@@ -10,6 +10,7 @@ Rails.application.routes.draw do
   }
   resources :options
 
+  get '/components/patterns', to: 'components#patterns'
   resources :components
 
   resources :sketches

@@ -32,10 +32,10 @@ int main(int argc, char *argv[]) {
     return -1;
   }
     
-  printf("{ \"steps\": [\n");
+  printf("{ \"steps\": [");
   while (startStep < endStep-1) {
     pattern(startStep);
-    printf("[ %d, %d, %d, %d ],\n", Toy.step[0], Toy.step[1], Toy.step[2], Toy.step[3]);
+    printf("[ %d, %d, %d, %d ],", Toy.step[0], Toy.step[1], Toy.step[2], Toy.step[3]);
     startStep++;
   }
   pattern(startStep);  

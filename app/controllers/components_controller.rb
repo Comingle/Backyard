@@ -69,6 +69,23 @@ class ComponentsController < ApplicationController
     end
   end
 
+  # Returns available patterns. If params[:current], those are excluded
+  # from the list.
+  def patterns
+    if params[:current_patterns]
+      current_patterns = params[:current_patterns].split(",")
+      @patterns = Component.patterns.where.not("name in (?)", current_patterns)
+    else
+      @patterns = Component.patterns
+    end
+    @options = Array.new
+    @patterns.each do |p|
+      @options.push(p.pat_options)
+    end
+    respond_to do |format|
+      format.json { }
+    end
+  end
   private
     # Use callbacks to share common setup or constraints between actions.
     def set_component

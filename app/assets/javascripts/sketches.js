@@ -112,6 +112,7 @@ $(function() {
     $("#pattern-" + id).remove();
   });
 
+  // Show pattern info in side div
   $(".pattern").on("click", function() {
     var id = $(this).data('id');
     var dest = "#pattern-" + id;
@@ -119,6 +120,38 @@ $(function() {
     $(dest).removeClass("hidden");
   });
 
-  // $.each($(".pattern"), function (ind, val) { console.log($(this).attr("data-name")); }) 
+  // Get list of patterns for "Add more patterns..." behavior
+  $("#add_patterns").on("click", function() {
+    current_patterns = [];
+    $.each($(".pattern"), function (ind, val) { 
+      current_patterns.push(this.dataset.name);
+    });
+    $.ajax({
+      url: "/components/patterns", 
+      dataType: "json", 
+      type: "GET", 
+      data: "current_patterns=" + current_patterns.join(","),
+      success: function(data) { 
+        var new_patterns = data;
+        console.log(new_patterns);
+        $.each(new_patterns, function (ind, val) {
+          $("#new_pattern_list").append(buildNewPatternLi(val));
+        });
+        $("#new_pattern_modal").modal('show');
+      }
+    });
+
+  });
+
+  function buildNewPatternLi(pat) {
+    var id = "comp_" + pat.id;
+    var li = '<li id="' + id + '" data-name="' + pat.name + '">';
+    li += '<label><input type="checkbox" value="' + id + '"> <strong>' +
+      pat.pretty_name + '</strong></label>';
+    li += "<p>" + pat.description + "</p>";
+    li += '</li>';
+
+    return li;
+  }
 
 });

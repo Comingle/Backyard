@@ -75,12 +75,12 @@ class SketchesController < ApplicationController
   end
 
   def missing
-    if params[:current_patterns]
-      current_patterns = params[:current_patterns]
-    else
-      current_patterns = @sketch.components.pluck(:name)
+    puts params
+      current_patterns = params[:current_patterns].split(',')
+      # current_patterns = @sketch.components.pluck(:name)
+    Component.patterns.where.not("name in (?)", current_patterns).each do |c|
+      puts c.name
     end
-    Component.patterns.where.not("name in (?)", @sketch.components.pluck(:name))
   end
 
   private
