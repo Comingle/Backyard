@@ -112,6 +112,23 @@ $(function() {
     $("#pattern-" + id).remove();
   });
 
+  $(".pattern-play").on("click", function() {
+    var id = $(this).parents(".pattern-desc").data('id');
+    var settingEls = $("#settings-" + id).children("input");
+    var settings = {};
+    $.each(settingEls, function(ind, val) {
+      // Expects an ID of "setting-XX-name" -- we want name.
+      var paramName = val.id.split("-")[2];
+      settings[paramName] = val.value;
+    });
+    $.ajax({
+      url: "/components/test_pattern",
+      type: "POST",
+      data: "settings=" + JSON.stringify(settings) + "&id=" + id,
+      success: function(data) { console.log(data); }
+    });
+  });
+
   // Show pattern info in side div
   $(".pattern").on("click", function() {
     var id = $(this).data('id');

@@ -12,12 +12,12 @@ class ComponentsController < ApplicationController
   # GET /components/1
   # GET /components/1.json
   def show
-    if (@component.testride and request.xhr?)
-      steps = Open3.capture2(@component.testride, @component.period.to_s);
-      respond_to do |format|
-        format.json { render json: steps[0] }
-      end
-    end
+    #if (@component.testride and request.xhr?)
+    #  steps = Open3.capture2(@component.testride, @component.period.to_s);
+    #  respond_to do |format|
+    #    format.json { render json: steps[0] }
+    #  end
+    #end
   end
 
   # GET /components/new
@@ -86,6 +86,18 @@ class ComponentsController < ApplicationController
       format.json { }
     end
   end
+
+  def test_pattern
+    if params[:settings]
+      settings = JSON.parse(params[:settings])
+      id = params[:id]
+      @steps = Component.find(id).test_pattern(settings, nil)
+      respond_to do |format|
+        format.json { render json: @steps }
+      end
+    end
+  end
+
   private
     # Use callbacks to share common setup or constraints between actions.
     def set_component

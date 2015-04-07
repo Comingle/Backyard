@@ -1,3 +1,5 @@
+require 'open3'
+
 GCC = "/usr/bin/gcc"
 GCCARGS = "-lm -o"
 PATTERNDIR = Rails.root + "patterns"
@@ -9,31 +11,56 @@ class Component < ActiveRecord::Base
   has_many :sketches, :through => :options
   has_many :patterns, :inverse_of => :component
 
-  after_validation :build_pattern, if: :is_pattern?
+  # after_validation :build_pattern, if: :is_pattern?
 
   scope :patterns, lambda { where(:category => "pattern") }
 
-  def build_pattern
-    new_pat = global.gsub(/int\s+\w+\s*\(int seq\)/, "int pattern(int seq)")
-    new_pat.gsub!(/<%.*:\s*(\d+).*%>/, '\1')
-    if (!Dir.exists?(PATTERNDIR))
-      Dir.mkdir PATTERNDIR
-      false
+  def test_pattern(opts, num_steps)
+    return if !is_pattern?
+    defaults = pat_options
+    defaults.each do |i|
+      max = i[:max]
+      min = i[:min]
+      item = i[:name].to_sym
+      default_value = i[:default]
+      if opts[item].nil? 
+        opts[item] = default_value 
+      elsif (opts[item] > max) | (opts[item] < min)
+        opts[item] = default_value 
+      end
     end
+    if num_steps.nil? then num_steps = period end
+    new_pat = global.gsub(/int\s+\w+\s*\(int seq\)/, "int pattern(int seq)")
+    # new_pat.gsub!(/<%.*:\s*(\d+).*%>/, '\1')
+    # if (!Dir.exists?(PATTERNDIR))
+    #   Dir.mkdir PATTERNDIR
+    #   false
+    # end
     pattern_build_dir = PATTERNDIR + name
-    c_prog = pattern_build_dir + name
-    c_file = pattern_build_dir + "#{name}.c"
+    # c_prog = pattern_build_dir + name # tmpfile
+    c_prog = Tempfile.new(name) 
+    c_file = Tempfile.new([name, ".c"])
+    # c_file = pattern_build_dir + "#{name}.c" # tmpfile
     if (!Dir.exists?(pattern_build_dir))
       Dir.mkdir pattern_build_dir
     end
-    pattern_template = ERB.new(File.read(PATTERNTEMPLATE))
-    c_pattern = pattern_template.result(new_pat.send(:binding))
+    pattern_template = Erubis::Eruby.new(File.read(PATTERNTEMPLATE)).result(new_pat.send(:binding))
+    c_pattern = Erubis::Eruby.new(pattern_template).result(opts)
     File.open c_file, "w" do |file|
       file << c_pattern
     end
-    if (system(GCC + " " + c_file.to_s + " " + GCCARGS + " " + c_prog.to_s))
-      self.testride = c_prog.to_s
+    stdout, stderr, status = Open3.capture3("#{GCC} #{c_file.path} #{GCCARGS} #{c_prog.path}")
+    if status.success?
+      c_file.close
+      c_prog.close
+      steps, steperr, stepstatus = Open3.capture3("#{c_prog.path} #{num_steps}")
+      # self.testride = c_prog.to_s
+    else
+      steps = nil
     end
+    c_file.unlink
+    c_prog.unlink
+    steps
   end
 
   def is_pattern?

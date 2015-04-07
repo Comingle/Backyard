@@ -14,9 +14,9 @@ struct {
 // Randomly blip an output on for a short burst.
 int pattern(int seq) {
   if (seq % 2) {
-    Toy.step[0] = Toy.step[1] = Toy.step[2] = 0;
+    Toy.step[0] = Toy.step[1] = Toy.step[2] = 20;
   } else {
-    Toy.step[random(0,3)] = 144;
+    Toy.step[random(0,3)] = 200;
   }
 
   Toy.step[3] = 70;

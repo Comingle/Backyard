@@ -16,7 +16,7 @@
   Vibration patterns on your Mod:<br>
   <ol id="patterns" name="pattern">
   <% @patterns.each_with_index do |p,i| %>
-    <li class="pattern" id="pat_<%= p.id %>" draggable="true" data-id=<%= p.id %> data-name=<%= p.name %>>
+    <li class="pattern" id="comp_<%= p.component_id %>" draggable="true" data-id=<%= p.component_id %> data-name=<%= p.name %>>
       <div class="row">
         <div class="col-md-3"><%= p.pretty_name %>
         </div>
@@ -41,6 +41,11 @@
 
   <%= f.label :longpressstart do %>Button click-and-hold should:<% end %>
   <%= f.select :longpressstart, { "Move to next pattern" => "cycle_pattern", "Increase vibration power" => "increase_power", "Decrease vibration power" => "decrease_power", "Slow vibration down" => "increase_time", "Speed vibration up" => "decrease_time", "Stop all vibration" => "stop"}, :selected => "cycle_pattern" %>
+  <br>
+
+  <h2>Accessories</h2>
+  Add a Nunchuck...
+
   <br>
 
   <span data-toggle="collapse" data-target="#collapseExample" aria-expanded="false" aria-controls="collapseExample">
