@@ -6,7 +6,7 @@ require 'digest'
 require 'open3'
 
 SKETCHDIR = Rails.root + "sketches"
-CATEGORIES = ["general", "pattern"]
+CATEGORIES = ["general", "pattern", "nunchuck"]
 IGNORE = ["hid"]
 
 INO = "/usr/local/bin/ino"
@@ -17,6 +17,19 @@ AVROBJCOPYOPTS = "-I ihex -O binary"
 GENERAL = ["model", "serial_console", "click", "doubleclick", "longpressstart", "time_scale", "power_scale"]
 
 class Sketch < ActiveRecord::Base
+  class BuildError < StandardError
+    def initialize(message = nil, action = nil, subject = nil)
+      @message = message
+      @action = action
+      @subject = subject
+      @default_message = I18n.t(:"unauthorized.default", :default => "There was an error building your sketch.")
+    end
+
+    def to_s
+      @message || @default_message
+    end
+  end
+
   has_many :options
   has_many :toys
   has_many :components, :through => :patterns
@@ -27,6 +40,7 @@ class Sketch < ActiveRecord::Base
 
   after_validation :get_build_dir
   before_save :build_sketch
+  before_update :build_sketch
 
   ## Fetch all components, join them together, process ERB substitutions
   ## Returns compilable Arduino code
@@ -63,7 +77,8 @@ class Sketch < ActiveRecord::Base
   def create_patterns
     # destroy any existing patterns for this sketch
     if (self.id)
-      Pattern.destroy_all(:sketch_id => self.id)
+      # Pattern.destroy_all(:sketch_id => self.id)
+      patterns.destroy_all
     end
 
     component_list = Array.new
@@ -163,7 +178,8 @@ class Sketch < ActiveRecord::Base
   end
 
   def build_sketch
-    if !File.exists?(get_sketch_file) then create_sketch end
+    # if !File.exists?(get_sketch_file) then create_sketch end
+    create_sketch
     origdir = Dir.getwd
     Dir.chdir(get_build_dir)
     clean_build_dir
@@ -186,9 +202,11 @@ class Sketch < ActiveRecord::Base
         #end
       else
         puts "avr-objcopy failed: #{stderr}"
+        raise BuildError.new(message: "avr-objcopy failed: #{stderr}")
       end
     else
       puts "Build failed: #{stderr}"
+      raise BuildError.new(message: "Build failed: #{stderr}")
     end
     Dir.chdir(origdir)
   end

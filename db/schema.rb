@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150402142951) do
+ActiveRecord::Schema.define(version: 20150424185847) do
 
   create_table "components", force: :cascade do |t|
     t.string   "name"
@@ -39,6 +39,25 @@ ActiveRecord::Schema.define(version: 20150402142951) do
 
   add_index "manifests", ["component_id"], name: "index_manifests_on_component_id"
   add_index "manifests", ["sketch_id"], name: "index_manifests_on_sketch_id"
+
+  create_table "nunchucks", force: :cascade do |t|
+    t.string   "c_click"
+    t.string   "c_double_click"
+    t.string   "z_click"
+    t.string   "z_double_click"
+    t.string   "joy_x"
+    t.string   "joy_y"
+    t.string   "roll"
+    t.string   "pitch"
+    t.string   "accel_x"
+    t.string   "accel_y"
+    t.string   "accel_z"
+    t.datetime "created_at",     null: false
+    t.datetime "updated_at",     null: false
+    t.integer  "sketch_id"
+  end
+
+  add_index "nunchucks", ["sketch_id"], name: "index_nunchucks_on_sketch_id"
 
   create_table "options", force: :cascade do |t|
     t.integer  "sketch_id"
@@ -101,6 +120,28 @@ ActiveRecord::Schema.define(version: 20150402142951) do
     t.float    "time_scale"
     t.float    "power_scale"
   end
+
+  create_table "threshold_functions", force: :cascade do |t|
+    t.string   "source"
+    t.float    "step_size"
+    t.integer  "base_thresh_low"
+    t.integer  "base_thresh_high"
+    t.integer  "thresh"
+    t.string   "source_function"
+    t.string   "increase"
+    t.boolean  "c_needed"
+    t.string   "increase_with_c"
+    t.boolean  "z_needed"
+    t.string   "increase_with_z"
+    t.string   "decrease"
+    t.string   "decrease_with_c"
+    t.string   "decrease_with_z"
+    t.datetime "created_at",       null: false
+    t.datetime "updated_at",       null: false
+    t.integer  "nunchuck_id"
+  end
+
+  add_index "threshold_functions", ["nunchuck_id"], name: "index_threshold_functions_on_nunchuck_id"
 
   create_table "toys", force: :cascade do |t|
     t.integer  "user_id"

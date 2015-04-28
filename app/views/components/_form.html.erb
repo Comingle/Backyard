@@ -1,4 +1,6 @@
 <%= form_for(@component) do |f| %>
+  <div class="row">
+  <div class="col-md-10">
   <% if @component.errors.any? %>
     <div id="error_explanation">
       <h2><%= pluralize(@component.errors.count, "error") %> prohibited this component from being saved:</h2>
@@ -10,7 +12,10 @@
       </ul>
     </div>
   <% end %>
+  </div>
 
+  <div class="row">
+  <div class="col-md-8">
   <%= f.label :name do %>Component Short Name<% end %>
   <%= f.text_field :name, :size=>12 %>
   <br/>
@@ -21,7 +26,7 @@
   <%= f.text_field :description, :size=>20 %>
   <br/>
   <%= f.label :category do %>Component Category<% end %>
-  <%= f.select :category, { "general" => "general", "pattern" => "pattern", "blob" => "blob" } %>
+  <%= f.select :category, { "general" => "general", "pattern" => "pattern", "blob" => "blob", "nunchuck" => "nunchuck" } %>
   <br/>
   <%= f.label :global do %>Global Code:<% end %><br>
   <%= f.text_area :global, rows: 20, cols: 80 %><br>
@@ -31,5 +36,15 @@
   <%= f.text_area :loop, rows: 20, cols: 80 %>
   <div class="actions">
     <%= f.submit %>
+  </div>
+  </div>
+  <div class="col-md-4">
+    Variables:
+    <ul>
+  <% @vars.each do |v| %>
+    <li><strong><%= v %></strong></li>
+  <% end %>
+    </ul>
+  </div>
   </div>
 <% end %>

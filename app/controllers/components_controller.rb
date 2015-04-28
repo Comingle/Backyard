@@ -27,6 +27,13 @@ class ComponentsController < ApplicationController
 
   # GET /components/1/edit
   def edit
+    c = @component
+    joined = [c.global,c.setup,c.loop].join("\n")
+    # fetch all ERB variable substitutions, but ignore those defined within
+    # component itself
+    @vars = joined.scan(/<%=\s*(\S+)\s*[\?%]/).uniq.flatten.reject { |i|
+      !joined.scan(/<%\s*(#{i})\s*=/).empty?
+    }
   end
 
   # POST /components
@@ -91,7 +98,7 @@ class ComponentsController < ApplicationController
     if params[:settings]
       settings = JSON.parse(params[:settings])
       id = params[:id]
-      @steps = Component.find(id).test_pattern(settings, nil)
+      @steps = Component.find(id).test_pattern(settings,nil)
       respond_to do |format|
         format.json { render json: @steps }
       end

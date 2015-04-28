@@ -1,4 +1,10 @@
 <p id="notice"><%= notice %></p>
 
+<pre>
+<% File.open @sketch.get_sketch_file, "r" do |file| %>
+<%= file.read %>
+<% end %>
+</pre>
+
 <%= link_to 'Edit', edit_sketch_path(@sketch) %> |
 <%= link_to 'Back', sketches_path %>

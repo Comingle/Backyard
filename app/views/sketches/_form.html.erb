@@ -44,7 +44,29 @@
   <br>
 
   <h2>Accessories</h2>
-  Add a Nunchuck...
+  <span data-toggle="collapse" data-target="#nunchuck_settings" aria-expanded="false" aria-controls="nunchuck_settings">
+    Nunchuck Settings <span class="caret"></span>
+  </span>
+  <div class="collapse" id="nunchuck_settings">
+  <%= f.label :c_click do %>C Button click should:<% end %>
+  <%= f.select :c_click, { "Move to next pattern" => "cycle_pattern", "Increase vibration power" => "increase_power", "Decrease vibration power" => "decrease_power", "Slow vibration down" => "increase_time", "Speed vibration up" => "decrease_time", "Stop all vibration" => "stop"}, :selected => "cycle_pattern" %>
+  <br>
+  <%= f.label :z_click do %>Z Button click should:<% end %>
+  <%= f.select :z_click, { "Move to next pattern" => "cycle_pattern", "Increase vibration power" => "increase_power", "Decrease vibration power" => "decrease_power", "Slow vibration down" => "increase_time", "Speed vibration up" => "decrease_time", "Stop all vibration" => "stop"}, :selected => "cycle_pattern" %>
+  <br>
+  <%= f.label :joy_y do %>Joystick up/down controls:<% end %>
+  <%= f.select :joy_y, { "Speed" => "speed", "Power" => "power", "Noise" => "noise"}, :selected => "speed" %>
+  <br>
+  <%= f.label :joy_x do %>Joystick left/right controls:<% end %>
+  <%= f.select :joy_x, { "Speed" => "speed", "Power" => "power", "Noise" => "noise"}, :selected => "power" %>
+  <br>
+  <%= f.label :tilt_x do %>Nunchuck tilt left/right controls:<% end %>
+  <%= f.select :tilt_x, { "Speed" => "speed", "Power" => "power", "Noise" => "noise"}, :selected => "speed" %>
+  <br>
+  <%= f.label :tilt_y do %>Nunchuck tilt forward/back controls:<% end %>
+  <%= f.select :tilt_y, { "Speed" => "speed", "Power" => "power", "Noise" => "noise"}, :selected => "speed" %>
+  <br>
+  </div>
 
   <br>
 

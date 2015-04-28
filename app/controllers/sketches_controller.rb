@@ -4,6 +4,14 @@ require 'open3'
 class SketchesController < ApplicationController
   before_action :set_sketch, only: [:show, :edit, :update, :destroy]
 
+  rescue_from Sketch::BuildError, :with => :build_error
+
+  def build_error(exception)
+    flash[:notice] = "There was an error building your sketch: #{exception.message}"
+    # Event.new_event "Exception: #{exception.message}"
+    redirect_to url_for([:edit, @sketch])
+  end
+
   # GET /sketches
   # GET /sketches.json
   def index
