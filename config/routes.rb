@@ -1,5 +1,14 @@
 Rails.application.routes.draw do
-  resources :patterns
+  resources :nunchucks
+
+  namespace :api, defaults: {format: :json} do
+    namespace :v1 do
+      resources :sketches
+      get '/components/patterns', to: 'components#patterns'
+      post '/components/test_pattern', to: 'components#test_pattern'
+      resources :components
+    end
+  end
 
   resources :sketch_histories
 
@@ -10,11 +19,8 @@ Rails.application.routes.draw do
   }
   resources :options
 
-  get '/components/patterns', to: 'components#patterns'
-  post '/components/test_pattern', to: 'components#test_pattern'
   resources :components
 
-  resources :sketches
 
   post '/sketches/find', to: 'sketches#find'
 

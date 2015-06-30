@@ -1,0 +1,31 @@
+{
+  "general": {
+    "model": "BETA",
+    "power_scale": 0.2,
+    "time_scale": 0.1,
+    "serial_console": false,
+    "click": "cycle_pattern",
+    "doubleclick": "increase_power",
+    "longpressstart": "decrease_power",
+    "startup_sequence": "startup_sequence"
+  },
+
+  "pattern": {
+    "third": {},
+    "first": { 
+      "motor0": 200 
+    },
+    "second": {
+      "motor1": 100
+    },
+    "pulse": {},
+    "fadeCos": {},
+    "weird3": {},
+    "flicker": {},
+    "weird2": {},
+    "fadeOffset": {},
+    "pulse2": {}
+  }
+}
+
+

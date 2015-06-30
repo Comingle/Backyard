@@ -87,9 +87,17 @@ $(function() {
         e.preventDefault(); 
       }
       root = {};
-      root.patterns = {};
+      var categories = [];
+      $("[data-category]").each(function() {
+        categories.push($(this).data('category'));
+      });
+      categories = categories.unique();
+      for (var i = 0; i < categories.length; i++) {
+        root[categories[i]] = {};
+      }
       $.each($(".pattern"), function(ind,val) { 
-        pattern = root.patterns[$(val).attr("data-name")] = {};
+        category = $(this).data('category');
+        pattern = root[category][$(val).attr("data-name")] = {};
         var pattern_id = $(val).attr("data-id");
         var settings = $("#settings-" + pattern_id).children('input'); 
         
@@ -99,7 +107,8 @@ $(function() {
           pattern[property] = value;
         }
       });
-      document.getElementById("sketch_config").textContent = JSON.stringify(root);
+      
+      //document.getElementById("sketch_config").textContent = JSON.stringify(root);
       this.submit();
     });
   }
@@ -169,6 +178,14 @@ $(function() {
     li += '</li>';
 
     return li;
+  }
+
+  Array.prototype.unique = function() {
+    var a = [];
+    for (var i=0, l=this.length; i<l; i++)
+        if (a.indexOf(this[i]) === -1)
+            a.push(this[i]);
+    return a;
   }
 
 });

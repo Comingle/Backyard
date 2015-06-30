@@ -1,0 +1,2 @@
+module NunchucksHelper
+end

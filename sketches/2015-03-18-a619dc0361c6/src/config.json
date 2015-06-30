@@ -1,1 +1,0 @@
-{"toy":{"pattern":{"second":{},"weird2":{},"flicker":{},"fadeoffset":{},"third":{},"first":{},"pulse":{},"pulse2":{},"sharp_ramp":{},"fade_cos":{},"weird3":{}},"id":"BETA","click":"Toy.increasePower();","longpressstart":"Toy.increaseTime();","doubleclick":"Toy.cyclePattern();","serial_console":true,"startup_sequence":["startup_sequence"]}}

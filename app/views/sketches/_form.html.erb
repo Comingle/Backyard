@@ -1,4 +1,5 @@
 <%= form_for(@sketch) do |f| %>
+  <%= fields_for :config, @sketch.config do |c| %>
   <% if @sketch.errors.any? %>
     <div id="error_explanation">
       <h2><%= pluralize(@sketch.errors.count, "error") %> prohibited this sketch from being saved:</h2>
@@ -16,7 +17,7 @@
   Vibration patterns on your Mod:<br>
   <ol id="patterns" name="pattern">
   <% @patterns.each_with_index do |p,i| %>
-    <li class="pattern" id="comp_<%= p.component_id %>" draggable="true" data-id=<%= p.component_id %> data-name=<%= p.name %>>
+    <li class="pattern" id="comp_<%= p.id %>" draggable="true" data-id=<%= p.id %> data-name=<%= p.name %> data-category=<%= p.category %>>
       <div class="row">
         <div class="col-md-3"><%= p.pretty_name %>
         </div>
@@ -31,40 +32,40 @@
 
   <h2>Clicks</h2>
 
-  <%= f.label :click do %>Button single click should:<% end %>
-  <%= f.select :click, { "Move to next pattern" => "cycle_pattern", "Increase vibration power" => "increase_power", "Decrease vibration power" => "decrease_power", "Slow vibration down" => "increase_time", "Speed vibration up" => "decrease_time", "Stop all vibration" => "stop"}, :selected => "cycle_pattern" %>
-  <br>
+    <%= c.label :click do %>Button single click should:<% end %>
+    <%= c.select :click, { "Move to next pattern" => "cycle_pattern", "Increase vibration power" => "increase_power", "Decrease vibration power" => "decrease_power", "Slow vibration down" => "increase_time", "Speed vibration up" => "decrease_time", "Stop all vibration" => "stop"}, :selected => "cycle_pattern" %>
+    <br>
 
-  <%= f.label :doubleclick do %>Button double click should:<% end %>
-  <%= f.select :doubleclick, { "Move to next pattern" => "cycle_pattern", "Increase vibration power" => "increase_power", "Decrease vibration power" => "decrease_power", "Slow vibration down" => "increase_time", "Speed vibration up" => "decrease_time", "Stop all vibration" => "stop"}, :selected => "cycle_pattern" %>
-  <br>
+    <%= c.label :doubleclick do %>Button double click should:<% end %>
+    <%= c.select :doubleclick, { "Move to next pattern" => "cycle_pattern", "Increase vibration power" => "increase_power", "Decrease vibration power" => "decrease_power", "Slow vibration down" => "increase_time", "Speed vibration up" => "decrease_time", "Stop all vibration" => "stop"}, :selected => "cycle_pattern" %>
+    <br>
 
-  <%= f.label :longpressstart do %>Button click-and-hold should:<% end %>
-  <%= f.select :longpressstart, { "Move to next pattern" => "cycle_pattern", "Increase vibration power" => "increase_power", "Decrease vibration power" => "decrease_power", "Slow vibration down" => "increase_time", "Speed vibration up" => "decrease_time", "Stop all vibration" => "stop"}, :selected => "cycle_pattern" %>
-  <br>
+    <%= c.label :longpressstart do %>Button click-and-hold should:<% end %>
+    <%= c.select :longpressstart, { "Move to next pattern" => "cycle_pattern", "Increase vibration power" => "increase_power", "Decrease vibration power" => "decrease_power", "Slow vibration down" => "increase_time", "Speed vibration up" => "decrease_time", "Stop all vibration" => "stop"}, :selected => "cycle_pattern" %>
+    <br>
 
   <h2>Accessories</h2>
   <span data-toggle="collapse" data-target="#nunchuck_settings" aria-expanded="false" aria-controls="nunchuck_settings">
     Nunchuck Settings <span class="caret"></span>
   </span>
   <div class="collapse" id="nunchuck_settings">
-  <%= f.label :c_click do %>C Button click should:<% end %>
-  <%= f.select :c_click, { "Move to next pattern" => "cycle_pattern", "Increase vibration power" => "increase_power", "Decrease vibration power" => "decrease_power", "Slow vibration down" => "increase_time", "Speed vibration up" => "decrease_time", "Stop all vibration" => "stop"}, :selected => "cycle_pattern" %>
+  <%= c.label :c_click do %>C Button click should:<% end %>
+  <%= c.select :c_click, { "Move to next pattern" => "cycle_pattern", "Increase vibration power" => "increase_power", "Decrease vibration power" => "decrease_power", "Slow vibration down" => "increase_time", "Speed vibration up" => "decrease_time", "Stop all vibration" => "stop"}, :selected => "cycle_pattern" %>
   <br>
-  <%= f.label :z_click do %>Z Button click should:<% end %>
-  <%= f.select :z_click, { "Move to next pattern" => "cycle_pattern", "Increase vibration power" => "increase_power", "Decrease vibration power" => "decrease_power", "Slow vibration down" => "increase_time", "Speed vibration up" => "decrease_time", "Stop all vibration" => "stop"}, :selected => "cycle_pattern" %>
+  <%= c.label :z_click do %>Z Button click should:<% end %>
+  <%= c.select :z_click, { "Move to next pattern" => "cycle_pattern", "Increase vibration power" => "increase_power", "Decrease vibration power" => "decrease_power", "Slow vibration down" => "increase_time", "Speed vibration up" => "decrease_time", "Stop all vibration" => "stop"}, :selected => "cycle_pattern" %>
   <br>
-  <%= f.label :joy_y do %>Joystick up/down controls:<% end %>
-  <%= f.select :joy_y, { "Speed" => "speed", "Power" => "power", "Noise" => "noise"}, :selected => "speed" %>
+  <%= c.label :joy_y do %>Joystick up/down controls:<% end %>
+  <%= c.select :joy_y, { "Speed" => "speed", "Power" => "power", "Noise" => "noise"}, :selected => "speed" %>
   <br>
-  <%= f.label :joy_x do %>Joystick left/right controls:<% end %>
-  <%= f.select :joy_x, { "Speed" => "speed", "Power" => "power", "Noise" => "noise"}, :selected => "power" %>
+  <%= c.label :joy_x do %>Joystick left/right controls:<% end %>
+  <%= c.select :joy_x, { "Speed" => "speed", "Power" => "power", "Noise" => "noise"}, :selected => "power" %>
   <br>
-  <%= f.label :tilt_x do %>Nunchuck tilt left/right controls:<% end %>
-  <%= f.select :tilt_x, { "Speed" => "speed", "Power" => "power", "Noise" => "noise"}, :selected => "speed" %>
+  <%= c.label :tilt_x do %>Nunchuck tilt left/right controls:<% end %>
+  <%= c.select :tilt_x, { "Speed" => "speed", "Power" => "power", "Noise" => "noise"}, :selected => "speed" %>
   <br>
-  <%= f.label :tilt_y do %>Nunchuck tilt forward/back controls:<% end %>
-  <%= f.select :tilt_y, { "Speed" => "speed", "Power" => "power", "Noise" => "noise"}, :selected => "speed" %>
+  <%= c.label :tilt_y do %>Nunchuck tilt forward/back controls:<% end %>
+  <%= c.select :tilt_y, { "Speed" => "speed", "Power" => "power", "Noise" => "noise"}, :selected => "speed" %>
   <br>
   </div>
 
@@ -74,12 +75,14 @@
     Advanced Settings <span class="caret"></span>
   </span>
   <div class="collapse" id="collapseExample">
-    Serial Console: <input type="radio" id="serial_console_true" value="true" checked name="sketch[serial_console]"><label for="serial_console_true">On</label></input>
-    <input type="radio" id="serial_console_false" value="false" name="sketch[serial_console]"><label for="serial_console_false">Off</label></input>
+    Serial Console: <%= c.radio_button :serial_console, true, :checked => true %> 
+    <%= c.label :serial_console, 'On', :value => true %>
+    <%= c.radio_button :serial_console, false %>
+    <%= c.label :serial_console, 'Off', :value => false %>
     <br>
 
-  <%= f.label :startup_sequence do %>When you turn on your Mod, it should:<% end %>
-  <%= f.select :startup_sequence, { "Run the normal startup sequence" => "startup_sequence", "Run a vibration pattern" => "startup_pattern", "Do nothing" => "false"}, :selected => "startup_sequence" %>
+  <%= c.label :startup_sequence do %>When you turn on your Mod, it should:<% end %>
+  <%= c.select :startup_sequence, { "Run the normal startup sequence" => "startup_sequence", "Run a vibration pattern" => "startup_pattern", "Do nothing" => "false"}, :selected => "startup_sequence" %>
     <br>
 
   <%= f.label :model do %>Model:<% end %>
@@ -88,6 +91,7 @@
     <%= f.label :config do %>Config JSON:<% end %><br>
     <%= f.text_area :config, rows: 20, cols: 80 %><br>
   </div>
+  <% end %>
   <div class="actions">
     <%= f.submit %>
   </div>

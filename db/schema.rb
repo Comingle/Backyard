@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150424185847) do
+ActiveRecord::Schema.define(version: 20150630165657) do
 
   create_table "components", force: :cascade do |t|
     t.string   "name"
@@ -41,36 +41,51 @@ ActiveRecord::Schema.define(version: 20150424185847) do
   add_index "manifests", ["sketch_id"], name: "index_manifests_on_sketch_id"
 
   create_table "nunchucks", force: :cascade do |t|
-    t.string   "c_click"
-    t.string   "c_double_click"
-    t.string   "z_click"
-    t.string   "z_double_click"
-    t.string   "joy_x"
-    t.string   "joy_y"
-    t.string   "roll"
-    t.string   "pitch"
-    t.string   "accel_x"
-    t.string   "accel_y"
-    t.string   "accel_z"
-    t.datetime "created_at",     null: false
-    t.datetime "updated_at",     null: false
-    t.integer  "sketch_id"
+    t.integer  "x_min",        default: 0
+    t.integer  "x_max",        default: 255
+    t.integer  "x_zero",       default: 124
+    t.integer  "y_min",        default: 0
+    t.integer  "y_max",        default: 255
+    t.integer  "y_zero",       default: 124
+    t.integer  "x_accel_min",  default: 0
+    t.integer  "x_accel_max",  default: 255
+    t.integer  "x_accel_zero", default: 510
+    t.integer  "y_accel_min",  default: 0
+    t.integer  "y_accel_max",  default: 255
+    t.integer  "y_accel_zero", default: 490
+    t.integer  "z_accel_min",  default: 0
+    t.integer  "z_accel_max",  default: 255
+    t.integer  "z_accel_zero", default: 460
+    t.integer  "radius",       default: 210
+    t.integer  "pitch_min",    default: 0
+    t.integer  "pitch_max",    default: 255
+    t.integer  "roll_min",     default: 0
+    t.integer  "roll_max",     default: 255
+    t.string   "name",         default: "Nunchuck"
+    t.datetime "created_at",                        null: false
+    t.datetime "updated_at",                        null: false
+    t.integer  "user_id"
   end
 
-  add_index "nunchucks", ["sketch_id"], name: "index_nunchucks_on_sketch_id"
+  add_index "nunchucks", ["user_id"], name: "index_nunchucks_on_user_id"
 
   create_table "options", force: :cascade do |t|
     t.integer  "sketch_id"
     t.integer  "component_id"
-    t.string   "key"
-    t.string   "value"
     t.datetime "created_at",     null: false
     t.datetime "updated_at",     null: false
     t.string   "component_name"
+    t.text     "kv"
   end
 
   add_index "options", ["component_id"], name: "index_options_on_component_id"
   add_index "options", ["sketch_id"], name: "index_options_on_sketch_id"
+
+  create_table "pattern_options", force: :cascade do |t|
+    t.string   "options"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
 
   create_table "patterns", force: :cascade do |t|
     t.string   "global"

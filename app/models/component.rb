@@ -1,21 +1,23 @@
 require 'open3'
 
 GCC = "/usr/bin/gcc"
+AVRGCC = "/usr/bin/avr-gcc"
 GCCARGS = "-lm -o"
 PATTERNDIR = Rails.root + "patterns"
 PATTERNTEMPLATE = PATTERNDIR + "c_pattern_template.erb"
 
 class Component < ActiveRecord::Base
   
-  has_many :options
+  #has_many :options
   has_many :sketches, :through => :options
-  has_many :patterns, :inverse_of => :component
+  #has_many :patterns, :inverse_of => :component
+  has_many :options, :inverse_of => :component
 
   # after_validation :build_pattern, if: :is_pattern?
 
   scope :patterns, lambda { where(:category => "pattern") }
 
-  def test_pattern(opts, num_steps)
+  def test_pattern(opts = {}, num_steps = period)
     return if !is_pattern?
     defaults = pat_options
     defaults.each do |i|
@@ -29,7 +31,7 @@ class Component < ActiveRecord::Base
         opts[item] = default_value 
       end
     end
-    if num_steps.nil? then num_steps = period end
+    # if num_steps.nil? then num_steps = period end
     new_pat = global.gsub(/int\s+\w+\s*\(int seq\)/, "int pattern(int seq)")
     # new_pat.gsub!(/<%.*:\s*(\d+).*%>/, '\1')
     # if (!Dir.exists?(PATTERNDIR))
@@ -49,17 +51,21 @@ class Component < ActiveRecord::Base
     File.open c_file, "w" do |file|
       file << c_pattern
     end
-    stdout, stderr, status = Open3.capture3("#{GCC} #{c_file.path} #{GCCARGS} #{c_prog.path}")
+    # Compile first with avr-gcc to prevent non-AVR functions (setuid()...) from slipping past us. If that's fine, then compile with gcc for local exec. Probably some way around this..
+    stdout, stderr, status = Open3.capture3("#{AVRGCC} #{c_file.path} #{GCCARGS} #{c_prog.path}")
     if status.success?
-      c_file.close
-      c_prog.close
-      steps, steperr, stepstatus = Open3.capture3("#{c_prog.path} #{num_steps}")
-      # self.testride = c_prog.to_s
-    else
-      steps = nil
+      stdout, stderr, status = Open3.capture3("#{GCC} #{c_file.path} #{GCCARGS} #{c_prog.path}")
+      if status.success?
+        c_file.close
+        c_prog.close
+        steps, steperr, stepstatus = Open3.capture3("#{c_prog.path} #{num_steps}")
+        # self.testride = c_prog.to_s
+      else
+        steps = nil
+      end
+      c_file.unlink
+      c_prog.unlink
     end
-    c_file.unlink
-    c_prog.unlink
     steps
   end
 
@@ -73,7 +79,8 @@ class Component < ActiveRecord::Base
       return nil
     end
     opts_with_vals = Array.new
-    options = global.scan(/%=\s*(\S*)\s*\?.*:\s*(\S+)\s*%>/)
+    # Aww yeah.
+    options = global.scan(/%=\s*(?:defined\?\()?(\w*)(?:\))?\s*\?.*:\s*(\S+)\s*%>/)
     # Each 'o' is a [variable name, default value] array
     options.each do |o|
       if o[0].match("time")

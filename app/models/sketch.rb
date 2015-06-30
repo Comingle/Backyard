@@ -30,13 +30,17 @@ class Sketch < ActiveRecord::Base
     end
   end
 
+  serialize :config, JSON
+
   has_many :options
   has_many :toys
-  has_many :components, :through => :patterns
+  has_many :components, :through => :options
+  #has_many :components, :through => :patterns
   has_many :users, :through => :toys
   has_many :sketch_histories
-  has_many :patterns, :inverse_of => :sketch
-  accepts_nested_attributes_for :patterns
+  # has_many :patterns, :inverse_of => :sketch
+  accepts_nested_attributes_for :options
+  #accepts_nested_attributes_for :patterns
 
   after_validation :get_build_dir
   before_save :build_sketch
@@ -49,10 +53,13 @@ class Sketch < ActiveRecord::Base
     footer = Component.find_by_name_and_category("footer", "general")
 
     template_list = Array.new
-    template_list.push(return_segments(header, nil))
-    template_list.push(gather_components)
-    template_list.push(create_patterns)
-    template_list.push(return_segments(footer, nil))
+    template_list.push(return_segments(header))
+    # Config keys are the top-level JSON hashes. We use those as categories
+    # for gathering components
+    config.keys.each do |c|
+      template_list.push(gather_components(c))
+    end
+    template_list.push(return_segments(footer))
     template_list.flatten!
 
     global = template_list.map { |g| g[:global] }.join("")
@@ -72,74 +79,53 @@ class Sketch < ActiveRecord::Base
     end
   end
   
-  # Takes "{patterns : { first : {...}, flicker: {...} }" JSON params and
-  # produces pattern objects
-  def create_patterns
-    # destroy any existing patterns for this sketch
-    if (self.id)
-      # Pattern.destroy_all(:sketch_id => self.id)
-      patterns.destroy_all
-    end
-
+  def gather_components(category)
     component_list = Array.new
-    config_json = JSON.parse(config)
-    pattern_list = config_json['patterns']
-    pattern_list.each do |pat_name,pat_options|
-      pat_component = Component.find_by_name_and_category(pat_name, "pattern")
-      if pat_component
-        locals = {:motor0 => pat_options['motor0'],
-          :motor1 => pat_options['motor1'],
-          :motor2 => pat_options['motor2'],
-          :time => pat_options['time'],
-          :on => pat_options['on'],
-          :off => pat_options['off']
-        }
-        segments = return_segments(pat_component, locals)
-        component_list.push(segments)
-        locals['global'] = segments[:global]
-        locals['setup'] = segments[:setup]
-        locals['loop'] = segments[:loop]
-        locals['component_id'] = pat_component.id
-        patterns.new(locals)
-      end
-    end
-    component_list
-  end
-
-  def gather_components
-    component_list = Array.new
+    config = self.config[category]
+    puts "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
+    puts config.class
+    puts "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
     # Throw out false values
-    GENERAL.reject {|i| self[i].class == FalseClass}.each do |comp_name|
+    config.keys.reject {|i| self[i].class == FalseClass}.each do |comp_name|
+      next if comp_name.match("startup_sequence")
+
       # Make sure our corresponding component actually exists. 
       # Very bad if not..
-      field_comp = Component.find_by_name_and_category(comp_name, "general")
-      next if !field_comp
+      comp_template = Component.find_by_name_and_category(comp_name, category)
+      next if !comp_template
       
-      # Default to including sketch attributes as ERB substitution context
-      context = self.as_json
-
-      # Find if our value is a blob referring to another component
-      component = Component.find_by_name(self[comp_name])
-      if !component.nil?
-        if component.category == "blob"
-          context[comp_name] = component.global
+      # If our particular item is a hash or array, we assume it has
+      # nested attributes.
+      if config[comp_name].class == Hash || config[comp_name].class == Array
+        context = config[comp_name]
+      else
+        context = config
+        # Find if our value is a blob referring to another component
+        component = Component.find_by_name_and_category(config[comp_name], "blob")
+        if !component.nil?
+          context = {comp_name => component.global}
         end
       end
-      component_list.push(return_segments(field_comp, context))
+      component_list.push(return_segments(comp_template, context))
     end
     # Special case for this one for now
     seq = context = nil
-    if (self.startup_sequence.class == TrueClass) |
-    self.startup_sequence.match("startup_sequence")
-      seq = Component.find_by_name("startup_sequence")
-      context = nil
-    elsif Component.find_by_name(self.startup_sequence).category == "pattern"
-      seq = Component.find_by_name("startup_pattern")
-      context = self.startup_sequence
+    startup_seq = config['startup_sequence']
+    if startup_seq
+      if startup_seq.class == TrueClass
+        seq = Component.find_by_name("startup_sequence")
+      elsif startup_seq.class == String && startup_seq.match("startup_sequence")
+        seq = Component.find_by_name("startup_sequence")
+      elsif Component.find_by_name(startup_seq)
+        if Component.find_by_name(startup_seq).category == "pattern"
+          seq = Component.find_by_name("startup_pattern")
+          context = self.startup_sequence
       # TODO: if we're running a pattern at startup make sure the pattern
       # itself is actually included.
+        end
+      end
+      component_list.push(return_segments(seq, context))
     end
-    component_list.push(return_segments(seq, context))
     component_list
   end
 
@@ -168,6 +154,25 @@ class Sketch < ActiveRecord::Base
       self.build_dir = dir
     end
     Pathname.new(self.build_dir)
+  end
+
+  def get_target
+    if self.hid
+      TARGET
+    else
+      TARGETNOHID
+    end
+  end
+
+  def get_hex_data
+    build_dir = get_build_dir
+    target = get_target
+    path = build_dir + ".build" + target + "firmware.hex"
+    if File.exists?(path)
+      File.open(path, "r") { |f|
+        f.read
+      }
+    end
   end
 
   def clean_build_dir
@@ -304,8 +309,10 @@ class Sketch < ActiveRecord::Base
     end
   end
 
+  # Return global, local, setup sections of a component. Context is used to
+  # provide ERB substitutions
   private
-    def return_segments(component, context)
+    def return_segments(component, context = nil)
       global = Erubis::Eruby.new(component.global).result(context)
       setup = Erubis::Eruby.new(component.setup).result(context)
       loop = Erubis::Eruby.new(component.loop).result(context)
