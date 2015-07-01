@@ -5,6 +5,8 @@ AVRGCC = "/usr/bin/avr-gcc"
 GCCARGS = "-lm -o"
 PATTERNDIR = Rails.root + "patterns"
 PATTERNTEMPLATE = PATTERNDIR + "c_pattern_template.erb"
+ERBITEMPAIR = /%=\s*(?:defined\?\()?(\w*)(?:\))?\s*\?.*:\s*(\S+)\s*%>/
+ERBITEMNAME = /%=\s*(?:defined\?\()?(\w*)(?:\))?\s*\?.*:\s*\S+\s*%>/
 
 class Component < ActiveRecord::Base
   
@@ -16,6 +18,10 @@ class Component < ActiveRecord::Base
   # after_validation :build_pattern, if: :is_pattern?
 
   scope :patterns, lambda { where(:category => "pattern") }
+
+  def is_pattern?
+    category.match("^pattern$")
+  end
 
   def test_pattern(opts = {}, num_steps = period)
     return if !is_pattern?
@@ -69,30 +75,37 @@ class Component < ActiveRecord::Base
     JSON.parse(steps)
   end
 
-  def is_pattern?
-    category.match("^pattern$")
-  end
-
   # returns variable name and default value
   def pat_options
     if !is_pattern? 
       return nil
     end
     opts_with_vals = Array.new
-    # Aww yeah.
-    options = global.scan(/%=\s*(?:defined\?\()?(\w*)(?:\))?\s*\?.*:\s*(\S+)\s*%>/)
+    # global portion of pattern is where the action is. no substitutions
+    # should be happening in setup or loop.
+    options = global.scan(ERBITEMPAIR)
+
     # Each 'o' is a [variable name, default value] array
     options.each do |o|
-      if o[0].match("time")
-        min = 10
-        max = 200
-      else
-        min = 0
-        max = 255
-      end
-      opts_with_vals.push({name: o[0], default: o[1], min: min, max: max})
+      v = Variable.find_by_name(o[0])
+      opts_with_vals.push({
+        name: o[0], 
+        default: o[1], 
+        min: v.min ? v.min : 0,
+        max: v.max ? v.max : 255,
+        description: v.description
+      })
     end
     opts_with_vals
+  end
+
+  # Fetch all ERB variable substitutions, but ignore those also 
+  # defined within the component itself
+  def substitutions
+    joined = [global,setup,loop].join("\n")
+    joined.scan(ERBITEMNAME).uniq.flatten.reject { |i|
+      !joined.scan(/<%\s*(#{i})\s*=/).empty?
+    }
   end
 
 end

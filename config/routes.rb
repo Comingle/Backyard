@@ -1,4 +1,6 @@
 Rails.application.routes.draw do
+  resources :variables
+
   resources :nunchucks
 
   namespace :api, defaults: {format: :json} do
