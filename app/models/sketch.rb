@@ -43,8 +43,19 @@ class Sketch < ActiveRecord::Base
   #accepts_nested_attributes_for :patterns
 
   after_validation :get_build_dir
-  before_save :build_sketch
-  before_update :build_sketch
+  #before_save :build_sketch
+  #before_update :build_sketch
+
+  def compile
+    props = build_sketch
+    old = Sketch.where("size = ? AND sha256 = ?", props.size, props.sha256)
+    if (old.empty?)
+      self.save!
+    else
+      clean_build_dir
+    end
+  end
+  
 
   ## Fetch all components, join them together, process ERB substitutions
   ## Returns compilable Arduino code
@@ -82,9 +93,7 @@ class Sketch < ActiveRecord::Base
   def gather_components(category)
     component_list = Array.new
     config = self.config[category]
-    puts "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
-    puts config.class
-    puts "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
+
     # Throw out false values
     config.keys.reject {|i| self[i].class == FalseClass}.each do |comp_name|
       next if comp_name.match("startup_sequence")
@@ -183,7 +192,6 @@ class Sketch < ActiveRecord::Base
   end
 
   def build_sketch
-    # if !File.exists?(get_sketch_file) then create_sketch end
     create_sketch
     origdir = Dir.getwd
     Dir.chdir(get_build_dir)
@@ -202,9 +210,6 @@ class Sketch < ActiveRecord::Base
       if status.success?
         self.sha256 = Digest::SHA256.file @bin
         self.size = File.size? @bin
-        #if (!Sketch.where("size = ? AND sha256 = ?", self.size, self.sha256))
-        #  self.save!
-        #end
       else
         puts "avr-objcopy failed: #{stderr}"
         raise BuildError.new(message: "avr-objcopy failed: #{stderr}")
@@ -214,6 +219,7 @@ class Sketch < ActiveRecord::Base
       raise BuildError.new(message: "Build failed: #{stderr}")
     end
     Dir.chdir(origdir)
+    {:size => self.size, :sha256 => self.sha256}
   end
 
   def read_config

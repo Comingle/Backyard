@@ -4,7 +4,7 @@ Rails.application.routes.draw do
   namespace :api, defaults: {format: :json} do
     namespace :v1 do
       resources :sketches
-      get '/components/patterns', to: 'components#patterns'
+      get '/patterns', to: 'components#patterns'
       post '/components/test_pattern', to: 'components#test_pattern'
       resources :components
     end

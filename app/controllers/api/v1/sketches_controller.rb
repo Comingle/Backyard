@@ -51,30 +51,30 @@ class SketchesController < ApplicationController
   def create
     @sketch = Sketch.new(sketch_params)
     @sketch.config= JSON.parse(sketch_params["config"])
-    if @sketch.save
-        # format.html { redirect_to @sketch, notice: "Sketch was successfully created. Fingerprint #{@sketch.sha256}, compile size: #{@sketch.size}" }
-      @sketch
-      # format.json { render :show, status: :created, location: @sketch }
+    build_props = @sketch.build_sketch
+    puts build_props
+    dupe = Sketch.find_by_size_and_sha256(build_props[:size], build_props[:sha256])
+    if dupe
+      @sketch = dupe
     else
-        # format.html { render :new }
-        #format.json { render json: @sketch.errors, status: :unprocessable_entity }
-      respond_with()
+      @sketch.save!
+      @sketch
     end
   end
 
   # PATCH/PUT /sketches/1
   # PATCH/PUT /sketches/1.json
-  def update
-    respond_to do |format|
-      if @sketch.update(sketch_params)
-        format.html { redirect_to @sketch, notice: 'Sketch was successfully updated.' }
-        format.json { render :show, status: :ok, location: @sketch }
-      else
-        format.html { render :edit }
-        format.json { render json: @sketch.errors, status: :unprocessable_entity }
-      end
-    end
-  end
+  #def update
+  #  respond_to do |format|
+  #    if @sketch.update(sketch_params)
+  #      format.html { redirect_to @sketch, notice: 'Sketch was successfully updated.' }
+  #      format.json { render :show, status: :ok, location: @sketch }
+  #    else
+  #      format.html { render :edit }
+  #      format.json { render json: @sketch.errors, status: :unprocessable_entity }
+  #    end
+  #  end
+  #end
 
   # DELETE /sketches/1
   # DELETE /sketches/1.json
@@ -107,7 +107,7 @@ class SketchesController < ApplicationController
 
     # Never trust parameters from the scary internet, only allow the white list through.
     def sketch_params
-      params[:sketch].permit(:config, :click, :doubleclick, :longpressstart, :serial_console, :startup_sequence, :model)
+      params[:sketch].permit(:click, :doubleclick, :longpressstart, :serial_console, :startup_sequence, :model, :config)
     end
 
     def get_token

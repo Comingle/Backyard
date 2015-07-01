@@ -19,6 +19,8 @@ class Component < ActiveRecord::Base
 
   def test_pattern(opts = {}, num_steps = period)
     return if !is_pattern?
+
+    # Set up default values for pattern, substituting optional supplied vals
     defaults = pat_options
     defaults.each do |i|
       max = i[:max]
@@ -27,37 +29,35 @@ class Component < ActiveRecord::Base
       default_value = i[:default]
       if opts[item].nil? 
         opts[item] = default_value 
-      elsif (opts[item] > max) | (opts[item] < min)
+      elsif (opts[item] > max) || (opts[item] < min)
         opts[item] = default_value 
       end
     end
-    # if num_steps.nil? then num_steps = period end
+
+    # Replace given pattern name with generic name
+    # Setup build dir
     new_pat = global.gsub(/int\s+\w+\s*\(int seq\)/, "int pattern(int seq)")
-    # new_pat.gsub!(/<%.*:\s*(\d+).*%>/, '\1')
-    # if (!Dir.exists?(PATTERNDIR))
-    #   Dir.mkdir PATTERNDIR
-    #   false
-    # end
     pattern_build_dir = PATTERNDIR + name
-    # c_prog = pattern_build_dir + name # tmpfile
     c_prog = Tempfile.new(name) 
     c_file = Tempfile.new([name, ".c"])
-    # c_file = pattern_build_dir + "#{name}.c" # tmpfile
     if (!Dir.exists?(pattern_build_dir))
       Dir.mkdir pattern_build_dir
     end
+
+    # Substitute ERB variables and write to file
     pattern_template = Erubis::Eruby.new(File.read(PATTERNTEMPLATE)).result(new_pat.send(:binding))
     c_pattern = Erubis::Eruby.new(pattern_template).result(opts)
     File.open c_file, "w" do |file|
       file << c_pattern
     end
+    c_file.close
+    c_prog.close
+
     # Compile first with avr-gcc to prevent non-AVR functions (setuid()...) from slipping past us. If that's fine, then compile with gcc for local exec. Probably some way around this..
     stdout, stderr, status = Open3.capture3("#{AVRGCC} #{c_file.path} #{GCCARGS} #{c_prog.path}")
     if status.success?
       stdout, stderr, status = Open3.capture3("#{GCC} #{c_file.path} #{GCCARGS} #{c_prog.path}")
       if status.success?
-        c_file.close
-        c_prog.close
         steps, steperr, stepstatus = Open3.capture3("#{c_prog.path} #{num_steps}")
         # self.testride = c_prog.to_s
       else
@@ -66,7 +66,7 @@ class Component < ActiveRecord::Base
       c_file.unlink
       c_prog.unlink
     end
-    steps
+    JSON.parse(steps)
   end
 
   def is_pattern?
