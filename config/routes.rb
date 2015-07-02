@@ -3,12 +3,13 @@ Rails.application.routes.draw do
 
   resources :nunchucks
 
-  namespace :api, defaults: {format: :json} do
+  namespace :api do
     namespace :v1 do
       resources :sketches
       get '/patterns', to: 'components#patterns'
       post '/components/test_pattern', to: 'components#test_pattern'
       resources :components
+      resources :toys
     end
   end
 

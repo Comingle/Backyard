@@ -3,17 +3,22 @@ require 'open3'
 module Api
   module V1
 class ComponentsController < ApplicationController
-  respond_to :json
+  respond_to :json, :html
   before_action :set_component, only: [:show, :edit, :update, :destroy]
 
   # GET /components
   # GET /components.json
   def index
+    respond_to do |format|
+      format.html { @components = Component.all }
+      format.json { 
     @components = Hash[Component.pluck(:category).uniq.each_with_object(nil).to_a]
     @components.each do |k,v|
       @components[k] = Component.where("category = ?", k)
     end
-    respond_with @components
+    }
+    end
+    #respond_with @components
   end
 
   # GET /components/1
@@ -35,13 +40,7 @@ class ComponentsController < ApplicationController
 
   # GET /components/1/edit
   def edit
-    c = @component
-    joined = [c.global,c.setup,c.loop].join("\n")
-    # fetch all ERB variable substitutions, but ignore those defined within
-    # component itself
-    @vars = joined.scan(/<%=\s*(\S+)\s*[\?%]/).uniq.flatten.reject { |i|
-      !joined.scan(/<%\s*(#{i})\s*=/).empty?
-    }
+    @vars = @component.variables
   end
 
   # POST /components

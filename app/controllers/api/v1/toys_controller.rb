@@ -1,4 +1,7 @@
+module Api
+  module V1
 class ToysController < ApplicationController
+  respond_to :json
   before_action :set_toy, only: [:show, :edit, :update, :destroy]
   before_filter :authenticate_user!
 
@@ -6,6 +9,7 @@ class ToysController < ApplicationController
   # GET /toys.json
   def index
     @toys = Toy.all
+    respond_with @toys
   end
 
   # GET /toys/1
@@ -74,4 +78,6 @@ class ToysController < ApplicationController
     def toy_params
       params[:toy].permit(:color)
     end
+end
+end
 end

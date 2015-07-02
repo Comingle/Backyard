@@ -101,11 +101,19 @@ class Component < ActiveRecord::Base
 
   # Fetch all ERB variable substitutions, but ignore those also 
   # defined within the component itself
-  def substitutions
+  def variables
     joined = [global,setup,loop].join("\n")
     joined.scan(ERBITEMNAME).uniq.flatten.reject { |i|
       !joined.scan(/<%\s*(#{i})\s*=/).empty?
     }
+  end
+
+  def variable_objs
+    names = variables
+    return if names.empty?
+    Variable.where.any_of(*names.each_with_index { |v,i|
+      names[i] = {"name" => v}
+    })
   end
 
 end

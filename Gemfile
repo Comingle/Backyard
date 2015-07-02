@@ -34,6 +34,7 @@ gem 'sdoc', '~> 0.4.0', group: :doc
 # gem 'capistrano-rails', group: :development
   
 gem 'devise'
+gem 'activerecord_any_of'
 
 group :development, :test do
   # Call 'debugger' anywhere in the code to stop execution and get a debugger console

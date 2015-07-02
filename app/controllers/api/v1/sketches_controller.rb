@@ -18,8 +18,8 @@ class SketchesController < ApplicationController
   # GET /sketches
   # GET /sketches.json
   def index
-    # @sketches = Sketch.all
-    respond_with Sketch.all
+    @sketches = Sketch.all
+    respond_with @sketches
   end
 
   # GET /sketches/1
