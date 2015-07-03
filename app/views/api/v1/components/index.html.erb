@@ -14,9 +14,7 @@
       <tr>
         <td><%= component.name %></td>
         <td><%= component.category %></td>
-        <td><%= link_to 'Show', component %></td>
-        <td><%= link_to 'Edit', edit_component_path(component) %></td>
-        <td><%= link_to 'Destroy', component, method: :delete, data: { confirm: 'Are you sure?' } %></td>
+        <td><%= link_to 'Edit', edit_api_v1_component_path(component) %></td>
       </tr>
     <% end %>
   </tbody>
@@ -24,4 +22,4 @@
 
 <br>
 
-<%= link_to 'New Component', new_component_path %>
+<%= link_to 'New Component', new_api_v1_component_path %>

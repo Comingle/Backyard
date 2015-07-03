@@ -7,10 +7,7 @@
 @components.each do |k,v|
   json.set! k do 
     v.each do |r|
-      json.set! r.name do
-        json.extract! r, :pretty_name, :description
-        json.set! :variables, r.variable_objs
-      end
+      json.partial! 'component', component: r
     end
   end
 end
