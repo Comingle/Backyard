@@ -5,6 +5,7 @@ Rails.application.routes.draw do
 
   namespace :api do
     namespace :v1 do
+      post '/sketches/find', to: 'sketches#find'
       resources :sketches
       get '/patterns', to: 'components#patterns'
       post '/components/test_pattern', to: 'components#test_pattern'
@@ -15,17 +16,16 @@ Rails.application.routes.draw do
 
   resources :sketch_histories
 
-  resources :toys
+  # resources :toys
 
   devise_for :users, controllers: {
     sessions: 'users/sessions'
   }
   resources :options
 
-  resources :components
+  # resources :components
 
 
-  post '/sketches/find', to: 'sketches#find'
 
   root to: "home#index"
 

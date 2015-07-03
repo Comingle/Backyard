@@ -60,6 +60,7 @@ class Sketch < ActiveRecord::Base
   ## Fetch all components, join them together, process ERB substitutions
   ## Returns compilable Arduino code
   def create_sketch
+    # XXX -- add nunchuck header selection
     header = Component.find_by_name_and_category("header", "general")
     footer = Component.find_by_name_and_category("footer", "general")
 
@@ -78,7 +79,6 @@ class Sketch < ActiveRecord::Base
     loop = template_list.map { |g| g[:loop] }.join("")
 
     sketch = [global, setup, loop].join("\n")
-    #puts sketch
     sketchfile = get_sketch_file
     File.open sketchfile, "w" do |file|
         file << sketch
@@ -227,69 +227,20 @@ class Sketch < ActiveRecord::Base
     config_options['toy']
   end
 
-# Traverse the configuration hash and fetch the global, local and setup segments
-# for each component. Will recurse in to directions named in TRAVERSE
-  #def parse_config(item, category)
-  #  list = Array.new
-  #  item.keys.each do |o|
-  #    next if (!item[o])
-  #    if (CATEGORIES.index(o))
-  #      list.push(parse_config(item[o], o))
-  #    else
-  #      if (item[o].class != FalseClass)
-  #        component = o
-  #      elsif (item[o].class == Array)
-  #        component = item[o]
-  #      elsif (item[o].class = Hash)
-  #        component = o
-  #      end
-  #      #if create_option(Component.find_by_name_and_category(o, category), item[o])
-  #        list.push(Component.where({name: component, category: category}))
-  #        puts component
-  #      #end
-#
-#      end
-#    end
-#    list
- # end
-
   def get_token
     date = Time.now.strftime("%Y-%m-%d")
     token = "#{date}-" + SecureRandom.hex(6)
     token
   end
 
-#  def create_option(component, setting)
-#    if !Option.find_by(sketch_id: self.id, component_id: component.id)
-#      if (setting.class == Hash)
-#        if setting.empty?
-#          Option.new(sketch_id: self.id, component_name: component.name,
-#          component_id: component.id).save!
-#        else
-#          setting.each do |k,v|
-#            Option.new(sketch_id: self.id, component_name: component.name,
-#            component_id: component.id, key: k.to_s, value: v.to_s).save!
-#          end
-#        end
-#      elsif setting.class == Array
-#        setting.each_with_index do |v,i|
-#          Option.new(sketch_id: self.id, component_name: component.name,
-#          component_id: component.id, key: i.to_s, value: v.to_s).save!
-#        end
-#      else
-#        Option.new(sketch_id: self.id, component_name: component.name,
-#        component_id: component.id, key: component.name, value: setting.to_s).save!
-#      end
-#    end
-#  end
-
-
   def self.find_by_hex(hex)
+    hex.gsub(/[^:0123456789ABCDEFabcdef]/,"")
     hex = hex[0..90000]
     hexfile = Tempfile.new(['firmware', '.hex'])
     hexfile.write(hex)
     hexfile.flush
     binfile = Tempfile.new(['firmware', '.bin'])
+    sketch = Sketch.new
 
     stdout, stderr, status = Open3.capture3("#{AVROBJCOPY} #{AVROBJCOPYOPTS} #{hexfile.path} #{binfile.path}")
 
@@ -297,22 +248,19 @@ class Sketch < ActiveRecord::Base
       binary = File.open(binfile.path, "rb") { |file|
         file.read
       }
-      sketch = nil
       Sketch.where("size is not null and sha256 is not null").each do |s|
         if (Digest::SHA256.new.update(binary[0 .. (s.size-1)]) == s.sha256)
           sketch = Sketch.find(s.id)
         end
       end
-
-      hexfile.close
-      hexfile.unlink
-      binfile.close
-      binfile.unlink
-
-      sketch
-    else
-      nil
     end
+
+    hexfile.close
+    hexfile.unlink
+    binfile.close
+    binfile.unlink
+
+    sketch
   end
 
   # Return global, local, setup sections of a component. Context is used to

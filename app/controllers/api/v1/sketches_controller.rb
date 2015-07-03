@@ -32,6 +32,11 @@ class SketchesController < ApplicationController
     respond_with @sketch
   end
 
+  # POST /sketches/find
+  def find
+    @sketch = Sketch.find_by_hex(params[:sketch])
+  end
+
   # GET /sketches/new
   #def new
   #  @sketch = Sketch.new
