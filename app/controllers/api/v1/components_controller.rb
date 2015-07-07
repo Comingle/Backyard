@@ -40,6 +40,7 @@ class ComponentsController < ApplicationController
 
   # GET /components/1/edit
   def edit
+    @component = Component.find(params[:id])
     @vars = @component.variables
   end
 

@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150701221542) do
+ActiveRecord::Schema.define(version: 20150707032415) do
 
   create_table "components", force: :cascade do |t|
     t.string   "name"
@@ -41,30 +41,31 @@ ActiveRecord::Schema.define(version: 20150701221542) do
   add_index "manifests", ["sketch_id"], name: "index_manifests_on_sketch_id"
 
   create_table "nunchucks", force: :cascade do |t|
-    t.integer  "x_min",        default: 0
-    t.integer  "x_max",        default: 255
+    t.integer  "x_min",        default: 28
+    t.integer  "x_max",        default: 230
     t.integer  "x_zero",       default: 124
-    t.integer  "y_min",        default: 0
-    t.integer  "y_max",        default: 255
+    t.integer  "y_min",        default: 28
+    t.integer  "y_max",        default: 230
     t.integer  "y_zero",       default: 124
-    t.integer  "x_accel_min",  default: 0
-    t.integer  "x_accel_max",  default: 255
-    t.integer  "x_accel_zero", default: 510
-    t.integer  "y_accel_min",  default: 0
-    t.integer  "y_accel_max",  default: 255
-    t.integer  "y_accel_zero", default: 490
-    t.integer  "z_accel_min",  default: 0
-    t.integer  "z_accel_max",  default: 255
-    t.integer  "z_accel_zero", default: 460
+    t.integer  "x_accel_min",  default: -433
+    t.integer  "x_accel_max",  default: 513
+    t.integer  "x_accel_zero", default: 0
+    t.integer  "y_accel_min",  default: -433
+    t.integer  "y_accel_max",  default: 513
+    t.integer  "y_accel_zero", default: 0
+    t.integer  "z_accel_min",  default: -433
+    t.integer  "z_accel_max",  default: 513
+    t.integer  "z_accel_zero", default: 0
     t.integer  "radius",       default: 210
     t.integer  "pitch_min",    default: 0
-    t.integer  "pitch_max",    default: 255
-    t.integer  "roll_min",     default: 0
-    t.integer  "roll_max",     default: 255
+    t.integer  "pitch_max",    default: 180
+    t.integer  "roll_min",     default: -100
+    t.integer  "roll_max",     default: 100
     t.string   "name",         default: "Nunchuck"
     t.datetime "created_at",                        null: false
     t.datetime "updated_at",                        null: false
     t.integer  "user_id"
+    t.text     "config"
   end
 
   add_index "nunchucks", ["user_id"], name: "index_nunchucks_on_user_id"
@@ -123,17 +124,8 @@ ActiveRecord::Schema.define(version: 20150701221542) do
     t.integer  "num_users"
     t.integer  "total_uses"
     t.string   "config"
-    t.datetime "created_at",                       null: false
-    t.datetime "updated_at",                       null: false
-    t.string   "model"
-    t.boolean  "hid",              default: false
-    t.boolean  "serial_console",   default: true
-    t.string   "startup_sequence"
-    t.string   "click"
-    t.string   "doubleclick"
-    t.string   "longpressstart"
-    t.float    "time_scale"
-    t.float    "power_scale"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
   end
 
   create_table "threshold_functions", force: :cascade do |t|
