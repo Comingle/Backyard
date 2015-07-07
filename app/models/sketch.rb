@@ -6,15 +6,12 @@ require 'digest'
 require 'open3'
 
 SKETCHDIR = Rails.root + "sketches"
-CATEGORIES = ["general", "pattern", "nunchuck"]
-IGNORE = ["hid"]
 
 INO = "/usr/local/bin/ino"
 TARGET = "LilyPadUSB"
 TARGETNOHID = "LilyPadUSBnoHID"
 AVROBJCOPY = "/usr/bin/avr-objcopy"
 AVROBJCOPYOPTS = "-I ihex -O binary"
-GENERAL = ["model", "serial_console", "click", "doubleclick", "longpressstart", "time_scale", "power_scale"]
 
 class Sketch < ActiveRecord::Base
   class BuildError < StandardError
@@ -46,13 +43,19 @@ class Sketch < ActiveRecord::Base
   #before_save :build_sketch
   #before_update :build_sketch
 
+  def general
+    config['general']
+  end
+  
+  def patterns
+    config['patterns']
+  end
+
   def compile
     props = build_sketch
     old = Sketch.where("size = ? AND sha256 = ?", props.size, props.sha256)
     if (old.empty?)
       self.save!
-    else
-      clean_build_dir
     end
   end
   
@@ -77,26 +80,33 @@ class Sketch < ActiveRecord::Base
     global = template_list.map { |g| g[:global] }.join("")
     setup = template_list.map { |g| g[:setup] }.join("")
     loop = template_list.map { |g| g[:loop] }.join("")
-
     sketch = [global, setup, loop].join("\n")
+    
+    # Write sketch file
     sketchfile = get_sketch_file
     File.open sketchfile, "w" do |file|
         file << sketch
     end
+
+    # Write sketch configuration
     configfile = get_src_dir + "config.json"
     File.open configfile, "w" do |file|
-      file << self.as_json(:only => GENERAL)
+      file << self.as_json(:only => Component.where(:category => "general"))
       file << self.config
     end
   end
   
+  # Finds every component that a sketch will be using and passes it to
+  # return_segments to get its ERB-substituted global/setup/loop sections
   def gather_components(category)
     component_list = Array.new
     config = self.config[category]
 
     # Throw out false values
     config.keys.reject {|i| self[i].class == FalseClass}.each do |comp_name|
+      # Manual for now...
       next if comp_name.match("startup_sequence")
+      next if comp_name.match("hid")
 
       # Make sure our corresponding component actually exists. 
       # Very bad if not..
@@ -128,7 +138,7 @@ class Sketch < ActiveRecord::Base
       elsif Component.find_by_name(startup_seq)
         if Component.find_by_name(startup_seq).category == "pattern"
           seq = Component.find_by_name("startup_pattern")
-          context = self.startup_sequence
+          context = startup_seq
       # TODO: if we're running a pattern at startup make sure the pattern
       # itself is actually included.
         end
@@ -166,17 +176,12 @@ class Sketch < ActiveRecord::Base
   end
 
   def get_target
-    if self.hid
-      TARGET
-    else
-      TARGETNOHID
-    end
+    general['hid'] ? TARGET : TARGETNOHID
   end
 
   def get_hex_data
     build_dir = get_build_dir
-    target = get_target
-    path = build_dir + ".build" + target + "firmware.hex"
+    path = build_dir + ".build" + get_target + "firmware.hex"
     if File.exists?(path)
       File.open(path, "r") { |f|
         f.read
@@ -196,12 +201,8 @@ class Sketch < ActiveRecord::Base
     origdir = Dir.getwd
     Dir.chdir(get_build_dir)
     clean_build_dir
-    if (self.hid)
-      target = TARGET
-    else
-      target = TARGETNOHID
-    end
-    objdir = get_build_dir + ".build" + target
+
+    objdir = get_build_dir + ".build" + get_target
     stdout, stderr, status = Open3.capture3(INO + " build -m " + target)
     if status.success?
       @hex = objdir + "firmware.hex"
@@ -219,19 +220,10 @@ class Sketch < ActiveRecord::Base
       raise BuildError.new(message: "Build failed: #{stderr}")
     end
     Dir.chdir(origdir)
+    # Return size and fingerprint for compile() to check for dupes
     {:size => self.size, :sha256 => self.sha256}
   end
 
-  def read_config
-    config_options = JSON.parse(self.config)
-    config_options['toy']
-  end
-
-  def get_token
-    date = Time.now.strftime("%Y-%m-%d")
-    token = "#{date}-" + SecureRandom.hex(6)
-    token
-  end
 
   def self.find_by_hex(hex)
     hex.gsub(/[^:0123456789ABCDEFabcdef]/,"")
@@ -271,6 +263,12 @@ class Sketch < ActiveRecord::Base
       setup = Erubis::Eruby.new(component.setup).result(context)
       loop = Erubis::Eruby.new(component.loop).result(context)
       {:global => global, :setup => setup, :loop => loop}
+    end
+
+    def get_token
+      date = Time.now.strftime("%Y-%m-%d")
+      token = "#{date}-" + SecureRandom.hex(6)
+      token
     end
 
 end
