@@ -7,6 +7,8 @@ PATTERNDIR = Rails.root + "patterns"
 PATTERNTEMPLATE = PATTERNDIR + "c_pattern_template.erb"
 ERBITEMPAIR = /%=\s*(?:defined\?\()?(\w*)(?:\))?\s*\?.*:\s*(\S+)\s*%>/
 ERBITEMNAME = /%=\s*(?:defined\?\()?(\w*)(?:\))?\s*\?.*:\s*\S+\s*%>/
+ERBITEMDEFINED = /defined\?\((\w*)\)/
+ERBITEMCALLED = /\#\{(\w*)\}/
 
 class Component < ActiveRecord::Base
   
@@ -103,9 +105,13 @@ class Component < ActiveRecord::Base
   # defined within the component itself
   def variables
     joined = [global,setup,loop].join("\n")
-    joined.scan(ERBITEMNAME).uniq.flatten.reject { |i|
+    defined = joined.scan(ERBITEMDEFINED).flatten.uniq.reject { |i|
       !joined.scan(/<%\s*(#{i})\s*=/).empty?
     }
+    called = joined.scan(ERBITEMCALLED).flatten.uniq.reject { |i|
+      !joined.scan(/<%\s*(#{i})\s*=/).empty?
+    }
+    defined.push(called).flatten
   end
 
   def variable_objs
