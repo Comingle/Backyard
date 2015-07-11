@@ -52,6 +52,7 @@ class Sketch < ActiveRecord::Base
   end
 
   def compile
+    create_sketch
     props = build_sketch
     old = Sketch.where("size = ? AND sha256 = ?", props.size, props.sha256)
     if (old.empty?)
@@ -118,8 +119,8 @@ class Sketch < ActiveRecord::Base
       if config[comp_name].class == Hash || config[comp_name].class == Array
         context = config[comp_name]
       else
+      # Find if our value is a blob referring to another component
         context = config
-        # Find if our value is a blob referring to another component
         component = Component.find_by_name_and_category(config[comp_name], "blob")
         if !component.nil?
           context = {comp_name => component.global}
@@ -197,13 +198,12 @@ class Sketch < ActiveRecord::Base
   end
 
   def build_sketch
-    create_sketch
     origdir = Dir.getwd
     Dir.chdir(get_build_dir)
     clean_build_dir
 
     objdir = get_build_dir + ".build" + get_target
-    stdout, stderr, status = Open3.capture3(INO + " build -m " + target)
+    stdout, stderr, status = Open3.capture3(INO + " build -m " + get_target)
     if status.success?
       @hex = objdir + "firmware.hex"
       @bin = objdir + "firmware.bin"
