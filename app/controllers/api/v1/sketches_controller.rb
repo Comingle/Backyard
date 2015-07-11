@@ -56,8 +56,8 @@ class SketchesController < ApplicationController
   def create
     @sketch = Sketch.new(sketch_params)
     @sketch.config= JSON.parse(sketch_params["config"])
+    @sketch.create_sketch
     build_props = @sketch.build_sketch
-    puts build_props
     dupe = Sketch.find_by_size_and_sha256(build_props[:size], build_props[:sha256])
     if dupe
       @sketch = dupe
@@ -66,7 +66,7 @@ class SketchesController < ApplicationController
       @sketch
     end
   end
-
+  
   # PATCH/PUT /sketches/1
   # PATCH/PUT /sketches/1.json
   #def update
