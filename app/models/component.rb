@@ -62,19 +62,21 @@ class Component < ActiveRecord::Base
     c_prog.close
 
     # Compile first with avr-gcc to prevent non-AVR functions (setuid()...) from slipping past us. If that's fine, then compile with gcc for local exec. Probably some way around this..
+    steps = Hash.new
     stdout, stderr, status = Open3.capture3("#{AVRGCC} #{c_file.path} #{GCCARGS} #{c_prog.path}")
     if status.success?
       stdout, stderr, status = Open3.capture3("#{GCC} #{c_file.path} #{GCCARGS} #{c_prog.path}")
       if status.success?
         steps, steperr, stepstatus = Open3.capture3("#{c_prog.path} #{num_steps}")
-        # self.testride = c_prog.to_s
       else
-        steps = nil
+        steps['error'] = stderr
       end
-      c_file.unlink
-      c_prog.unlink
+    else
+      steps['error'] = stderr
     end
-    JSON.parse(steps)
+    c_file.unlink
+    c_prog.unlink
+    steps.class == Hash ? steps : JSON.parse(steps)
   end
 
   # returns variable name and default value
@@ -105,7 +107,7 @@ class Component < ActiveRecord::Base
   # defined within the component itself
   def variables
     joined = [global,setup,loop].join("\n")
-    defined = joined.scan(ERBITEMDEFINED).flatten.uniq.reject { |i|
+    defined = joined.scan(ERBITEMNAME).flatten.uniq.reject { |i|
       !joined.scan(/<%\s*(#{i})\s*=/).empty?
     }
     called = joined.scan(ERBITEMCALLED).flatten.uniq.reject { |i|
@@ -115,11 +117,16 @@ class Component < ActiveRecord::Base
   end
 
   def variable_objs
-    names = variables
-    return if names.empty?
-    Variable.where.any_of(*names.each_with_index { |v,i|
-      names[i] = {"name" => v}
-    })
+    objs = Array.new
+    variables.each do |v|
+      objs.push(Variable.where("name = ?", v).first_or_create do |var|
+        var.name = v
+      end)
+    end
+    objs.empty? ? nil : objs
+    #Variable.where.any_of(*names.each_with_index { |v,i|
+    #  names[i] = {"name" => v}
+    #})
   end
 
 end
