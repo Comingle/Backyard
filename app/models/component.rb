@@ -25,7 +25,7 @@ class Component < ActiveRecord::Base
     category.match("^pattern$")
   end
 
-  def test_pattern(opts = {}, num_steps = period)
+  def test_pattern(opts = {}, num_steps = self.period)
     return if !is_pattern?
 
     # Set up default values for pattern, substituting optional supplied vals
@@ -33,7 +33,7 @@ class Component < ActiveRecord::Base
     defaults.each do |i|
       max = i[:max]
       min = i[:min]
-      item = i[:name].to_sym
+      item = i[:name]
       default_value = i[:default]
       if opts[item].nil? 
         opts[item] = default_value 
@@ -41,6 +41,7 @@ class Component < ActiveRecord::Base
         opts[item] = default_value 
       end
     end
+  
 
     # Replace given pattern name with generic name
     # Setup build dir
@@ -67,12 +68,17 @@ class Component < ActiveRecord::Base
     if status.success?
       stdout, stderr, status = Open3.capture3("#{GCC} #{c_file.path} #{GCCARGS} #{c_prog.path}")
       if status.success?
-        steps, steperr, stepstatus = Open3.capture3("#{c_prog.path} #{num_steps}")
+        stdout, stderr, status = Open3.capture3("#{c_prog.path} #{num_steps}")
+        if status.success?
+          steps = stdout
+        else 
+          steps['error'] = stderr.empty? ? "Unable to run your pattern: #{status}" : stderr
+        end
       else
-        steps['error'] = stderr
+        steps['error'] = stderr.empty? ? "Unable to compile your pattern: #{status}" : stderr
       end
     else
-      steps['error'] = stderr
+      steps['error'] = stderr.empty? ? "Unable to verify your pattern: #{status}" : stderr
     end
     c_file.unlink
     c_prog.unlink
