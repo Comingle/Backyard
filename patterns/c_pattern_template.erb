@@ -14,29 +14,30 @@ struct {
 <%= new_pat %>
 
 int main(int argc, char *argv[]) {
-  long startStep, endStep;
+  long startStep = 0;
+  long endStep = 500;
   if (argc > 2) {
     startStep = strtol(argv[1], (char **)NULL, 10);
     endStep = strtol(argv[2], (char **)NULL, 10);
-  } else {
+  } else if (argc > 1) {
     startStep = 0;
     endStep = strtol(argv[1], (char **)NULL, 10);
   }
 
   if (startStep > endStep) {
-    return -1;
+    return 1;
   }
     
-  printf("{ \"steps\": [");
+  printf("{\"steps\":[");
   while (startStep < endStep-1) {
     pattern(startStep);
-    printf("[ %d, %d, %d, %d ],", Toy.step[0], Toy.step[1], Toy.step[2], Toy.step[3]);
+    printf("[%d,%d,%d,%d],", Toy.step[0], Toy.step[1], Toy.step[2], Toy.step[3]);
     startStep++;
   }
   pattern(startStep);  
-  printf("[ %d, %d, %d, %d ]]}\n", Toy.step[0], Toy.step[1], Toy.step[2], Toy.step[3]);
+  printf("[%d,%d,%d,%d]]}\n", Toy.step[0], Toy.step[1], Toy.step[2], Toy.step[3]);
 
-  return 1;
+  return 0;
 }
 
 int myRandom(int min, int max) {

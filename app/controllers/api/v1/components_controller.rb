@@ -104,7 +104,7 @@ class ComponentsController < ApplicationController
     if params[:settings]
       settings = JSON.parse(params[:settings])
       id = params[:id]
-      @steps = Component.find(id).test_pattern(settings,nil)
+      @steps = Component.find(id).test_pattern(settings)
       respond_to do |format|
         format.json { render json: @steps }
       end
