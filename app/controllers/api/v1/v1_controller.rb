@@ -1,0 +1,36 @@
+module Api
+  module V1
+    class V1Controller < ::ActionController::Base
+      protect_from_forgery with: :null_session
+      before_filter :authenticate
+
+      def current_user
+        @user
+      end
+
+      private
+
+      def authenticate
+        authenticate_user_from_token || render_unauthorized
+      end
+
+      def authenticate_user_from_token
+        token = request.headers['Authorization']
+        identifier = params[:email] || params[:username]
+        @user = identifier && User.where("email = ? or username = ?", identifier, identifier).first
+        @user && @user.authentication_token.matches?(token)
+      end
+
+      def render_unauthorized
+        self.headers['WWW-Authenticate'] = 'Token realm="Application"'
+        render json: 'You must provide a valid token', status: 401
+      end
+    end
+  end
+end
+
+# Must be sent via HTTPS.
+
+# Must not be stored directly in the database. Only a hash of the token can be stored there. (Remember, token = password. We don't store passwords in plain text in the db, right?)
+
+# Should have an expiry date.

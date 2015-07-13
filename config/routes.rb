@@ -11,6 +11,8 @@ Rails.application.routes.draw do
       post '/components/test_pattern', to: 'components#test_pattern'
       resources :components
       resources :toys
+      resources :users
+      resources :sessions
     end
   end
 
