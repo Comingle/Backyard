@@ -19,6 +19,6 @@ class AuthenticationToken
   end
 
   def to_hashed_token(token)
-    Digest::MD5.base64digest(token)
+    SCrypt::Password.create(token)
   end
 end

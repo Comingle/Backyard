@@ -2,7 +2,7 @@ require 'rails_helper'
 
 describe AuthenticationToken do
   let(:auth_token) { SecureRandom.base64(24) }
-  let(:hashed_auth_token) { Digest::MD5.base64digest(auth_token) }
+  let(:hashed_auth_token) { SCrypt::Password.create(auth_token) }
   subject(:token) { AuthenticationToken.new(hashed_auth_token) }
 
   describe "#matches?" do
