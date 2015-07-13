@@ -3,7 +3,7 @@ require 'open3'
 
 module Api
   module V1
-class SketchesController < ApplicationController
+class SketchesController < V1Controller
   respond_to :json
   before_action :set_sketch, only: [:show, :edit, :update, :destroy]
 

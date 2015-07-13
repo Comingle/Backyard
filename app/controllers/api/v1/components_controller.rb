@@ -2,7 +2,7 @@ require 'open3'
 
 module Api
   module V1
-class ComponentsController < ApplicationController
+class ComponentsController < V1Controller
   respond_to :json, :html
   before_action :set_component, only: [:show, :edit, :update, :destroy]
 
@@ -11,7 +11,7 @@ class ComponentsController < ApplicationController
   def index
     respond_to do |format|
       format.html { @components = Component.all }
-      format.json { 
+      format.json {
     @components = Hash[Component.pluck(:category).uniq.each_with_object(nil).to_a]
     @components.each do |k,v|
       @components[k] = Component.where("category = ?", k)

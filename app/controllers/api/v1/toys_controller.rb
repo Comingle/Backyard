@@ -1,6 +1,6 @@
 module Api
   module V1
-class ToysController < ApplicationController
+class ToysController < V1Controller
   respond_to :json
   before_action :set_toy, only: [:show, :edit, :update, :destroy]
   before_filter :authenticate_user!

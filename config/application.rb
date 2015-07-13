@@ -27,5 +27,9 @@ module Backyard
       DeviseController.respond_to :html, :json
     end
 
+    config.generators do |g|
+      g.fixture_replacement :factory_girl
+    end
+
   end
 end
