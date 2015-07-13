@@ -114,7 +114,11 @@ class ComponentsController < V1Controller
   private
     # Use callbacks to share common setup or constraints between actions.
     def set_component
-      @component = Component.find(params[:id])
+      if params[:id].match(/\D/)
+        @component = Component.find_by_name(params[:id])
+      else
+        @component = Component.find(params[:id])
+      end
     end
 
     # Never trust parameters from the scary internet, only allow the white list through.
