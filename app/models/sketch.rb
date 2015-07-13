@@ -64,17 +64,23 @@ class Sketch < ActiveRecord::Base
   ## Fetch all components, join them together, process ERB substitutions
   ## Returns compilable Arduino code
   def create_sketch
-    # XXX -- add nunchuck header selection
-    header = Component.find_by_name_and_category("header", "general")
-    footer = Component.find_by_name_and_category("footer", "general")
-
+    # Process header separately since it must be first.
+    if general['nunchuck_header'].class == TrueClass
+      header_type = 'nunchuck_header'
+    else 
+      header_type = 'header'
+    end
+    header = Component.find_by_name_and_category(header_type, "general")
     template_list = Array.new
     template_list.push(return_segments(header))
+
     # Config keys are the top-level JSON hashes. We use those as categories
     # for gathering components
     config.keys.each do |c|
       template_list.push(gather_components(c))
     end
+
+    footer = Component.find_by_name_and_category("footer", "general")
     template_list.push(return_segments(footer))
     template_list.flatten!
 
@@ -84,8 +90,7 @@ class Sketch < ActiveRecord::Base
     sketch = [global, setup, loop].join("\n")
     
     # Write sketch file
-    sketchfile = get_sketch_file
-    File.open sketchfile, "w" do |file|
+    File.open get_sketch_file, "w" do |file|
         file << sketch
     end
 
@@ -225,6 +230,10 @@ class Sketch < ActiveRecord::Base
   end
 
 
+  # Search through existing sketches for a record with a fingerprint that matches
+  # our incoming HEX file data.
+  # HEX file uploaded -> converted to raw binary via avr-objcopy -> sha256 ->
+  # Sketch.find_by_sha256(...)
   def self.find_by_hex(hex)
     hex.gsub(/[^:0123456789ABCDEFabcdef]/,"")
     hex = hex[0..90000]
@@ -240,6 +249,8 @@ class Sketch < ActiveRecord::Base
       binary = File.open(binfile.path, "rb") { |file|
         file.read
       }
+      # I don't exactly remember why I'm doing it this way
+      # instead of Sketch.find_by_sha256. It works for now.
       Sketch.where("size is not null and sha256 is not null").each do |s|
         if (Digest::SHA256.new.update(binary[0 .. (s.size-1)]) == s.sha256)
           sketch = Sketch.find(s.id)
