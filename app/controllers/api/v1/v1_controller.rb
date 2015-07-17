@@ -15,10 +15,12 @@ module Api
       end
 
       def authenticate_user_from_token
-        token = request.headers['Authorization']
-        identifier = params[:email] || params[:username]
-        @user = identifier && User.where("email = ? or username = ?", identifier, identifier).first
-        @user && @user.authentication_token.matches?(token)
+        if auth_headers = request.headers['Authorization']
+          auth = JSON.parse(auth_headers)
+          identifier = auth['identifier']
+          @user = identifier && User.where("email = ? or username = ?", identifier, identifier).first
+          @user && @user.authentication_token.matches_and_valid?(auth['authentication_token'])
+        end
       end
 
       def render_unauthorized

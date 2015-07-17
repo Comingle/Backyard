@@ -8,7 +8,7 @@ module Api
         if @user = User.where("email = ? or username = ?", identifier, identifier).first
           if @user.valid_password?(session_params[:password])
             token = @user.generate_authentication_token
-            render json: { authorization_token: token }
+            render json: { authentication_token: token, identifier: identifier }
           else
             render json: { errors: "You have entered the wrong password." }, status: :unauthorized
           end
