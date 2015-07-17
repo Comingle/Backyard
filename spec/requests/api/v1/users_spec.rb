@@ -23,8 +23,19 @@ describe "Users" do
       end
     end
 
-    context "with the correct auth token" do
+    context "with an expired token" do
+      before do
+        user.update_attributes(token_expires_at: 1.second.ago)
+        get "/api/v1/users/#{user.id}", params, headers
+      end
 
+      it "responds with unauthorized" do
+        expect(user.token_valid?).to eql false
+        expect(response).to have_http_status :unauthorized
+      end
+    end
+
+    context "with the correct auth token" do
       context "and a valid email" do
         let(:headers_hash) { { authentication_token: token, identifier: user.email } }
         it 'returns the user' do

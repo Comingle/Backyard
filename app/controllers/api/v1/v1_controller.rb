@@ -32,7 +32,3 @@ module Api
 end
 
 # Must be sent via HTTPS.
-
-# Must not be stored directly in the database. Only a hash of the token can be stored there. (Remember, token = password. We don't store passwords in plain text in the db, right?)
-
-# Should have an expiry date.
