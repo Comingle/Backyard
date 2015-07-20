@@ -1,4 +1,4 @@
-<%= form_for(@component, url: api_v1_component_path) do |f| %>
+<%= form_for(@component, url: (@component.new_record? ? api_v1_components_path : api_v1_component_path)) do |f| %>
   <div class="row">
   <div class="col-md-10">
   <% if @component.errors.any? %>
@@ -38,6 +38,7 @@
     <%= f.submit %>
   </div>
   </div>
+  <% if defined?(@vars) %>
   <div class="col-md-4">
     Variables:
     <ul>
@@ -46,5 +47,6 @@
   <% end %>
     </ul>
   </div>
+  <% end %>
   </div>
 <% end %>
