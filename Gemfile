@@ -40,6 +40,7 @@ gem 'therubyracer',  platforms: :ruby
 gem 'rack-cors', :require => 'rack/cors'
 gem 'active_model_serializers'
 gem 'scrypt'
+gem 'hashdiff'
 
 group :development, :test do
   # Call 'debugger' anywhere in the code to stop execution and get a debugger console
