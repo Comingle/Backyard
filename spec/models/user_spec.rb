@@ -26,4 +26,24 @@ describe User do
     #  expect(AuthenticationToken.to_hashed_token(token).to eql(user.hashed_authentication_token)
     #end
   end
+
+  describe "#token_valid?" do
+    before do
+      user.generate_authentication_token
+    end
+    context "when the auth token is not expired" do
+      it "returns false" do
+        expect(subject.token_valid?).to eql true
+      end
+    end
+
+    context "when the auth token is expired" do
+      before do
+        user.update_attributes(token_expires_at: 1.second.ago)
+      end
+      it "returns false" do
+        expect(subject.token_valid?).to eql false
+      end
+    end
+  end
 end

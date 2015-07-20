@@ -15,10 +15,12 @@ module Api
       end
 
       def authenticate_user_from_token
-        token = request.headers['Authorization']
-        identifier = params[:email] || params[:username]
-        @user = identifier && User.where("email = ? or username = ?", identifier, identifier).first
-        @user && @user.authentication_token.matches?(token)
+        if auth_headers = request.headers['Authorization']
+          auth = JSON.parse(auth_headers)
+          identifier = auth['identifier']
+          @user = identifier && User.where("email = ? or username = ?", identifier, identifier).first
+          @user && @user.authentication_token.matches_and_valid?(auth['authentication_token'])
+        end
       end
 
       def render_unauthorized
@@ -30,7 +32,3 @@ module Api
 end
 
 # Must be sent via HTTPS.
-
-# Must not be stored directly in the database. Only a hash of the token can be stored there. (Remember, token = password. We don't store passwords in plain text in the db, right?)
-
-# Should have an expiry date.

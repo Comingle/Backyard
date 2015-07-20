@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150712185757) do
+ActiveRecord::Schema.define(version: 20150717201021) do
 
   create_table "components", force: :cascade do |t|
     t.string   "name"
@@ -27,18 +27,6 @@ ActiveRecord::Schema.define(version: 20150712185757) do
     t.string   "pretty_name"
     t.string   "description"
   end
-
-  create_table "manifests", force: :cascade do |t|
-    t.integer  "sketch_id"
-    t.integer  "component_id"
-    t.string   "key"
-    t.string   "value"
-    t.datetime "created_at",   null: false
-    t.datetime "updated_at",   null: false
-  end
-
-  add_index "manifests", ["component_id"], name: "index_manifests_on_component_id"
-  add_index "manifests", ["sketch_id"], name: "index_manifests_on_sketch_id"
 
   create_table "nunchucks", force: :cascade do |t|
     t.integer  "x_min",        default: 28
@@ -81,12 +69,6 @@ ActiveRecord::Schema.define(version: 20150712185757) do
 
   add_index "options", ["component_id"], name: "index_options_on_component_id"
   add_index "options", ["sketch_id"], name: "index_options_on_sketch_id"
-
-  create_table "pattern_options", force: :cascade do |t|
-    t.string   "options"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-  end
 
   create_table "patterns", force: :cascade do |t|
     t.string   "global"
@@ -180,6 +162,7 @@ ActiveRecord::Schema.define(version: 20150712185757) do
     t.string   "avatar"
     t.string   "username"
     t.string   "hashed_authentication_token"
+    t.datetime "token_expires_at"
   end
 
   add_index "users", ["email"], name: "index_users_on_email", unique: true
