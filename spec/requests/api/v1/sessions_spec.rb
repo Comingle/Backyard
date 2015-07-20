@@ -44,8 +44,8 @@ describe "Sessions" do
 
     context "with a bad password" do
       let(:params) { { identifier: 'my_email@example.com', password: "bad_password" } }
-      it "responds with unauthorized" do
-        expect(response).to have_http_status :unauthorized
+      it "responds with not found" do
+        expect(response).to have_http_status :not_found
       end
     end
   end
