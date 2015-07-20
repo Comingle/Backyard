@@ -1,4 +1,6 @@
 class User < ActiveRecord::Base
+
+  TOKEN_DURATION = 6.months
   has_many :toys
   has_many :sketches, through: :toys
   has_many :nunchucks
@@ -11,8 +13,12 @@ class User < ActiveRecord::Base
 
   attr_accessor :login
 
+  def token_valid?
+    Time.current < token_expires_at
+  end
+
   def authentication_token
-    AuthenticationToken.new(hashed_authentication_token)
+    AuthenticationToken.new(self)
   end
 
   def self.find_for_database_authentication(warden_conditions)
@@ -28,7 +34,7 @@ class User < ActiveRecord::Base
     token = SecureRandom.base64(24)
     hashed_token = AuthenticationToken.to_hashed_token(token)
 
-    self.update_attributes(hashed_authentication_token: hashed_token)
+    self.update_attributes(hashed_authentication_token: hashed_token, token_expires_at: Time.current + TOKEN_DURATION)
     return token
   end
 end

@@ -6,16 +6,20 @@ class AuthenticationToken
     new.to_hashed_token(token)
   end
 
-  def initialize(hashed_authentication_token = nil)
-    @hashed_authentication_token = hashed_authentication_token
+  def initialize(tokenized_object = nil)
+    @tokenized_object = tokenized_object
+    if tokenized_object
+      @hashed_authentication_token = tokenized_object.hashed_authentication_token
+    end
   end
 
   def to_s
     @hashed_authentication_token
   end
 
-  def matches? token
-    to_hashed_token(token) == @hashed_authentication_token
+  def matches_and_valid? token
+    matches = to_hashed_token(token) == @hashed_authentication_token
+    matches && @tokenized_object.token_valid?
   end
 
   def to_hashed_token(token)
