@@ -1,4 +1,5 @@
 require 'rails_helper'
+require 'scrypt'
 
 describe AuthenticationToken do
   let(:auth_token) { SecureRandom.base64(24) }
