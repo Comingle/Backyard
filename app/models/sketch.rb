@@ -13,6 +13,9 @@ TARGETNOHID = "LilyPadUSBnoHID"
 AVROBJCOPY = "/usr/bin/avr-objcopy"
 AVROBJCOPYOPTS = "-I ihex -O binary"
 
+# Atmega32u4 limitiation
+MAXSKETCHSIZE = 28672
+
 class Sketch < ActiveRecord::Base
   class BuildError < StandardError
     def initialize(message = nil, action = nil, subject = nil)
@@ -48,7 +51,13 @@ class Sketch < ActiveRecord::Base
   end
   
   def patterns
-    config['patterns']
+    plural_count = config['patterns'].blank? ? 0 : config['patterns'].count
+    single_count = config['pattern'].blank? ? 0 : config['pattern'].count
+    if plural_count > single_count
+      config['patterns']
+    else
+      config['pattern']
+    end
   end
 
   def compile
@@ -65,13 +74,8 @@ class Sketch < ActiveRecord::Base
   ## Returns compilable Arduino code
   def create_sketch
     # Process header separately since it must be first.
-    if general['nunchuck_header'].class == TrueClass
-      header_type = 'nunchuck_header'
-    else 
-      header_type = 'header'
-    end
-    header = Component.find_by_name_and_category(header_type, "general")
     template_list = Array.new
+    header = Component.find_by_name_and_category("header", "general")
     template_list.push(return_segments(header))
 
     # Config keys are the top-level JSON hashes. We use those as categories
@@ -110,14 +114,15 @@ class Sketch < ActiveRecord::Base
 
     # Throw out false values
     config.keys.reject {|i| self[i].class == FalseClass}.each do |comp_name|
-      # Manual for now...
+      # Special cases for now...
       next if comp_name.match("startup_sequence")
       next if comp_name.match("hid")
 
       # Make sure our corresponding component actually exists. 
-      # Very bad if not..
       comp_template = Component.find_by_name_and_category(comp_name, category)
-      next if !comp_template
+      if !comp_template
+        raise BuildError.new(message: "sketch component not found: #{comp_name}")
+      end
       
       # If our particular item is a hash or array, we assume it has
       # nested attributes.
@@ -133,23 +138,23 @@ class Sketch < ActiveRecord::Base
       end
       component_list.push(return_segments(comp_template, context))
     end
+
     # Special case for this one for now
     seq = context = nil
     startup_seq = config['startup_sequence']
     if startup_seq
-      if startup_seq.class == TrueClass
+      if startup_seq.present?
         seq = Component.find_by_name("startup_sequence")
-      elsif startup_seq.class == String && startup_seq.match("startup_sequence")
-        seq = Component.find_by_name("startup_sequence")
+        component_list.push(return_segments(seq, context))
       elsif Component.find_by_name(startup_seq)
         if Component.find_by_name(startup_seq).category == "pattern"
           seq = Component.find_by_name("startup_pattern")
           context = startup_seq
+          component_list.push(return_segments(seq, context))
       # TODO: if we're running a pattern at startup make sure the pattern
       # itself is actually included.
         end
       end
-      component_list.push(return_segments(seq, context))
     end
     component_list
   end
@@ -216,12 +221,13 @@ class Sketch < ActiveRecord::Base
       if status.success?
         self.sha256 = Digest::SHA256.file @bin
         self.size = File.size? @bin
+        if self.size > MAXSKETCHSIZE
+          raise BuildError.new(message: "sketch is too large: #{self.size} bytes (#{MAXSKETCHSIZE} maximum size)")
+        end
       else
-        puts "avr-objcopy failed: #{stderr}"
         raise BuildError.new(message: "avr-objcopy failed: #{stderr}")
       end
     else
-      puts "Build failed: #{stderr}"
       raise BuildError.new(message: "Build failed: #{stderr}")
     end
     Dir.chdir(origdir)
