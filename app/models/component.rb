@@ -3,8 +3,10 @@ require 'open3'
 GCC = "/usr/bin/gcc"
 AVRGCC = "/usr/bin/avr-gcc"
 GCCARGS = "-lm -o"
+
 PATTERNDIR = Rails.root + "patterns"
 PATTERNTEMPLATE = PATTERNDIR + "c_pattern_template.erb"
+
 ERBITEMPAIR = /%=\s*(?:defined\?\()?(\w*)(?:\))?\s*\?.*:\s*(\S+)\s*%>/
 ERBITEMNAME = /%=\s*(?:defined\?\()?(\w*)(?:\))?\s*\?.*:\s*\S+\s*%>/
 ERBITEMDEFINED = /defined\?\((\w*)\)/
@@ -29,7 +31,7 @@ class Component < ActiveRecord::Base
     return if !is_pattern?
 
     # Set up default values for pattern, substituting optional supplied vals
-    defaults = pat_options
+    defaults = variables
     defaults.each do |i|
       max = i[:max]
       min = i[:min]
@@ -86,41 +88,46 @@ class Component < ActiveRecord::Base
   end
 
   # returns variable name and default value
-  def pat_options
-    if !is_pattern? 
-      return nil
-    end
+  def variables
     opts_with_vals = Array.new
     # global portion of pattern is where the action is. no substitutions
     # should be happening in setup or loop.
-    options = global.scan(ERBITEMPAIR)
+    options = [global,setup,loop].join('\n').scan(ERBITEMPAIR)
 
     # Each 'o' is a [variable name, default value] array
     options.each do |o|
-      v = Variable.find_by_name(o[0])
-      opts_with_vals.push({
-        name: o[0], 
-        default: o[1], 
-        min: v.min ? v.min : 0,
-        max: v.max ? v.max : 255,
-        description: v.description
-      })
+      v = Variable.where(:name => o[0]).first_or_create
+      if o[0].match(/\d/)
+        opts_with_vals.push({
+          name: o[0], 
+          default: o[1], 
+          min: v.min,
+          max: v.max,
+          description: v.description
+        })
+      else 
+        opts_with_vals.push({
+          name: o[0], 
+          default: o[1], 
+          description: v.description
+        })
+      end
     end
-    opts_with_vals
+    opts_with_vals.uniq
   end
 
   # Fetch all ERB variable substitutions, but ignore those also 
   # defined within the component itself
-  def variables
-    joined = [global,setup,loop].join("\n")
-    defined = joined.scan(ERBITEMNAME).flatten.uniq.reject { |i|
-      !joined.scan(/<%\s*(#{i})\s*=/).empty?
-    }
-    called = joined.scan(ERBITEMCALLED).flatten.uniq.reject { |i|
-      !joined.scan(/<%\s*(#{i})\s*=/).empty?
-    }
-    defined.push(called).flatten
-  end
+  #def variables
+  #  joined = [global,setup,loop].join("\n")
+  #  defined = joined.scan(ERBITEMNAME).flatten.uniq.reject { |i|
+  #    !joined.scan(/<%\s*(#{i})\s*=/).empty?
+  #  }
+  #  called = joined.scan(ERBITEMCALLED).flatten.uniq.reject { |i|
+  #    !joined.scan(/<%\s*(#{i})\s*=/).empty?
+  #  }
+  #  defined.push(called).flatten
+  #end
 
   def variable_objs
     objs = Array.new
