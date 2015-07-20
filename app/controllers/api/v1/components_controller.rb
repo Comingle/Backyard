@@ -21,21 +21,19 @@ class ComponentsController < V1Controller
     #respond_with @components
   end
 
-  # GET /components/1
-  # GET /components/1.json
-  def show
-    #if (@component.testride and request.xhr?)
-    #  steps = Open3.capture2(@component.testride, @component.period.to_s);
-    #  respond_to do |format|
-    #    format.json { render json: steps[0] }
-    #  end
-    #end
-    respond_with @component
-  end
-
   # GET /components/new
   def new
     @component = Component.new
+  end
+
+  # GET /components/1
+  # GET /components/1.json
+  def show
+    if @components.present?
+      respond_with @components
+    else
+      respond_with @component
+    end
   end
 
   # GET /components/1/edit
@@ -116,6 +114,12 @@ class ComponentsController < V1Controller
     def set_component
       if params[:id].match(/\D/)
         @component = Component.find_by_name(params[:id])
+        if @component.blank?
+          @components = Component.where("category = ?", params[:id])
+          if @components.blank?
+            raise ActiveRecord::RecordNotFound
+          end
+        end
       else
         @component = Component.find(params[:id])
       end
