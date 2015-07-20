@@ -1,3 +1,6 @@
+require 'scrypt'
+SCrypt::Engine.calibrate!(max_mem: 4 * 1024 * 1024)
+
 class AuthenticationToken
 
   attr_reader :hashed_authentication_token
@@ -15,7 +18,7 @@ class AuthenticationToken
   end
 
   def matches? token
-    to_hashed_token(token) == @hashed_authentication_token
+    SCrypt::Password.new(@hashed_authentication_token) == token
   end
 
   def to_hashed_token(token)

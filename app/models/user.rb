@@ -28,7 +28,7 @@ class User < ActiveRecord::Base
     token = SecureRandom.base64(24)
     hashed_token = AuthenticationToken.to_hashed_token(token)
 
-    self.update_attributes(hashed_authentication_token: hashed_token)
+    self.update_attributes!(hashed_authentication_token: hashed_token)
     return token
   end
 end
