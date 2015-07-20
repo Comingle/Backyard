@@ -10,7 +10,7 @@ module Api
             token = @user.generate_authentication_token
             render json: { authorization_token: token }
           else
-            render json: { errors: "You have entered the wrong password." }, status: :unauthorized
+            render json: { errors: "Could not find a user with those credentials." }, status: :not_found
           end
         else
           render json: { errors: "Could not find a user with those credentials." }, status: :not_found
