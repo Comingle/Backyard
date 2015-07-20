@@ -3,23 +3,21 @@ require 'open3'
 
 module Api
   module V1
-class SketchesController < V1Controller
+  class SketchesController < V1Controller
   respond_to :json
   before_action :set_sketch, only: [:show, :edit, :update, :destroy]
 
   rescue_from Sketch::BuildError, :with => :build_error
 
   def build_error(exception)
-    flash[:notice] = "There was an error building your sketch: #{exception.message}"
-    # Event.new_event "Exception: #{exception.message}"
-    redirect_to url_for([:edit, @sketch])
+    render(json: exception.message, status: 500)
   end
 
   # GET /sketches
   # GET /sketches.json
   def index
-    @sketches = Sketch.all
-    respond_with @sketches
+    #@sketches = Sketch.all
+    #respond_with @sketches
   end
 
   # GET /sketches/1
@@ -55,7 +53,10 @@ class SketchesController < V1Controller
   # POST /sketches.json
   def create
     @sketch = Sketch.new(sketch_params)
-    @sketch.config= JSON.parse(sketch_params["config"])
+    # This needs to be turned in to a delayed job -- we want to receive lots of
+    # sketches and compile them in the background
+    @defer = params["defer"] # Don't report HEX data back in this response
+    @sketch.config = JSON.parse(sketch_params["config"])
     @sketch.create_sketch
     build_props = @sketch.build_sketch
     dupe = Sketch.find_by_size_and_sha256(build_props[:size], build_props[:sha256])
@@ -112,7 +113,7 @@ class SketchesController < V1Controller
 
     # Never trust parameters from the scary internet, only allow the white list through.
     def sketch_params
-      params[:sketch].permit(:click, :doubleclick, :longpressstart, :serial_console, :startup_sequence, :model, :config)
+      params[:sketch].permit(:config)
     end
 
     def get_token
