@@ -1,0 +1,1302 @@
+--
+-- PostgreSQL database dump
+--
+
+SET statement_timeout = 0;
+SET lock_timeout = 0;
+SET client_encoding = 'SQL_ASCII';
+SET standard_conforming_strings = on;
+SET check_function_bodies = false;
+SET client_min_messages = warning;
+
+--
+-- Name: plpgsql; Type: EXTENSION; Schema: -; Owner: 
+--
+
+CREATE EXTENSION IF NOT EXISTS plpgsql WITH SCHEMA pg_catalog;
+
+
+--
+-- Name: EXTENSION plpgsql; Type: COMMENT; Schema: -; Owner: 
+--
+
+COMMENT ON EXTENSION plpgsql IS 'PL/pgSQL procedural language';
+
+
+SET search_path = public, pg_catalog;
+
+SET default_tablespace = '';
+
+SET default_with_oids = false;
+
+--
+-- Name: components; Type: TABLE; Schema: public; Owner: durkie; Tablespace: 
+--
+
+CREATE TABLE components (
+    id integer NOT NULL,
+    name character varying,
+    category character varying,
+    use_count integer,
+    global character varying,
+    created_at timestamp without time zone NOT NULL,
+    updated_at timestamp without time zone NOT NULL,
+    setup character varying,
+    loop character varying,
+    testride character varying,
+    period integer,
+    pretty_name character varying,
+    description character varying
+);
+
+
+ALTER TABLE public.components OWNER TO durkie;
+
+--
+-- Name: components_id_seq; Type: SEQUENCE; Schema: public; Owner: durkie
+--
+
+CREATE SEQUENCE components_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.components_id_seq OWNER TO durkie;
+
+--
+-- Name: components_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: durkie
+--
+
+ALTER SEQUENCE components_id_seq OWNED BY components.id;
+
+
+--
+-- Name: manifests; Type: TABLE; Schema: public; Owner: durkie; Tablespace: 
+--
+
+CREATE TABLE manifests (
+    id integer NOT NULL,
+    sketch_id integer,
+    component_id integer,
+    key character varying,
+    value character varying,
+    created_at timestamp without time zone NOT NULL,
+    updated_at timestamp without time zone NOT NULL
+);
+
+
+ALTER TABLE public.manifests OWNER TO durkie;
+
+--
+-- Name: nunchucks; Type: TABLE; Schema: public; Owner: durkie; Tablespace: 
+--
+
+CREATE TABLE nunchucks (
+    id integer NOT NULL,
+    x_min integer DEFAULT 28,
+    x_max integer DEFAULT 230,
+    x_zero integer DEFAULT 124,
+    y_min integer DEFAULT 28,
+    y_max integer DEFAULT 230,
+    y_zero integer DEFAULT 124,
+    x_accel_min integer DEFAULT (-433),
+    x_accel_max integer DEFAULT 513,
+    x_accel_zero integer DEFAULT 0,
+    y_accel_min integer DEFAULT (-433),
+    y_accel_max integer DEFAULT 513,
+    y_accel_zero integer DEFAULT 0,
+    z_accel_min integer DEFAULT (-433),
+    z_accel_max integer DEFAULT 513,
+    z_accel_zero integer DEFAULT 0,
+    radius integer DEFAULT 210,
+    pitch_min integer DEFAULT 0,
+    pitch_max integer DEFAULT 180,
+    roll_min integer DEFAULT (-100),
+    roll_max integer DEFAULT 100,
+    name character varying DEFAULT 'Nunchuck'::character varying,
+    created_at timestamp without time zone NOT NULL,
+    updated_at timestamp without time zone NOT NULL,
+    user_id integer,
+    config text
+);
+
+
+ALTER TABLE public.nunchucks OWNER TO durkie;
+
+--
+-- Name: nunchucks_id_seq; Type: SEQUENCE; Schema: public; Owner: durkie
+--
+
+CREATE SEQUENCE nunchucks_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.nunchucks_id_seq OWNER TO durkie;
+
+--
+-- Name: nunchucks_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: durkie
+--
+
+ALTER SEQUENCE nunchucks_id_seq OWNED BY nunchucks.id;
+
+
+--
+-- Name: options; Type: TABLE; Schema: public; Owner: durkie; Tablespace: 
+--
+
+CREATE TABLE options (
+    id integer NOT NULL,
+    sketch_id integer,
+    component_id integer,
+    created_at timestamp without time zone NOT NULL,
+    updated_at timestamp without time zone NOT NULL,
+    component_name character varying,
+    kv text
+);
+
+
+ALTER TABLE public.options OWNER TO durkie;
+
+--
+-- Name: options_id_seq; Type: SEQUENCE; Schema: public; Owner: durkie
+--
+
+CREATE SEQUENCE options_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.options_id_seq OWNER TO durkie;
+
+--
+-- Name: options_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: durkie
+--
+
+ALTER SEQUENCE options_id_seq OWNED BY options.id;
+
+
+--
+-- Name: pattern_options; Type: TABLE; Schema: public; Owner: durkie; Tablespace: 
+--
+
+CREATE TABLE pattern_options (
+    id integer NOT NULL,
+    options character varying,
+    created_at timestamp without time zone NOT NULL,
+    updated_at timestamp without time zone NOT NULL
+);
+
+
+ALTER TABLE public.pattern_options OWNER TO durkie;
+
+--
+-- Name: patterns; Type: TABLE; Schema: public; Owner: durkie; Tablespace: 
+--
+
+CREATE TABLE patterns (
+    id integer NOT NULL,
+    global character varying,
+    setup character varying,
+    loop character varying,
+    motor0 integer,
+    motor1 integer,
+    motor2 integer,
+    "on" integer,
+    off integer,
+    "time" integer,
+    created_at timestamp without time zone NOT NULL,
+    updated_at timestamp without time zone NOT NULL,
+    sketch_id integer,
+    component_id integer
+);
+
+
+ALTER TABLE public.patterns OWNER TO durkie;
+
+--
+-- Name: patterns_id_seq; Type: SEQUENCE; Schema: public; Owner: durkie
+--
+
+CREATE SEQUENCE patterns_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.patterns_id_seq OWNER TO durkie;
+
+--
+-- Name: patterns_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: durkie
+--
+
+ALTER SEQUENCE patterns_id_seq OWNED BY patterns.id;
+
+
+--
+-- Name: schema_migrations; Type: TABLE; Schema: public; Owner: durkie; Tablespace: 
+--
+
+CREATE TABLE schema_migrations (
+    version character varying NOT NULL
+);
+
+
+ALTER TABLE public.schema_migrations OWNER TO durkie;
+
+--
+-- Name: sketch_histories; Type: TABLE; Schema: public; Owner: durkie; Tablespace: 
+--
+
+CREATE TABLE sketch_histories (
+    id integer NOT NULL,
+    toy_id integer,
+    sketch_id integer,
+    created_at timestamp without time zone NOT NULL,
+    updated_at timestamp without time zone NOT NULL
+);
+
+
+ALTER TABLE public.sketch_histories OWNER TO durkie;
+
+--
+-- Name: sketch_histories_id_seq; Type: SEQUENCE; Schema: public; Owner: durkie
+--
+
+CREATE SEQUENCE sketch_histories_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.sketch_histories_id_seq OWNER TO durkie;
+
+--
+-- Name: sketch_histories_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: durkie
+--
+
+ALTER SEQUENCE sketch_histories_id_seq OWNED BY sketch_histories.id;
+
+
+--
+-- Name: sketches; Type: TABLE; Schema: public; Owner: durkie; Tablespace: 
+--
+
+CREATE TABLE sketches (
+    id integer NOT NULL,
+    size integer,
+    build_dir character varying,
+    sha256 character varying,
+    num_users integer,
+    total_uses integer,
+    config character varying,
+    created_at timestamp without time zone NOT NULL,
+    updated_at timestamp without time zone NOT NULL
+);
+
+
+ALTER TABLE public.sketches OWNER TO durkie;
+
+--
+-- Name: sketches_id_seq; Type: SEQUENCE; Schema: public; Owner: durkie
+--
+
+CREATE SEQUENCE sketches_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.sketches_id_seq OWNER TO durkie;
+
+--
+-- Name: sketches_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: durkie
+--
+
+ALTER SEQUENCE sketches_id_seq OWNED BY sketches.id;
+
+
+--
+-- Name: threshold_functions; Type: TABLE; Schema: public; Owner: durkie; Tablespace: 
+--
+
+CREATE TABLE threshold_functions (
+    id integer NOT NULL,
+    source character varying,
+    step_size double precision,
+    base_thresh_low integer,
+    base_thresh_high integer,
+    thresh integer,
+    source_function character varying,
+    increase character varying,
+    c_needed boolean,
+    increase_with_c character varying,
+    z_needed boolean,
+    increase_with_z character varying,
+    decrease character varying,
+    decrease_with_c character varying,
+    decrease_with_z character varying,
+    created_at timestamp without time zone NOT NULL,
+    updated_at timestamp without time zone NOT NULL,
+    nunchuck_id integer
+);
+
+
+ALTER TABLE public.threshold_functions OWNER TO durkie;
+
+--
+-- Name: threshold_functions_id_seq; Type: SEQUENCE; Schema: public; Owner: durkie
+--
+
+CREATE SEQUENCE threshold_functions_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.threshold_functions_id_seq OWNER TO durkie;
+
+--
+-- Name: threshold_functions_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: durkie
+--
+
+ALTER SEQUENCE threshold_functions_id_seq OWNED BY threshold_functions.id;
+
+
+--
+-- Name: toys; Type: TABLE; Schema: public; Owner: durkie; Tablespace: 
+--
+
+CREATE TABLE toys (
+    id integer NOT NULL,
+    user_id integer,
+    sketch_id integer,
+    color character varying,
+    model character varying,
+    created_at timestamp without time zone NOT NULL,
+    updated_at timestamp without time zone NOT NULL,
+    nickname character varying
+);
+
+
+ALTER TABLE public.toys OWNER TO durkie;
+
+--
+-- Name: toys_id_seq; Type: SEQUENCE; Schema: public; Owner: durkie
+--
+
+CREATE SEQUENCE toys_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.toys_id_seq OWNER TO durkie;
+
+--
+-- Name: toys_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: durkie
+--
+
+ALTER SEQUENCE toys_id_seq OWNED BY toys.id;
+
+
+--
+-- Name: users; Type: TABLE; Schema: public; Owner: durkie; Tablespace: 
+--
+
+CREATE TABLE users (
+    id integer NOT NULL,
+    email character varying DEFAULT ''::character varying NOT NULL,
+    encrypted_password character varying DEFAULT ''::character varying NOT NULL,
+    reset_password_token character varying,
+    reset_password_sent_at timestamp without time zone,
+    remember_created_at timestamp without time zone,
+    sign_in_count integer DEFAULT 0 NOT NULL,
+    current_sign_in_at timestamp without time zone,
+    last_sign_in_at timestamp without time zone,
+    current_sign_in_ip character varying,
+    last_sign_in_ip character varying,
+    created_at timestamp without time zone,
+    updated_at timestamp without time zone,
+    address character varying,
+    avatar character varying,
+    username character varying,
+    hashed_authentication_token character varying,
+    token_expires_at timestamp without time zone
+);
+
+
+ALTER TABLE public.users OWNER TO durkie;
+
+--
+-- Name: users_id_seq; Type: SEQUENCE; Schema: public; Owner: durkie
+--
+
+CREATE SEQUENCE users_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.users_id_seq OWNER TO durkie;
+
+--
+-- Name: users_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: durkie
+--
+
+ALTER SEQUENCE users_id_seq OWNED BY users.id;
+
+
+--
+-- Name: variables; Type: TABLE; Schema: public; Owner: durkie; Tablespace: 
+--
+
+CREATE TABLE variables (
+    id integer NOT NULL,
+    name character varying,
+    description character varying,
+    min integer,
+    max integer,
+    created_at timestamp without time zone NOT NULL,
+    updated_at timestamp without time zone NOT NULL
+);
+
+
+ALTER TABLE public.variables OWNER TO durkie;
+
+--
+-- Name: variables_id_seq; Type: SEQUENCE; Schema: public; Owner: durkie
+--
+
+CREATE SEQUENCE variables_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.variables_id_seq OWNER TO durkie;
+
+--
+-- Name: variables_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: durkie
+--
+
+ALTER SEQUENCE variables_id_seq OWNED BY variables.id;
+
+
+--
+-- Name: id; Type: DEFAULT; Schema: public; Owner: durkie
+--
+
+ALTER TABLE ONLY components ALTER COLUMN id SET DEFAULT nextval('components_id_seq'::regclass);
+
+
+--
+-- Name: id; Type: DEFAULT; Schema: public; Owner: durkie
+--
+
+ALTER TABLE ONLY nunchucks ALTER COLUMN id SET DEFAULT nextval('nunchucks_id_seq'::regclass);
+
+
+--
+-- Name: id; Type: DEFAULT; Schema: public; Owner: durkie
+--
+
+ALTER TABLE ONLY options ALTER COLUMN id SET DEFAULT nextval('options_id_seq'::regclass);
+
+
+--
+-- Name: id; Type: DEFAULT; Schema: public; Owner: durkie
+--
+
+ALTER TABLE ONLY patterns ALTER COLUMN id SET DEFAULT nextval('patterns_id_seq'::regclass);
+
+
+--
+-- Name: id; Type: DEFAULT; Schema: public; Owner: durkie
+--
+
+ALTER TABLE ONLY sketch_histories ALTER COLUMN id SET DEFAULT nextval('sketch_histories_id_seq'::regclass);
+
+
+--
+-- Name: id; Type: DEFAULT; Schema: public; Owner: durkie
+--
+
+ALTER TABLE ONLY sketches ALTER COLUMN id SET DEFAULT nextval('sketches_id_seq'::regclass);
+
+
+--
+-- Name: id; Type: DEFAULT; Schema: public; Owner: durkie
+--
+
+ALTER TABLE ONLY threshold_functions ALTER COLUMN id SET DEFAULT nextval('threshold_functions_id_seq'::regclass);
+
+
+--
+-- Name: id; Type: DEFAULT; Schema: public; Owner: durkie
+--
+
+ALTER TABLE ONLY toys ALTER COLUMN id SET DEFAULT nextval('toys_id_seq'::regclass);
+
+
+--
+-- Name: id; Type: DEFAULT; Schema: public; Owner: durkie
+--
+
+ALTER TABLE ONLY users ALTER COLUMN id SET DEFAULT nextval('users_id_seq'::regclass);
+
+
+--
+-- Name: id; Type: DEFAULT; Schema: public; Owner: durkie
+--
+
+ALTER TABLE ONLY variables ALTER COLUMN id SET DEFAULT nextval('variables_id_seq'::regclass);
+
+
+--
+-- Data for Name: components; Type: TABLE DATA; Schema: public; Owner: durkie
+--
+
+COPY components (id, name, category, use_count, global, created_at, updated_at, setup, loop, testride, period, pretty_name, description) FROM stdin;
+3	click	general	\N	// Click handler.\nvoid click() {\n  <%= defined?(click) ? click : cycle_pattern %>\n}\n	2015-03-13 20:34:35.771737	2015-07-09 19:59:08.549435	Toy.attachClick(click);\n		\N	\N		
+4	doubleclick	general	\N	// Double click handler\nvoid doubleClick() {\n  <%= defined?(doubleclick) ? doubleclick : increase_power %>\n}\n	2015-03-13 20:54:23.546587	2015-07-09 19:59:35.35297	Toy.attachDoubleClick(doubleClick);\n		\N	\N		
+5	footer	general	\N		2015-03-13 20:54:49.989728	2015-03-21 16:03:04.008452	}\n	}\n	\N	\N	\N	\N
+6	header	general	\N	#include <OSSex.h>\n#include <RunningAverage.h>\n	2015-03-13 20:55:36.228838	2015-07-14 21:26:39.853402	void setup() {\n\n	void loop() {\n	\N	\N		
+7	model	general	\N		2015-03-13 20:55:57.061817	2015-07-14 21:30:52.67438	Toy.setID(<%= defined?(model) ? model : MOD %>);\n\n		\N	\N		
+8	longpressstart	general	\N	// Click and hold handler.\nvoid longPressStart() {\n  <%= defined?(longpressstart) ? longpressstart : decrease_power %>\n}\n	2015-03-13 20:56:34.849447	2015-07-09 20:10:08.231825	Toy.attachLongPressStart(longPressStart);\n		\N	\N		
+9	power_scale	general	\N		2015-03-13 20:57:09.818321	2015-07-09 20:10:42.80571	Toy.setPowerScaleFactor(<%= defined?(power_scale) ? power_scale : 0.2 %>);\n\n		\N	\N		
+10	serial_console	general	\N		2015-03-13 20:58:55.427248	2015-03-16 19:09:41.28014	// Start the Serial console\nSerial.begin(9600);\n	// Serial console. Read a character in to command[1], and a value in to val\n  char command[1];\n  byte val;\n\n  if (Serial.available() > 0) {\n    Serial.readBytes(command,1);\n    if (command[0] == 'l') { // Set LED power\n      val = Serial.parseInt();\n      Toy.setLED(0,val);\n      Serial.println(val);\n    } else if (command[0] == '0' || command[0] == '1' || command[0] == '2') { // Set power of individual motor\n      val = Serial.parseInt();\n      Toy.setOutput(command[0], val);\n      Serial.println(val);\n    } else if (command[0] == '-') { // Catch '-1', set power of all motors\n      int out = Serial.parseInt();\n      out *= -1;\n      val = Serial.parseInt();\n      Toy.setOutput(out,val);\n    } else if (command[0] == '{') {\n      int motors[3];\n      motors[0] = Serial.parseInt();\n      motors[1] = Serial.parseInt();\n      motors[2] = Serial.parseInt();\n      for (int i = 0; i < 3; i++) {\n        if (motors[i] >= 0) {\n          Toy.setOutput(i, motors[i]);\n        }\n      }\n    } else if (command[0] == 'p') {\n      Serial.println(Toy.decreasePower());\n    } else if (command[0] == 'P') {\n      Serial.println(Toy.increasePower());\n    } else if (command[0] == 't') { // Decrease pattern time, as in everything goes faster\n      Serial.println(Toy.decreaseTime());\n    } else if (command[0] == 'T') {\n      Serial.println(Toy.increaseTime());\n    } else if (command[0] == 'r') { // Run a specific pattern, r,0; r,1; etc.\n      val = Serial.parseInt();\n      Toy.runPattern(val);\n      Serial.println(Toy.getPattern());\n    } else if (command[0] == 'g') {  // Get number of currently running pattern\n      Serial.println(Toy.getPattern());\n    } else if (command[0] == 's') {\n      Toy.stop();\n    } else if (command[0] == 'c') {\n      Toy.cyclePattern();\n      Serial.println(Toy.getPattern());\n    } else if (command[0] == 'i') { // Read input 0 or 1 and print it to serial port\n      int in = Serial.parseInt();\n      in %= Toy.device.inCount;\n      Serial.println(Toy.getInput(in));\n    }\n  }\n	\N	\N	\N	\N
+11	time_scale	general	\N		2015-03-13 20:59:52.765726	2015-07-09 20:20:01.161629	Toy.setTimeScaleFactor(<%= defined?(time_scale) ? time_scale : 0.1 %>);\n		\N	\N		
+12	fade_cos	pattern	\N	int fade_cos(int seq) {\n  Toy.step[0] = Toy.step[1] = Toy.step[2] = round(127 * cos((seq / (8*PI))-PI) + 127);\n  Toy.step[3] = <%= defined?(time) ? time : 50 %>;\n  return 1;\n}\n	2015-03-13 21:18:22.140866	2015-05-06 20:31:54.605513	Toy.addPattern(fade_cos);\n		/home/durkie/backyard/patterns/fade_cos/fade_cos	156	Fade	Fades all motors in and out
+13	fadeoffset	pattern	\N	int fadeOffset(int seq) {\n  // cos sequence takes 158 steps to run. start motor 1 a third of the way in (53 steps), start motor 2 2/3 (106 steps) of the way in.\n  Toy.step[0] = round(127 * cos((seq / (8*PI))-PI) + 127);\n  if (seq >= 58) {\n    Toy.step[1] = round(127 * cos(((seq-58) / (8*PI))-PI) + 127);\n  }\n  if (seq >= 106) {\n    Toy.step[2] = round(127 * cos(((seq-106) / (8*PI))-PI) + 127);\n  }\n  Toy.step[3] = <%= defined?(time) ? time : 50 %>;\n  return 1;\n}\n	2015-03-13 21:18:57.498403	2015-05-06 20:32:10.222724	Toy.addPattern(fadeOffset);\n		/home/durkie/backyard/patterns/fadeoffset/fadeoffset	500	FadeOffset	Fades motor 0, then motor 1, then motor 2
+14	first	pattern	\N	// First motor only\n// Why have a 50ms timing on the step (Toy.step[3]) ? This lets you adjust the power of the pattern,\n// so that instead of running [100, 0, 0, 50] the whole time, it might become [120, 0, 0, 50] after a button click\nint first(int seq) {\n  Toy.step[0] = <%= defined?(motor0) ? motor0 : 100 %>;\n  Toy.step[1] = <%= defined?(motor1) ? motor1 : 0 %>;\n  Toy.step[2] = <%= defined?(motor2) ? motor2 : 0 %>;\n  Toy.step[3] = <%= defined?(time) ? time : 50 %>;\n  return 1;\n}\n	2015-03-13 21:19:23.682548	2015-05-06 20:32:35.218524	Toy.addPattern(first);\n		/home/durkie/backyard/patterns/first/first	5	First	Just the first motor
+15	second	pattern	\N	// Second motor only\nint second(int seq) {\n  Toy.step[0] = <%= defined?(motor0) ? motor0 : 0 %>;\n  Toy.step[1] = <%= defined?(motor1) ? motor1 : 100 %>;\n  Toy.step[2] = <%= defined?(motor2) ? motor2 : 0 %>;\n  Toy.step[3] = <%= defined?(time) ? time : 50 %>;\n  return 1;\n}\n	2015-03-13 21:19:57.062803	2015-05-06 20:33:39.611953	Toy.addPattern(second);\n		/home/durkie/backyard/patterns/second/second	5	Second	Just the second motor
+16	third	pattern	\N	// Third motor only\nint third(int seq) {\n  Toy.step[0] = <%= defined?(motor0) ? motor0 : 0 %>;\n  Toy.step[1] = <%= defined?(motor1) ? motor1 : 0 %>;\n  Toy.step[2] = <%= defined?(motor2) ? motor2 : 100 %>;\n  Toy.step[3] = <%= defined?(time) ? time : 50 %>;\n  return 1;\n}\n	2015-03-13 21:20:24.457457	2015-05-06 20:33:56.615844	Toy.addPattern(third);\n		/home/durkie/backyard/patterns/third/third	5	Third	Just the third / base motor
+17	flicker	pattern	\N	// Turn on all outputs slightly offset from each other.\nint flicker(int seq) {\n  // set all motors initially to -1, ie "leave it alone"\n  Toy.step[0] = Toy.step[1] = Toy.step[2] = -1;\n\n  if (seq > 2) {\n    Toy.step[3] = 200;\n  } else {\n    Toy.step[3] = 20;\n  }\n\n  seq %= 3;\n  Toy.step[seq] = 80;\n\n  return 1;\n}\n	2015-03-13 21:20:55.360369	2015-04-27 19:38:00.133789	Toy.addPattern(flicker);\n		/home/durkie/backyard/patterns/flicker/flicker	200	Flicker	Turns on all motors slightly offset from each other
+18	pulse	pattern	\N	// Randomly blip an output on for a short burst.\nint pulse(int seq) {\n  if (seq % 2) {\n    Toy.step[0] = Toy.step[1] = Toy.step[2] = <%= defined?(off) ? off : 0 %>;\n  } else {\n    Toy.step[random(0,3)] = <%= defined?(on) ? on : 144 %>;\n  }\n\n  Toy.step[3] = <%= defined?(time) ? time : 70 %>;\n  return 1;\n}\n	2015-03-13 21:21:52.488449	2015-05-06 20:34:36.770402	Toy.addPattern(pulse);\n		/home/durkie/backyard/patterns/pulse/pulse	500	Pulse	Randomly turns a motor on for a short burst
+19	pulse2	pattern	\N	// Opposite of pulse() -- turn on all outputs, randomly blip one off\nint pulse2(int seq) {\n  if (seq % 2) {\n    Toy.step[0] = Toy.step[1] = Toy.step[2] = <%= defined?(on) ? on : 100 %>;\n  } else {\n    Toy.step[random(0,3)] = <%= defined?(off) ? off : 0 %>;\n  }\n\n  Toy.step[3] = <%= defined?(time) ? time : 100 %>;\n  return 1;\n}\n	2015-03-13 21:22:56.773175	2015-05-06 20:34:59.352335	Toy.addPattern(pulse2);\n		/home/durkie/backyard/patterns/pulse2/pulse2	500	Reverse Pulse	Turns on all motors, and randomly turns one off for a short burst
+20	sharp_ramp	pattern	\N	int sharp_ramp(int seq) {\n  // neat exponential sequence inspired by github/jgeisler0303\n  const uint8_t fadeTable[32] = {0, 1, 1, 2, 2, 2, 3, 3, 4, 5, 6, 7, 9, 10, 12, 15, 17, 21, 25, 30, 36, 43, 51, 61, 73, 87, 104, 125, 149, 178, 213, 255};\n  seq %= 32;\n  Toy.step[0] = Toy.step[1] = Toy.step[2] = fadeTable[seq];\n  Toy.step[3] = <%= defined?(time) ? time : 12 %> ;\n  return 1;\n}\n	2015-03-13 21:23:49.005886	2015-07-14 19:05:25.281019	Toy.addPattern(sharp_ramp);\n		/home/durkie/backyard/patterns/sharp_ramp/sharp_ramp	32	SharpRamp	Quickly ramps the power up of all motors and repeats
+21	weird2	pattern	\N	int weird2(int seq) {\n  Toy.step[2] = round(127*cos(tan(tan(seq/(8*PI)))-PI/2)+127);\n  Toy.step[3] = <%= defined?(time) ? time : 30 %>;\n  return 1;\n}\n	2015-03-13 21:24:11.026838	2015-05-06 20:35:26.488522	Toy.addPattern(weird2);\n		/home/durkie/backyard/patterns/weird2/weird2	79	Weird 2	Strange repeating wavy pattern
+22	weird3	pattern	\N	int weird3(int seq) {\n  Toy.step[2] = round(50*(cos(seq/(8*PI)+PI/2) + sin(seq/2))+100);\n  Toy.step[3] = <%= defined?(time) ? time : 30 %>;\n  return 1;\n}\n	2015-03-13 21:24:37.133397	2015-05-06 20:35:37.860384	Toy.addPattern(weird3);\n		/home/durkie/backyard/patterns/weird3/weird3	160	Weird 3	Another strange repeating wavy pattern
+23	startup_sequence	general	\N	// Cycle through all the outputs, turn the LED on and leave it on to show that we're on\nvoid startupSequence() {\n  int outs = Toy.device.outCount;\n  int outInterval = 100 / outs;\n\n  Toy.setLED(0,128);\n\n  for (int i = 0; i < outs; i++) {\n    Toy.setOutput(i, 100+outInterval*i);\n    delay(100);\n    Toy.setOutput(i, 0);\n    delay(50);\n  }\n  for (int i = 0; i < 3; i++) {\n    Toy.setLED(0,0);\n    delay(100);\n    Toy.setLED(0,128);\n    delay(100);\n  }\n}\n	2015-03-16 19:37:48.508342	2015-03-16 19:37:48.508342	// Blip all the motors and flash the LED to show that everything is working and the device is on.\nstartupSequence();\n		\N	\N	\N	\N
+24	startup_pattern	general	\N		2015-03-16 19:39:11.173858	2015-04-02 04:14:10.308062	Toy.runPattern(<%= startup_sequence %>);\n		\N	\N		
+25	cycle_pattern	blob	\N	Toy.cyclePattern();\n	2015-03-18 20:08:35.681832	2015-03-21 16:07:27.704149			\N	\N	\N	\N
+26	increase_power	blob	\N	Toy.increasePower();\n	2015-03-18 20:09:00.984136	2015-03-21 16:08:59.411882			\N	\N	\N	\N
+27	decrease_power	blob	\N	Toy.decreasePower();\n	2015-03-18 20:09:20.779282	2015-03-21 16:09:37.503459			\N	\N	\N	\N
+28	increase_time	blob	\N	Toy.increaseTime();\n	2015-03-18 20:09:43.821445	2015-03-18 20:09:43.821445			\N	\N	\N	\N
+29	decrease_time	blob	\N	Toy.decreaseTime();	2015-03-18 20:10:01.807953	2015-03-18 20:10:01.807953			\N	\N	\N	\N
+30	stop	blob	\N	Toy.stop();\n	2015-03-30 22:26:15.250655	2015-03-31 15:13:53.330648			\N	\N	Stop	Stops all patterns
+31	nunchuck_header	general	\N	#include <Wire.h>\n#include <WiiChuck.h>\n\nWiiChuck nunchuck = WiiChuck(c_update, z_update);\n\nbool c_update() {\n  return nunchuck.cPressed();\n}\n\nbool z_update() {\n  return nunchuck.zPressed();\n}\n	2015-04-07 03:37:52.282288	2015-07-14 20:31:11.718008	Toy.setHackerPort(HACKER_PORT_I2C);\nnunchuck.begin();\n	nunchuck.update();\n\n	\N	\N	Wii Nunchuck	Add a nunchuck to your Mod
+32	c_click	nunchuck	\N	void c_click() {\n  <%= c_click ? c_click : stop %>\n}\n	2015-04-07 21:43:48.547495	2015-04-24 02:26:32.7335	nunchuck.attachCClick(c_click);\n		\N	\N	C Button Click	Nunchuck C button click behavior
+33	z_click	nunchuck	\N	void z_click() {\n  <%= z_click ? z_click : cycle_pattern %>\n}\n	2015-04-08 04:11:11.653052	2015-04-24 02:26:49.168405	nunchuck.attachZClick(z_click);\n		\N	\N	Z Click	Control the Nunchuck Z click button
+34	nunchuck_threshold	nunchuck	\N	<% samples = "samples_#{source}" %>\n<% baselines = "baselines_#{source}" %>\n\nRunningAverage <%= samples %>(6);\nRunningAverage <%= baselines %>(6);\n\nvoid check_<%= source %>_threshold() {\n  float step_size = <%= defined?(step_size) ? step_size : 0.03 %>;\n  int base_range_low = <%= defined?(base_thresh_low) ? base_thresh_low : 108 %>;\n  int base_range_high = <%= defined?(base_thresh_high) ? base_thresh_high : 148 %>;\n  int thresh = <%= defined?(thresh) ? thresh : fail %>;\n  int sample = <%= defined?(source_function) ? source_function : fail %>\n  \n  int avg = <%= samples %>.getAverage();\n  int trend;\n\n  <%= samples %>.addValue(sample);\n  // if moving average is roughly near middle point (128), throw it on stack of baseline averages\n  if (base_range_low <= avg && avg <= base_range_high) {\n    <%= baselines %>.addValue(avg);\n  }\n\n  // X behavior\n  trend = sample - <%= baselines %>.getAverage();\n  // Act only if more/less than 10 away from baseline\n  if (trend > <%= thresh %>) {\n    // Run increase function\n    <% if defined?(increase) %>\n      <%= increase %>\n    <% end %>\n    // Run increase with C Pressed\n    if (<%= defined?(c_needed) ? c_needed : false %> && nunchuck.cPressed()) {\n      <%= defined?(increase_with_c) ? increase_with_c : false; %>\n    } \n    // Run increase with Z pressed\n    if (<%= defined?(z_needed) ? z_needed : false %> && nunchuck.zPressed()) {\n      <%= defined?(increase_with_z) ? increase_with_z : false; %>\n    }\n  } else if (trend < -<%= thresh %>) {\n    // Run X decrease function\n    <% if defined?(decrease) %>\n      <%= decrease %>\n    <% end %>\n    // Run decrease function with C Pressed\n    if (<%= defined?(c_needed) ? c_needed : false %> && nunchuck.cPressed()) {\n      <%= defined?(decrease_with_c) ? decrease_with_c : false; %>\n    } \n    // Run X decrease with Z pressed\n    if (<%= defined?(z_needed) ? z_needed : false %> && nunchuck.zPressed()) {\n      <%= defined?(decrease_with_z) ? decrease_with_z : false; %>\n    }\n  }\n}	2015-04-08 17:05:27.276558	2015-07-04 01:29:32.431239	  <%= samples %>.clear();\n  <%= baselines %>.clear();\n	  check_<%= source %>_threshold();\n	\N	\N	Nunchuck Threshold	Moving average threshold compare function for nunchuck
+35	duringlongpress	general	\N	void duringLongPress() {\n  <% if defined?(increase_power) %>\n  Toy.setPowerScaleFactor(Toy.getPowerScaleFactor() + <%= defined?(micro_power_scale) ? micro_power_scale : 0.0005 %>);\n  <% elsif defined?(decrease_power) %>\n  Toy.setPowerScaleFactor(Toy.getPowerScaleFactor() - <%= defined?(micro_power_scale) ? micro_power_scale : 0.0005 %>);\n  <% elsif defined?(increase_time) %>\nToy.setPowerScaleFactor(Toy.getTimeScaleFactor() + <%= defined?(micro_time_scale) ? micro_power_scale : 0.0005 %>);\n <% elsif defined?(decrease_time) %>\nToy.setPowerScaleFactor(Toy.getTimeScaleFactor() - <%= defined?(micro_time_scale) ? micro_power_scale : 0.0005 %>);\n  <% end %>\n}\n	2015-07-20 14:40:52.471009	2015-07-20 16:02:26.799443	Toy.attachDuringLongPress(duringLongPress);\n		\N	\N	During Button Long Press	Action to take while button is being held. It runs continuously as long as the button is held.
+\.
+
+
+--
+-- Name: components_id_seq; Type: SEQUENCE SET; Schema: public; Owner: durkie
+--
+
+SELECT pg_catalog.setval('components_id_seq', 1, false);
+
+
+--
+-- Data for Name: manifests; Type: TABLE DATA; Schema: public; Owner: durkie
+--
+
+COPY manifests (id, sketch_id, component_id, key, value, created_at, updated_at) FROM stdin;
+1	12	\N	hid	false	2015-03-24 18:56:25.349822	2015-03-24 18:56:25.349822
+2	12	8	\N	\N	2015-03-24 18:59:39.258093	2015-03-24 18:59:39.258093
+\.
+
+
+--
+-- Data for Name: nunchucks; Type: TABLE DATA; Schema: public; Owner: durkie
+--
+
+COPY nunchucks (id, x_min, x_max, x_zero, y_min, y_max, y_zero, x_accel_min, x_accel_max, x_accel_zero, y_accel_min, y_accel_max, y_accel_zero, z_accel_min, z_accel_max, z_accel_zero, radius, pitch_min, pitch_max, roll_min, roll_max, name, created_at, updated_at, user_id, config) FROM stdin;
+\.
+
+
+--
+-- Name: nunchucks_id_seq; Type: SEQUENCE SET; Schema: public; Owner: durkie
+--
+
+SELECT pg_catalog.setval('nunchucks_id_seq', 1, false);
+
+
+--
+-- Data for Name: options; Type: TABLE DATA; Schema: public; Owner: durkie
+--
+
+COPY options (id, sketch_id, component_id, created_at, updated_at, component_name, kv) FROM stdin;
+1	12	6	2015-03-24 19:29:24.539662	2015-03-24 19:29:24.539662	\N	\N
+2	12	\N	2015-03-24 19:58:01.021067	2015-03-24 19:58:01.021067	\N	\N
+3	12	\N	2015-03-24 19:58:01.045124	2015-03-24 19:58:01.045124	\N	\N
+4	12	3	2015-03-24 19:58:01.054931	2015-03-24 19:58:01.054931	\N	\N
+5	12	8	2015-03-30 19:56:17.593869	2015-03-30 19:56:17.593869	longpressstart	\N
+6	15	7	2015-03-31 19:19:43.407178	2015-03-31 19:19:43.407178	id	\N
+7	15	3	2015-03-31 19:19:43.414944	2015-03-31 19:19:43.414944	click	\N
+8	15	8	2015-03-31 19:19:43.420144	2015-03-31 19:19:43.420144	longpressstart	\N
+9	15	4	2015-03-31 19:19:43.425867	2015-03-31 19:19:43.425867	doubleclick	\N
+10	15	10	2015-03-31 19:19:43.431906	2015-03-31 19:19:43.431906	serial_console	\N
+11	15	23	2015-03-31 19:19:43.437944	2015-03-31 19:19:43.437944	startup_sequence	\N
+12	15	17	2015-03-31 19:37:25.106882	2015-03-31 19:37:25.106882	flicker	\N
+13	15	13	2015-03-31 19:37:25.112989	2015-03-31 19:37:25.112989	fadeoffset	\N
+14	15	12	2015-03-31 19:37:25.118069	2015-03-31 19:37:25.118069	fade_cos	\N
+15	15	15	2015-03-31 19:37:25.122576	2015-03-31 19:37:25.122576	second	\N
+16	15	16	2015-03-31 19:37:25.126903	2015-03-31 19:37:25.126903	third	\N
+17	15	14	2015-03-31 19:37:25.131394	2015-03-31 19:37:25.131394	first	\N
+18	15	18	2015-03-31 19:37:25.135597	2015-03-31 19:37:25.135597	pulse	\N
+19	15	19	2015-03-31 19:37:25.13955	2015-03-31 19:37:25.13955	pulse2	\N
+20	15	20	2015-03-31 19:37:25.144524	2015-03-31 19:37:25.144524	sharp_ramp	\N
+21	15	21	2015-03-31 19:37:25.149964	2015-03-31 19:37:25.149964	weird2	\N
+22	15	22	2015-03-31 19:37:25.155199	2015-03-31 19:37:25.155199	weird3	\N
+23	\N	20	2015-03-31 20:21:20.469999	2015-03-31 20:21:20.469999	sharp_ramp	\N
+24	\N	19	2015-03-31 20:21:20.482457	2015-03-31 20:21:20.482457	pulse2	\N
+25	\N	14	2015-03-31 20:21:20.490181	2015-03-31 20:21:20.490181	first	\N
+26	\N	15	2015-03-31 20:21:20.495463	2015-03-31 20:21:20.495463	second	\N
+27	\N	16	2015-03-31 20:21:20.501668	2015-03-31 20:21:20.501668	third	\N
+28	\N	12	2015-03-31 20:21:20.508321	2015-03-31 20:21:20.508321	fade_cos	\N
+29	\N	18	2015-03-31 20:21:20.514539	2015-03-31 20:21:20.514539	pulse	\N
+30	\N	13	2015-03-31 20:21:20.524196	2015-03-31 20:21:20.524196	fadeoffset	\N
+31	\N	21	2015-03-31 20:21:20.530261	2015-03-31 20:21:20.530261	weird2	\N
+32	\N	17	2015-03-31 20:21:20.537014	2015-03-31 20:21:20.537014	flicker	\N
+33	\N	22	2015-03-31 20:21:20.54421	2015-03-31 20:21:20.54421	weird3	\N
+34	16	20	2015-03-31 20:22:29.177577	2015-03-31 20:22:29.177577	sharp_ramp	\N
+35	16	19	2015-03-31 20:22:29.18394	2015-03-31 20:22:29.18394	pulse2	\N
+36	16	14	2015-03-31 20:22:29.188679	2015-03-31 20:22:29.188679	first	\N
+37	16	15	2015-03-31 20:22:29.192812	2015-03-31 20:22:29.192812	second	\N
+38	16	16	2015-03-31 20:22:29.19695	2015-03-31 20:22:29.19695	third	\N
+39	16	12	2015-03-31 20:22:29.201639	2015-03-31 20:22:29.201639	fade_cos	\N
+40	16	18	2015-03-31 20:22:29.20618	2015-03-31 20:22:29.20618	pulse	\N
+41	16	13	2015-03-31 20:22:29.210695	2015-03-31 20:22:29.210695	fadeoffset	\N
+42	16	21	2015-03-31 20:22:29.215073	2015-03-31 20:22:29.215073	weird2	\N
+43	16	17	2015-03-31 20:22:29.219162	2015-03-31 20:22:29.219162	flicker	\N
+44	16	22	2015-03-31 20:22:29.224194	2015-03-31 20:22:29.224194	weird3	\N
+\.
+
+
+--
+-- Name: options_id_seq; Type: SEQUENCE SET; Schema: public; Owner: durkie
+--
+
+SELECT pg_catalog.setval('options_id_seq', 1, false);
+
+
+--
+-- Data for Name: pattern_options; Type: TABLE DATA; Schema: public; Owner: durkie
+--
+
+COPY pattern_options (id, options, created_at, updated_at) FROM stdin;
+\.
+
+
+--
+-- Data for Name: patterns; Type: TABLE DATA; Schema: public; Owner: durkie
+--
+
+COPY patterns (id, global, setup, loop, motor0, motor1, motor2, "on", off, "time", created_at, updated_at, sketch_id, component_id) FROM stdin;
+43	\N	\N	\N	\N	\N	\N	\N	\N	\N	2015-04-01 15:58:05.508558	2015-04-01 15:58:05.508558	19	20
+44	\N	\N	\N	\N	\N	\N	\N	\N	\N	2015-04-01 15:58:05.514467	2015-04-01 15:58:05.514467	19	21
+45	\N	\N	\N	\N	\N	\N	\N	\N	\N	2015-04-01 15:58:05.520891	2015-04-01 15:58:05.520891	19	22
+1	\N	\N	\N	\N	\N	\N	\N	\N	\N	2015-04-01 15:45:35.976255	2015-04-01 15:45:35.976255	19	12
+2	\N	\N	\N	\N	\N	\N	\N	\N	\N	2015-04-01 15:53:16.604378	2015-04-01 15:53:16.604378	19	12
+3	\N	\N	\N	\N	\N	\N	\N	\N	\N	2015-04-01 15:53:16.678873	2015-04-01 15:53:16.678873	19	13
+4	\N	\N	\N	\N	\N	\N	\N	\N	\N	2015-04-01 15:53:16.707413	2015-04-01 15:53:16.707413	19	14
+5	\N	\N	\N	\N	\N	\N	\N	\N	\N	2015-04-01 15:53:16.730012	2015-04-01 15:53:16.730012	19	15
+6	\N	\N	\N	\N	\N	\N	\N	\N	\N	2015-04-01 15:53:16.749173	2015-04-01 15:53:16.749173	19	16
+7	\N	\N	\N	\N	\N	\N	\N	\N	\N	2015-04-01 15:53:16.766718	2015-04-01 15:53:16.766718	19	17
+8	\N	\N	\N	\N	\N	\N	\N	\N	\N	2015-04-01 15:53:16.78263	2015-04-01 15:53:16.78263	19	18
+9	\N	\N	\N	\N	\N	\N	\N	\N	\N	2015-04-01 15:53:16.799867	2015-04-01 15:53:16.799867	19	19
+10	\N	\N	\N	\N	\N	\N	\N	\N	\N	2015-04-01 15:53:16.814922	2015-04-01 15:53:16.814922	19	20
+11	\N	\N	\N	\N	\N	\N	\N	\N	\N	2015-04-01 15:53:16.829955	2015-04-01 15:53:16.829955	19	21
+12	\N	\N	\N	\N	\N	\N	\N	\N	\N	2015-04-01 15:53:16.845758	2015-04-01 15:53:16.845758	19	22
+13	\N	\N	\N	\N	\N	\N	\N	\N	\N	2015-04-01 15:56:33.465714	2015-04-01 15:56:33.465714	19	12
+14	\N	\N	\N	\N	\N	\N	\N	\N	\N	2015-04-01 15:56:33.476416	2015-04-01 15:56:33.476416	19	13
+15	\N	\N	\N	\N	\N	\N	\N	\N	\N	2015-04-01 15:56:33.499235	2015-04-01 15:56:33.499235	19	14
+16	\N	\N	\N	\N	\N	\N	\N	\N	\N	2015-04-01 15:56:33.505793	2015-04-01 15:56:33.505793	19	15
+17	\N	\N	\N	\N	\N	\N	\N	\N	\N	2015-04-01 15:56:33.512279	2015-04-01 15:56:33.512279	19	16
+18	\N	\N	\N	\N	\N	\N	\N	\N	\N	2015-04-01 15:56:33.518123	2015-04-01 15:56:33.518123	19	17
+19	\N	\N	\N	\N	\N	\N	\N	\N	\N	2015-04-01 15:56:33.524835	2015-04-01 15:56:33.524835	19	18
+20	\N	\N	\N	\N	\N	\N	\N	\N	\N	2015-04-01 15:56:33.531741	2015-04-01 15:56:33.531741	19	19
+21	\N	\N	\N	\N	\N	\N	\N	\N	\N	2015-04-01 15:56:33.537676	2015-04-01 15:56:33.537676	19	20
+22	\N	\N	\N	\N	\N	\N	\N	\N	\N	2015-04-01 15:56:33.543377	2015-04-01 15:56:33.543377	19	21
+23	\N	\N	\N	\N	\N	\N	\N	\N	\N	2015-04-01 15:56:33.54922	2015-04-01 15:56:33.54922	19	22
+24	\N	\N	\N	\N	\N	\N	\N	\N	\N	2015-04-01 15:57:12.8974	2015-04-01 15:57:12.8974	19	12
+25	\N	\N	\N	\N	\N	\N	\N	\N	\N	2015-04-01 15:57:12.905622	2015-04-01 15:57:12.905622	19	13
+26	\N	\N	\N	\N	\N	\N	\N	\N	\N	2015-04-01 15:57:12.998851	2015-04-01 15:57:12.998851	19	14
+27	\N	\N	\N	\N	\N	\N	\N	\N	\N	2015-04-01 15:57:13.008577	2015-04-01 15:57:13.008577	19	15
+28	\N	\N	\N	\N	\N	\N	\N	\N	\N	2015-04-01 15:57:13.018065	2015-04-01 15:57:13.018065	19	16
+29	\N	\N	\N	\N	\N	\N	\N	\N	\N	2015-04-01 15:57:13.025923	2015-04-01 15:57:13.025923	19	17
+30	\N	\N	\N	\N	\N	\N	\N	\N	\N	2015-04-01 15:57:13.033088	2015-04-01 15:57:13.033088	19	18
+31	\N	\N	\N	\N	\N	\N	\N	\N	\N	2015-04-01 15:57:13.0398	2015-04-01 15:57:13.0398	19	19
+32	\N	\N	\N	\N	\N	\N	\N	\N	\N	2015-04-01 15:57:13.047231	2015-04-01 15:57:13.047231	19	20
+33	\N	\N	\N	\N	\N	\N	\N	\N	\N	2015-04-01 15:57:13.054131	2015-04-01 15:57:13.054131	19	21
+34	\N	\N	\N	\N	\N	\N	\N	\N	\N	2015-04-01 15:57:13.060932	2015-04-01 15:57:13.060932	19	22
+35	\N	\N	\N	\N	\N	\N	\N	\N	50	2015-04-01 15:58:05.443818	2015-04-01 15:58:05.443818	19	12
+36	\N	\N	\N	\N	\N	\N	\N	\N	\N	2015-04-01 15:58:05.454049	2015-04-01 15:58:05.454049	19	13
+37	\N	\N	\N	200	\N	\N	\N	\N	\N	2015-04-01 15:58:05.462236	2015-04-01 15:58:05.462236	19	14
+38	\N	\N	\N	\N	\N	\N	\N	\N	\N	2015-04-01 15:58:05.471095	2015-04-01 15:58:05.471095	19	15
+39	\N	\N	\N	\N	\N	\N	\N	\N	\N	2015-04-01 15:58:05.479539	2015-04-01 15:58:05.479539	19	16
+40	\N	\N	\N	\N	\N	\N	\N	\N	\N	2015-04-01 15:58:05.488069	2015-04-01 15:58:05.488069	19	17
+41	\N	\N	\N	\N	\N	\N	\N	\N	\N	2015-04-01 15:58:05.496073	2015-04-01 15:58:05.496073	19	18
+42	\N	\N	\N	\N	\N	\N	\N	\N	\N	2015-04-01 15:58:05.502473	2015-04-01 15:58:05.502473	19	19
+46	int fade_cos(int seq) {\n  Toy.step[0] = Toy.step[1] = Toy.step[2] = round(127 * cos((seq / (8*PI))-PI) + 127);\n  Toy.step[3] = 50;\n  return 1;\n}\n	Toy.addPattern(fade_cos);\n		\N	\N	\N	\N	\N	50	2015-04-01 16:12:03.931189	2015-04-01 16:12:03.931189	19	12
+47	int fadeOffset(int seq) {\n  // cos sequence takes 158 steps to run. start motor 1 a third of the way in (53 steps), start motor 2 2/3 (106 steps) of the way in.\n  Toy.step[0] = round(127 * cos((seq / (8*PI))-PI) + 127);\n  if (seq >= 58) {\n    Toy.step[1] = round(127 * cos(((seq-58) / (8*PI))-PI) + 127);\n  }\n  if (seq >= 106) {\n    Toy.step[2] = round(127 * cos(((seq-106) / (8*PI))-PI) + 127);\n  }\n  Toy.step[3] = 50;\n  return 1;\n}\n	Toy.addPattern(fadeOffset);\n		\N	\N	\N	\N	\N	\N	2015-04-01 16:12:03.939994	2015-04-01 16:12:03.939994	19	13
+48	// First motor only\n// Why have a 50ms timing on the step (Toy.step[3]) ? This lets you adjust the power of the pattern,\n// so that instead of running [100, 0, 0, 50] the whole time, it might become [120, 0, 0, 50] after a button click\nint first(int seq) {\n  Toy.step[0] = 200;\n  Toy.step[1] = 0;\n  Toy.step[2] = 0;\n  Toy.step[3] = 50;\n  return 1;\n}\n	Toy.addPattern(first);\n		200	\N	\N	\N	\N	\N	2015-04-01 16:12:03.947507	2015-04-01 16:12:03.947507	19	14
+49	// Second motor only\nint second(int seq) {\n  Toy.step[0] = 0;\n  Toy.step[1] = 100;\n  Toy.step[2] = 0;\n  Toy.step[3] = 50;\n  return 1;\n}\n	Toy.addPattern(second);\n		\N	\N	\N	\N	\N	\N	2015-04-01 16:12:03.956393	2015-04-01 16:12:03.956393	19	15
+50	// Third motor only\nint third(int seq) {\n  Toy.step[0] = 0;\n  Toy.step[1] = 0;\n  Toy.step[2] = 100;\n  Toy.step[3] = 50;\n  return 1;\n}\n	Toy.addPattern(third);\n		\N	\N	\N	\N	\N	\N	2015-04-01 16:12:03.963723	2015-04-01 16:12:03.963723	19	16
+51	// Turn on all outputs slightly offset from each other.\nint flicker(int seq) {\n  // set all motors initally to -1, ie "leave it alone"\n  Toy.step[0] = Toy.step[1] = Toy.step[2] = -1;\n\n  if (seq > 2) {\n    Toy.step[3] = 200;\n  } else {\n    Toy.step[3] = 20;\n  }\n\n  seq %= 3;\n  Toy.step[seq] = 80;\n\n  return 1;\n}\n	Toy.addPattern(flicker);\n		\N	\N	\N	\N	\N	\N	2015-04-01 16:12:03.970329	2015-04-01 16:12:03.970329	19	17
+52	// Randomly blip an output on for a short burst.\nint pulse(int seq) {\n  if (seq % 2) {\n    Toy.step[0] = Toy.step[1] = Toy.step[2] = 0;\n  } else {\n    Toy.step[random(0,3)] = 144;\n  }\n\n  Toy.step[3] = 70;\n  return 1;\n}\n	Toy.addPattern(pulse);\n		\N	\N	\N	\N	\N	\N	2015-04-01 16:12:04.035542	2015-04-01 16:12:04.035542	19	18
+53	// Opposite of pulse() -- turn on all outputs, randomly blip one off\nint pulse2(int seq) {\n  if (seq % 2) {\n    Toy.step[0] = Toy.step[1] = Toy.step[2] = 100;\n  } else {\n    Toy.step[random(0,3)] = 0;\n  }\n\n  Toy.step[3] = 100;\n  return 1;\n}\n	Toy.addPattern(pulse2);\n		\N	\N	\N	\N	\N	\N	2015-04-01 16:12:04.04337	2015-04-01 16:12:04.04337	19	19
+54	int sharp_ramp(int seq) {\n  // neat exponential sequence inspired by github/jgeisler0303\n  const uint8_t fadeTable[32] = {0, 1, 1, 2, 2, 2, 3, 3, 4, 5, 6, 7, 9, 10, 12, 15, 17, 21, 25, 30, 36, 43, 51, 61, 73, 87, 104, 125, 149, 178, 213, 255};\n  seq %= 32;\n  Toy.step[0] = Toy.step[1] = Toy.step[2] = fadeTable[seq];\n  Toy.step[3] = 12 ;\n}\n	Toy.addPattern(sharp_ramp);		\N	\N	\N	\N	\N	\N	2015-04-01 16:12:04.056882	2015-04-01 16:12:04.056882	19	20
+55	int weird2(int seq) {\n  Toy.step[2] = round(127*cos(tan(tan(seq/(8*PI)))-PI/2)+127);\n  Toy.step[3] = 30;\n  return 1;\n}\n	Toy.addPattern(weird2);\n		\N	\N	\N	\N	\N	\N	2015-04-01 16:12:04.064156	2015-04-01 16:12:04.064156	19	21
+56	int weird3(int seq) {\n  Toy.step[2] = round(50*(cos(seq/(8*PI)+PI/2) + sin(seq/2))+100);\n  Toy.step[3] = 30;\n  return 1;\n}\n	Toy.addPattern(weird3);\n		\N	\N	\N	\N	\N	\N	2015-04-01 16:12:04.07202	2015-04-01 16:12:04.07202	19	22
+57	int fade_cos(int seq) {\n  Toy.step[0] = Toy.step[1] = Toy.step[2] = round(127 * cos((seq / (8*PI))-PI) + 127);\n  Toy.step[3] = 50;\n  return 1;\n}\n	Toy.addPattern(fade_cos);\n		\N	\N	\N	\N	\N	\N	2015-04-01 16:30:17.937506	2015-04-01 16:30:17.937506	21	12
+58	int fadeOffset(int seq) {\n  // cos sequence takes 158 steps to run. start motor 1 a third of the way in (53 steps), start motor 2 2/3 (106 steps) of the way in.\n  Toy.step[0] = round(127 * cos((seq / (8*PI))-PI) + 127);\n  if (seq >= 58) {\n    Toy.step[1] = round(127 * cos(((seq-58) / (8*PI))-PI) + 127);\n  }\n  if (seq >= 106) {\n    Toy.step[2] = round(127 * cos(((seq-106) / (8*PI))-PI) + 127);\n  }\n  Toy.step[3] = 50;\n  return 1;\n}\n	Toy.addPattern(fadeOffset);\n		\N	\N	\N	\N	\N	\N	2015-04-01 16:30:17.943425	2015-04-01 16:30:17.943425	21	13
+59	// First motor only\n// Why have a 50ms timing on the step (Toy.step[3]) ? This lets you adjust the power of the pattern,\n// so that instead of running [100, 0, 0, 50] the whole time, it might become [120, 0, 0, 50] after a button click\nint first(int seq) {\n  Toy.step[0] = 100;\n  Toy.step[1] = 0;\n  Toy.step[2] = 0;\n  Toy.step[3] = 50;\n  return 1;\n}\n	Toy.addPattern(first);\n		\N	\N	\N	\N	\N	\N	2015-04-01 16:30:17.948537	2015-04-01 16:30:17.948537	21	14
+60	// Second motor only\nint second(int seq) {\n  Toy.step[0] = 0;\n  Toy.step[1] = 100;\n  Toy.step[2] = 0;\n  Toy.step[3] = 50;\n  return 1;\n}\n	Toy.addPattern(second);\n		\N	\N	\N	\N	\N	\N	2015-04-01 16:30:17.95357	2015-04-01 16:30:17.95357	21	15
+61	// Third motor only\nint third(int seq) {\n  Toy.step[0] = 0;\n  Toy.step[1] = 0;\n  Toy.step[2] = 100;\n  Toy.step[3] = 50;\n  return 1;\n}\n	Toy.addPattern(third);\n		\N	\N	\N	\N	\N	\N	2015-04-01 16:30:17.958603	2015-04-01 16:30:17.958603	21	16
+62	// Turn on all outputs slightly offset from each other.\nint flicker(int seq) {\n  // set all motors initally to -1, ie "leave it alone"\n  Toy.step[0] = Toy.step[1] = Toy.step[2] = -1;\n\n  if (seq > 2) {\n    Toy.step[3] = 200;\n  } else {\n    Toy.step[3] = 20;\n  }\n\n  seq %= 3;\n  Toy.step[seq] = 80;\n\n  return 1;\n}\n	Toy.addPattern(flicker);\n		\N	\N	\N	\N	\N	\N	2015-04-01 16:30:17.963813	2015-04-01 16:30:17.963813	21	17
+63	// Randomly blip an output on for a short burst.\nint pulse(int seq) {\n  if (seq % 2) {\n    Toy.step[0] = Toy.step[1] = Toy.step[2] = 0;\n  } else {\n    Toy.step[random(0,3)] = 144;\n  }\n\n  Toy.step[3] = 70;\n  return 1;\n}\n	Toy.addPattern(pulse);\n		\N	\N	\N	\N	\N	\N	2015-04-01 16:30:17.968702	2015-04-01 16:30:17.968702	21	18
+64	// Opposite of pulse() -- turn on all outputs, randomly blip one off\nint pulse2(int seq) {\n  if (seq % 2) {\n    Toy.step[0] = Toy.step[1] = Toy.step[2] = 100;\n  } else {\n    Toy.step[random(0,3)] = 0;\n  }\n\n  Toy.step[3] = 100;\n  return 1;\n}\n	Toy.addPattern(pulse2);\n		\N	\N	\N	\N	\N	\N	2015-04-01 16:30:17.973527	2015-04-01 16:30:17.973527	21	19
+65	int sharp_ramp(int seq) {\n  // neat exponential sequence inspired by github/jgeisler0303\n  const uint8_t fadeTable[32] = {0, 1, 1, 2, 2, 2, 3, 3, 4, 5, 6, 7, 9, 10, 12, 15, 17, 21, 25, 30, 36, 43, 51, 61, 73, 87, 104, 125, 149, 178, 213, 255};\n  seq %= 32;\n  Toy.step[0] = Toy.step[1] = Toy.step[2] = fadeTable[seq];\n  Toy.step[3] = 12 ;\n}\n	Toy.addPattern(sharp_ramp);		\N	\N	\N	\N	\N	\N	2015-04-01 16:30:17.978291	2015-04-01 16:30:17.978291	21	20
+66	int weird2(int seq) {\n  Toy.step[2] = round(127*cos(tan(tan(seq/(8*PI)))-PI/2)+127);\n  Toy.step[3] = 30;\n  return 1;\n}\n	Toy.addPattern(weird2);\n		\N	\N	\N	\N	\N	\N	2015-04-01 16:30:17.983192	2015-04-01 16:30:17.983192	21	21
+67	int weird3(int seq) {\n  Toy.step[2] = round(50*(cos(seq/(8*PI)+PI/2) + sin(seq/2))+100);\n  Toy.step[3] = 30;\n  return 1;\n}\n	Toy.addPattern(weird3);\n		\N	\N	\N	\N	\N	\N	2015-04-01 16:30:17.987821	2015-04-01 16:30:17.987821	21	22
+112	int sharp_ramp(int seq) {\n  // neat exponential sequence inspired by github/jgeisler0303\n  const uint8_t fadeTable[32] = {0, 1, 1, 2, 2, 2, 3, 3, 4, 5, 6, 7, 9, 10, 12, 15, 17, 21, 25, 30, 36, 43, 51, 61, 73, 87, 104, 125, 149, 178, 213, 255};\n  seq %= 32;\n  Toy.step[0] = Toy.step[1] = Toy.step[2] = fadeTable[seq];\n  Toy.step[3] = 12 ;\n}\n	Toy.addPattern(sharp_ramp);		\N	\N	\N	\N	\N	\N	2015-04-02 14:23:06.529824	2015-04-02 14:23:06.529824	20	20
+219	// Second motor only\nint second(int seq) {\n  Toy.step[0] = 0;\n  Toy.step[1] = 100;\n  Toy.step[2] = 0;\n  Toy.step[3] = 50;\n  return 1;\n}\n	Toy.addPattern(second);\n		\N	\N	\N	\N	\N	\N	2015-04-02 17:33:22.288721	2015-04-02 17:33:22.288721	25	15
+113	int fadeOffset(int seq) {\n  // cos sequence takes 158 steps to run. start motor 1 a third of the way in (53 steps), start motor 2 2/3 (106 steps) of the way in.\n  Toy.step[0] = round(127 * cos((seq / (8*PI))-PI) + 127);\n  if (seq >= 58) {\n    Toy.step[1] = round(127 * cos(((seq-58) / (8*PI))-PI) + 127);\n  }\n  if (seq >= 106) {\n    Toy.step[2] = round(127 * cos(((seq-106) / (8*PI))-PI) + 127);\n  }\n  Toy.step[3] = 50;\n  return 1;\n}\n	Toy.addPattern(fadeOffset);\n		\N	\N	\N	\N	\N	\N	2015-04-02 14:23:06.538451	2015-04-02 14:23:06.538451	20	13
+114	// First motor only\n// Why have a 50ms timing on the step (Toy.step[3]) ? This lets you adjust the power of the pattern,\n// so that instead of running [100, 0, 0, 50] the whole time, it might become [120, 0, 0, 50] after a button click\nint first(int seq) {\n  Toy.step[0] = 100;\n  Toy.step[1] = 0;\n  Toy.step[2] = 0;\n  Toy.step[3] = 50;\n  return 1;\n}\n	Toy.addPattern(first);\n		\N	\N	\N	\N	\N	\N	2015-04-02 14:23:06.547609	2015-04-02 14:23:06.547609	20	14
+115	// Second motor only\nint second(int seq) {\n  Toy.step[0] = 0;\n  Toy.step[1] = 100;\n  Toy.step[2] = 0;\n  Toy.step[3] = 50;\n  return 1;\n}\n	Toy.addPattern(second);\n		\N	\N	\N	\N	\N	\N	2015-04-02 14:23:06.554138	2015-04-02 14:23:06.554138	20	15
+116	// Third motor only\nint third(int seq) {\n  Toy.step[0] = 0;\n  Toy.step[1] = 0;\n  Toy.step[2] = 100;\n  Toy.step[3] = 50;\n  return 1;\n}\n	Toy.addPattern(third);\n		\N	\N	\N	\N	\N	\N	2015-04-02 14:23:06.561426	2015-04-02 14:23:06.561426	20	16
+117	// Turn on all outputs slightly offset from each other.\nint flicker(int seq) {\n  // set all motors initally to -1, ie "leave it alone"\n  Toy.step[0] = Toy.step[1] = Toy.step[2] = -1;\n\n  if (seq > 2) {\n    Toy.step[3] = 200;\n  } else {\n    Toy.step[3] = 20;\n  }\n\n  seq %= 3;\n  Toy.step[seq] = 80;\n\n  return 1;\n}\n	Toy.addPattern(flicker);\n		\N	\N	\N	\N	\N	\N	2015-04-02 14:23:06.567958	2015-04-02 14:23:06.567958	20	17
+118	// Randomly blip an output on for a short burst.\nint pulse(int seq) {\n  if (seq % 2) {\n    Toy.step[0] = Toy.step[1] = Toy.step[2] = 0;\n  } else {\n    Toy.step[random(0,3)] = 144;\n  }\n\n  Toy.step[3] = 70;\n  return 1;\n}\n	Toy.addPattern(pulse);\n		\N	\N	\N	\N	\N	\N	2015-04-02 14:23:06.574627	2015-04-02 14:23:06.574627	20	18
+119	// Opposite of pulse() -- turn on all outputs, randomly blip one off\nint pulse2(int seq) {\n  if (seq % 2) {\n    Toy.step[0] = Toy.step[1] = Toy.step[2] = 100;\n  } else {\n    Toy.step[random(0,3)] = 0;\n  }\n\n  Toy.step[3] = 100;\n  return 1;\n}\n	Toy.addPattern(pulse2);\n		\N	\N	\N	\N	\N	\N	2015-04-02 14:23:06.581209	2015-04-02 14:23:06.581209	20	19
+120	int fade_cos(int seq) {\n  Toy.step[0] = Toy.step[1] = Toy.step[2] = round(127 * cos((seq / (8*PI))-PI) + 127);\n  Toy.step[3] = 50;\n  return 1;\n}\n	Toy.addPattern(fade_cos);\n		\N	\N	\N	\N	\N	\N	2015-04-02 14:23:06.587636	2015-04-02 14:23:06.587636	20	12
+121	int weird2(int seq) {\n  Toy.step[2] = round(127*cos(tan(tan(seq/(8*PI)))-PI/2)+127);\n  Toy.step[3] = 30;\n  return 1;\n}\n	Toy.addPattern(weird2);\n		\N	\N	\N	\N	\N	\N	2015-04-02 14:23:06.593684	2015-04-02 14:23:06.593684	20	21
+122	int weird3(int seq) {\n  Toy.step[2] = round(50*(cos(seq/(8*PI)+PI/2) + sin(seq/2))+100);\n  Toy.step[3] = 30;\n  return 1;\n}\n	Toy.addPattern(weird3);\n		\N	\N	\N	\N	\N	\N	2015-04-02 14:23:06.600356	2015-04-02 14:23:06.600356	20	22
+205	int fade_cos(int seq) {\n  Toy.step[0] = Toy.step[1] = Toy.step[2] = round(127 * cos((seq / (8*PI))-PI) + 127);\n  Toy.step[3] = 50;\n  return 1;\n}\n	Toy.addPattern(fade_cos);\n		\N	\N	\N	\N	\N	\N	2015-04-02 17:31:14.822559	2015-04-02 17:31:14.822559	24	12
+206	int fadeOffset(int seq) {\n  // cos sequence takes 158 steps to run. start motor 1 a third of the way in (53 steps), start motor 2 2/3 (106 steps) of the way in.\n  Toy.step[0] = round(127 * cos((seq / (8*PI))-PI) + 127);\n  if (seq >= 58) {\n    Toy.step[1] = round(127 * cos(((seq-58) / (8*PI))-PI) + 127);\n  }\n  if (seq >= 106) {\n    Toy.step[2] = round(127 * cos(((seq-106) / (8*PI))-PI) + 127);\n  }\n  Toy.step[3] = 50;\n  return 1;\n}\n	Toy.addPattern(fadeOffset);\n		\N	\N	\N	\N	\N	\N	2015-04-02 17:31:14.833447	2015-04-02 17:31:14.833447	24	13
+207	// First motor only\n// Why have a 50ms timing on the step (Toy.step[3]) ? This lets you adjust the power of the pattern,\n// so that instead of running [100, 0, 0, 50] the whole time, it might become [120, 0, 0, 50] after a button click\nint first(int seq) {\n  Toy.step[0] = 100;\n  Toy.step[1] = 0;\n  Toy.step[2] = 0;\n  Toy.step[3] = 50;\n  return 1;\n}\n	Toy.addPattern(first);\n		\N	\N	\N	\N	\N	\N	2015-04-02 17:31:14.840466	2015-04-02 17:31:14.840466	24	14
+208	// Second motor only\nint second(int seq) {\n  Toy.step[0] = 0;\n  Toy.step[1] = 100;\n  Toy.step[2] = 0;\n  Toy.step[3] = 50;\n  return 1;\n}\n	Toy.addPattern(second);\n		\N	\N	\N	\N	\N	\N	2015-04-02 17:31:14.899437	2015-04-02 17:31:14.899437	24	15
+209	// Third motor only\nint third(int seq) {\n  Toy.step[0] = 0;\n  Toy.step[1] = 0;\n  Toy.step[2] = 100;\n  Toy.step[3] = 50;\n  return 1;\n}\n	Toy.addPattern(third);\n		\N	\N	\N	\N	\N	\N	2015-04-02 17:31:14.908499	2015-04-02 17:31:14.908499	24	16
+210	// Turn on all outputs slightly offset from each other.\nint flicker(int seq) {\n  // set all motors initally to -1, ie "leave it alone"\n  Toy.step[0] = Toy.step[1] = Toy.step[2] = -1;\n\n  if (seq > 2) {\n    Toy.step[3] = 200;\n  } else {\n    Toy.step[3] = 20;\n  }\n\n  seq %= 3;\n  Toy.step[seq] = 80;\n\n  return 1;\n}\n	Toy.addPattern(flicker);\n		\N	\N	\N	\N	\N	\N	2015-04-02 17:31:14.916562	2015-04-02 17:31:14.916562	24	17
+211	// Randomly blip an output on for a short burst.\nint pulse(int seq) {\n  if (seq % 2) {\n    Toy.step[0] = Toy.step[1] = Toy.step[2] = 0;\n  } else {\n    Toy.step[random(0,3)] = 144;\n  }\n\n  Toy.step[3] = 70;\n  return 1;\n}\n	Toy.addPattern(pulse);\n		\N	\N	\N	\N	\N	\N	2015-04-02 17:31:14.92355	2015-04-02 17:31:14.92355	24	18
+212	// Opposite of pulse() -- turn on all outputs, randomly blip one off\nint pulse2(int seq) {\n  if (seq % 2) {\n    Toy.step[0] = Toy.step[1] = Toy.step[2] = 100;\n  } else {\n    Toy.step[random(0,3)] = 0;\n  }\n\n  Toy.step[3] = 100;\n  return 1;\n}\n	Toy.addPattern(pulse2);\n		\N	\N	\N	\N	\N	\N	2015-04-02 17:31:14.93059	2015-04-02 17:31:14.93059	24	19
+213	int sharp_ramp(int seq) {\n  // neat exponential sequence inspired by github/jgeisler0303\n  const uint8_t fadeTable[32] = {0, 1, 1, 2, 2, 2, 3, 3, 4, 5, 6, 7, 9, 10, 12, 15, 17, 21, 25, 30, 36, 43, 51, 61, 73, 87, 104, 125, 149, 178, 213, 255};\n  seq %= 32;\n  Toy.step[0] = Toy.step[1] = Toy.step[2] = fadeTable[seq];\n  Toy.step[3] = 12 ;\n}\n	Toy.addPattern(sharp_ramp);		\N	\N	\N	\N	\N	\N	2015-04-02 17:31:14.938628	2015-04-02 17:31:14.938628	24	20
+214	int weird2(int seq) {\n  Toy.step[2] = round(127*cos(tan(tan(seq/(8*PI)))-PI/2)+127);\n  Toy.step[3] = 30;\n  return 1;\n}\n	Toy.addPattern(weird2);\n		\N	\N	\N	\N	\N	\N	2015-04-02 17:31:14.94433	2015-04-02 17:31:14.94433	24	21
+215	int weird3(int seq) {\n  Toy.step[2] = round(50*(cos(seq/(8*PI)+PI/2) + sin(seq/2))+100);\n  Toy.step[3] = 30;\n  return 1;\n}\n	Toy.addPattern(weird3);\n		\N	\N	\N	\N	\N	\N	2015-04-02 17:31:14.94969	2015-04-02 17:31:14.94969	24	22
+216	int fade_cos(int seq) {\n  Toy.step[0] = Toy.step[1] = Toy.step[2] = round(127 * cos((seq / (8*PI))-PI) + 127);\n  Toy.step[3] = 50;\n  return 1;\n}\n	Toy.addPattern(fade_cos);\n		\N	\N	\N	\N	\N	\N	2015-04-02 17:33:22.283189	2015-04-02 17:33:22.283189	25	12
+217	int fadeOffset(int seq) {\n  // cos sequence takes 158 steps to run. start motor 1 a third of the way in (53 steps), start motor 2 2/3 (106 steps) of the way in.\n  Toy.step[0] = round(127 * cos((seq / (8*PI))-PI) + 127);\n  if (seq >= 58) {\n    Toy.step[1] = round(127 * cos(((seq-58) / (8*PI))-PI) + 127);\n  }\n  if (seq >= 106) {\n    Toy.step[2] = round(127 * cos(((seq-106) / (8*PI))-PI) + 127);\n  }\n  Toy.step[3] = 50;\n  return 1;\n}\n	Toy.addPattern(fadeOffset);\n		\N	\N	\N	\N	\N	\N	2015-04-02 17:33:22.285195	2015-04-02 17:33:22.285195	25	13
+218	// First motor only\n// Why have a 50ms timing on the step (Toy.step[3]) ? This lets you adjust the power of the pattern,\n// so that instead of running [100, 0, 0, 50] the whole time, it might become [120, 0, 0, 50] after a button click\nint first(int seq) {\n  Toy.step[0] = 100;\n  Toy.step[1] = 0;\n  Toy.step[2] = 0;\n  Toy.step[3] = 50;\n  return 1;\n}\n	Toy.addPattern(first);\n		\N	\N	\N	\N	\N	\N	2015-04-02 17:33:22.286861	2015-04-02 17:33:22.286861	25	14
+220	// Third motor only\nint third(int seq) {\n  Toy.step[0] = 0;\n  Toy.step[1] = 0;\n  Toy.step[2] = 100;\n  Toy.step[3] = 50;\n  return 1;\n}\n	Toy.addPattern(third);\n		\N	\N	\N	\N	\N	\N	2015-04-02 17:33:22.290484	2015-04-02 17:33:22.290484	25	16
+221	// Turn on all outputs slightly offset from each other.\nint flicker(int seq) {\n  // set all motors initally to -1, ie "leave it alone"\n  Toy.step[0] = Toy.step[1] = Toy.step[2] = -1;\n\n  if (seq > 2) {\n    Toy.step[3] = 200;\n  } else {\n    Toy.step[3] = 20;\n  }\n\n  seq %= 3;\n  Toy.step[seq] = 80;\n\n  return 1;\n}\n	Toy.addPattern(flicker);\n		\N	\N	\N	\N	\N	\N	2015-04-02 17:33:22.292082	2015-04-02 17:33:22.292082	25	17
+222	// Randomly blip an output on for a short burst.\nint pulse(int seq) {\n  if (seq % 2) {\n    Toy.step[0] = Toy.step[1] = Toy.step[2] = 0;\n  } else {\n    Toy.step[random(0,3)] = 144;\n  }\n\n  Toy.step[3] = 70;\n  return 1;\n}\n	Toy.addPattern(pulse);\n		\N	\N	\N	\N	\N	\N	2015-04-02 17:33:22.293816	2015-04-02 17:33:22.293816	25	18
+223	// Opposite of pulse() -- turn on all outputs, randomly blip one off\nint pulse2(int seq) {\n  if (seq % 2) {\n    Toy.step[0] = Toy.step[1] = Toy.step[2] = 100;\n  } else {\n    Toy.step[random(0,3)] = 0;\n  }\n\n  Toy.step[3] = 100;\n  return 1;\n}\n	Toy.addPattern(pulse2);\n		\N	\N	\N	\N	\N	\N	2015-04-02 17:33:22.295614	2015-04-02 17:33:22.295614	25	19
+224	int sharp_ramp(int seq) {\n  // neat exponential sequence inspired by github/jgeisler0303\n  const uint8_t fadeTable[32] = {0, 1, 1, 2, 2, 2, 3, 3, 4, 5, 6, 7, 9, 10, 12, 15, 17, 21, 25, 30, 36, 43, 51, 61, 73, 87, 104, 125, 149, 178, 213, 255};\n  seq %= 32;\n  Toy.step[0] = Toy.step[1] = Toy.step[2] = fadeTable[seq];\n  Toy.step[3] = 12 ;\n}\n	Toy.addPattern(sharp_ramp);		\N	\N	\N	\N	\N	\N	2015-04-02 17:33:22.297229	2015-04-02 17:33:22.297229	25	20
+225	int weird2(int seq) {\n  Toy.step[2] = round(127*cos(tan(tan(seq/(8*PI)))-PI/2)+127);\n  Toy.step[3] = 30;\n  return 1;\n}\n	Toy.addPattern(weird2);\n		\N	\N	\N	\N	\N	\N	2015-04-02 17:33:22.298887	2015-04-02 17:33:22.298887	25	21
+226	int weird3(int seq) {\n  Toy.step[2] = round(50*(cos(seq/(8*PI)+PI/2) + sin(seq/2))+100);\n  Toy.step[3] = 30;\n  return 1;\n}\n	Toy.addPattern(weird3);\n		\N	\N	\N	\N	\N	\N	2015-04-02 17:33:22.300646	2015-04-02 17:33:22.300646	25	22
+227	int fade_cos(int seq) {\n  Toy.step[0] = Toy.step[1] = Toy.step[2] = round(127 * cos((seq / (8*PI))-PI) + 127);\n  Toy.step[3] = 50;\n  return 1;\n}\n	Toy.addPattern(fade_cos);\n		\N	\N	\N	\N	\N	\N	2015-04-02 17:33:52.746519	2015-04-02 17:33:52.746519	26	12
+228	int fadeOffset(int seq) {\n  // cos sequence takes 158 steps to run. start motor 1 a third of the way in (53 steps), start motor 2 2/3 (106 steps) of the way in.\n  Toy.step[0] = round(127 * cos((seq / (8*PI))-PI) + 127);\n  if (seq >= 58) {\n    Toy.step[1] = round(127 * cos(((seq-58) / (8*PI))-PI) + 127);\n  }\n  if (seq >= 106) {\n    Toy.step[2] = round(127 * cos(((seq-106) / (8*PI))-PI) + 127);\n  }\n  Toy.step[3] = 50;\n  return 1;\n}\n	Toy.addPattern(fadeOffset);\n		\N	\N	\N	\N	\N	\N	2015-04-02 17:33:52.751673	2015-04-02 17:33:52.751673	26	13
+229	// First motor only\n// Why have a 50ms timing on the step (Toy.step[3]) ? This lets you adjust the power of the pattern,\n// so that instead of running [100, 0, 0, 50] the whole time, it might become [120, 0, 0, 50] after a button click\nint first(int seq) {\n  Toy.step[0] = 100;\n  Toy.step[1] = 0;\n  Toy.step[2] = 0;\n  Toy.step[3] = 50;\n  return 1;\n}\n	Toy.addPattern(first);\n		\N	\N	\N	\N	\N	\N	2015-04-02 17:33:52.754874	2015-04-02 17:33:52.754874	26	14
+230	// Second motor only\nint second(int seq) {\n  Toy.step[0] = 0;\n  Toy.step[1] = 100;\n  Toy.step[2] = 0;\n  Toy.step[3] = 50;\n  return 1;\n}\n	Toy.addPattern(second);\n		\N	\N	\N	\N	\N	\N	2015-04-02 17:33:52.759169	2015-04-02 17:33:52.759169	26	15
+231	// Third motor only\nint third(int seq) {\n  Toy.step[0] = 0;\n  Toy.step[1] = 0;\n  Toy.step[2] = 100;\n  Toy.step[3] = 50;\n  return 1;\n}\n	Toy.addPattern(third);\n		\N	\N	\N	\N	\N	\N	2015-04-02 17:33:52.761689	2015-04-02 17:33:52.761689	26	16
+232	// Turn on all outputs slightly offset from each other.\nint flicker(int seq) {\n  // set all motors initally to -1, ie "leave it alone"\n  Toy.step[0] = Toy.step[1] = Toy.step[2] = -1;\n\n  if (seq > 2) {\n    Toy.step[3] = 200;\n  } else {\n    Toy.step[3] = 20;\n  }\n\n  seq %= 3;\n  Toy.step[seq] = 80;\n\n  return 1;\n}\n	Toy.addPattern(flicker);\n		\N	\N	\N	\N	\N	\N	2015-04-02 17:33:52.764343	2015-04-02 17:33:52.764343	26	17
+233	// Randomly blip an output on for a short burst.\nint pulse(int seq) {\n  if (seq % 2) {\n    Toy.step[0] = Toy.step[1] = Toy.step[2] = 0;\n  } else {\n    Toy.step[random(0,3)] = 144;\n  }\n\n  Toy.step[3] = 70;\n  return 1;\n}\n	Toy.addPattern(pulse);\n		\N	\N	\N	\N	\N	\N	2015-04-02 17:33:52.767214	2015-04-02 17:33:52.767214	26	18
+234	// Opposite of pulse() -- turn on all outputs, randomly blip one off\nint pulse2(int seq) {\n  if (seq % 2) {\n    Toy.step[0] = Toy.step[1] = Toy.step[2] = 100;\n  } else {\n    Toy.step[random(0,3)] = 0;\n  }\n\n  Toy.step[3] = 100;\n  return 1;\n}\n	Toy.addPattern(pulse2);\n		\N	\N	\N	\N	\N	\N	2015-04-02 17:33:52.770071	2015-04-02 17:33:52.770071	26	19
+235	int sharp_ramp(int seq) {\n  // neat exponential sequence inspired by github/jgeisler0303\n  const uint8_t fadeTable[32] = {0, 1, 1, 2, 2, 2, 3, 3, 4, 5, 6, 7, 9, 10, 12, 15, 17, 21, 25, 30, 36, 43, 51, 61, 73, 87, 104, 125, 149, 178, 213, 255};\n  seq %= 32;\n  Toy.step[0] = Toy.step[1] = Toy.step[2] = fadeTable[seq];\n  Toy.step[3] = 12 ;\n}\n	Toy.addPattern(sharp_ramp);		\N	\N	\N	\N	\N	\N	2015-04-02 17:33:52.7727	2015-04-02 17:33:52.7727	26	20
+236	int weird2(int seq) {\n  Toy.step[2] = round(127*cos(tan(tan(seq/(8*PI)))-PI/2)+127);\n  Toy.step[3] = 30;\n  return 1;\n}\n	Toy.addPattern(weird2);\n		\N	\N	\N	\N	\N	\N	2015-04-02 17:33:52.775685	2015-04-02 17:33:52.775685	26	21
+237	int weird3(int seq) {\n  Toy.step[2] = round(50*(cos(seq/(8*PI)+PI/2) + sin(seq/2))+100);\n  Toy.step[3] = 30;\n  return 1;\n}\n	Toy.addPattern(weird3);\n		\N	\N	\N	\N	\N	\N	2015-04-02 17:33:52.778338	2015-04-02 17:33:52.778338	26	22
+249	int fade_cos(int seq) {\n  Toy.step[0] = Toy.step[1] = Toy.step[2] = round(127 * cos((seq / (8*PI))-PI) + 127);\n  Toy.step[3] = 50;\n  return 1;\n}\n	Toy.addPattern(fade_cos);\n		\N	\N	\N	\N	\N	\N	2015-04-02 17:41:35.679736	2015-04-02 17:41:35.679736	28	12
+250	int fadeOffset(int seq) {\n  // cos sequence takes 158 steps to run. start motor 1 a third of the way in (53 steps), start motor 2 2/3 (106 steps) of the way in.\n  Toy.step[0] = round(127 * cos((seq / (8*PI))-PI) + 127);\n  if (seq >= 58) {\n    Toy.step[1] = round(127 * cos(((seq-58) / (8*PI))-PI) + 127);\n  }\n  if (seq >= 106) {\n    Toy.step[2] = round(127 * cos(((seq-106) / (8*PI))-PI) + 127);\n  }\n  Toy.step[3] = 50;\n  return 1;\n}\n	Toy.addPattern(fadeOffset);\n		\N	\N	\N	\N	\N	\N	2015-04-02 17:41:35.683468	2015-04-02 17:41:35.683468	28	13
+251	// Turn on all outputs slightly offset from each other.\nint flicker(int seq) {\n  // set all motors initally to -1, ie "leave it alone"\n  Toy.step[0] = Toy.step[1] = Toy.step[2] = -1;\n\n  if (seq > 2) {\n    Toy.step[3] = 200;\n  } else {\n    Toy.step[3] = 20;\n  }\n\n  seq %= 3;\n  Toy.step[seq] = 80;\n\n  return 1;\n}\n	Toy.addPattern(flicker);\n		\N	\N	\N	\N	\N	\N	2015-04-02 17:41:35.685801	2015-04-02 17:41:35.685801	28	17
+252	// Second motor only\nint second(int seq) {\n  Toy.step[0] = 0;\n  Toy.step[1] = 100;\n  Toy.step[2] = 0;\n  Toy.step[3] = 50;\n  return 1;\n}\n	Toy.addPattern(second);\n		\N	\N	\N	\N	\N	\N	2015-04-02 17:41:35.688459	2015-04-02 17:41:35.688459	28	15
+253	// Third motor only\nint third(int seq) {\n  Toy.step[0] = 0;\n  Toy.step[1] = 0;\n  Toy.step[2] = 100;\n  Toy.step[3] = 50;\n  return 1;\n}\n	Toy.addPattern(third);\n		\N	\N	\N	\N	\N	\N	2015-04-02 17:41:35.69073	2015-04-02 17:41:35.69073	28	16
+254	// First motor only\n// Why have a 50ms timing on the step (Toy.step[3]) ? This lets you adjust the power of the pattern,\n// so that instead of running [100, 0, 0, 50] the whole time, it might become [120, 0, 0, 50] after a button click\nint first(int seq) {\n  Toy.step[0] = 100;\n  Toy.step[1] = 0;\n  Toy.step[2] = 0;\n  Toy.step[3] = 50;\n  return 1;\n}\n	Toy.addPattern(first);\n		\N	\N	\N	\N	\N	\N	2015-04-02 17:41:35.692966	2015-04-02 17:41:35.692966	28	14
+255	// Randomly blip an output on for a short burst.\nint pulse(int seq) {\n  if (seq % 2) {\n    Toy.step[0] = Toy.step[1] = Toy.step[2] = 0;\n  } else {\n    Toy.step[random(0,3)] = 144;\n  }\n\n  Toy.step[3] = 70;\n  return 1;\n}\n	Toy.addPattern(pulse);\n		\N	\N	\N	\N	\N	\N	2015-04-02 17:41:35.695245	2015-04-02 17:41:35.695245	28	18
+256	// Opposite of pulse() -- turn on all outputs, randomly blip one off\nint pulse2(int seq) {\n  if (seq % 2) {\n    Toy.step[0] = Toy.step[1] = Toy.step[2] = 100;\n  } else {\n    Toy.step[random(0,3)] = 0;\n  }\n\n  Toy.step[3] = 100;\n  return 1;\n}\n	Toy.addPattern(pulse2);\n		\N	\N	\N	\N	\N	\N	2015-04-02 17:41:35.69775	2015-04-02 17:41:35.69775	28	19
+257	int sharp_ramp(int seq) {\n  // neat exponential sequence inspired by github/jgeisler0303\n  const uint8_t fadeTable[32] = {0, 1, 1, 2, 2, 2, 3, 3, 4, 5, 6, 7, 9, 10, 12, 15, 17, 21, 25, 30, 36, 43, 51, 61, 73, 87, 104, 125, 149, 178, 213, 255};\n  seq %= 32;\n  Toy.step[0] = Toy.step[1] = Toy.step[2] = fadeTable[seq];\n  Toy.step[3] = 12 ;\n}\n	Toy.addPattern(sharp_ramp);		\N	\N	\N	\N	\N	\N	2015-04-02 17:41:35.700471	2015-04-02 17:41:35.700471	28	20
+258	int weird2(int seq) {\n  Toy.step[2] = round(127*cos(tan(tan(seq/(8*PI)))-PI/2)+127);\n  Toy.step[3] = 30;\n  return 1;\n}\n	Toy.addPattern(weird2);\n		\N	\N	\N	\N	\N	\N	2015-04-02 17:41:35.702986	2015-04-02 17:41:35.702986	28	21
+259	int weird3(int seq) {\n  Toy.step[2] = round(50*(cos(seq/(8*PI)+PI/2) + sin(seq/2))+100);\n  Toy.step[3] = 30;\n  return 1;\n}\n	Toy.addPattern(weird3);\n		\N	\N	\N	\N	\N	\N	2015-04-02 17:41:35.705269	2015-04-02 17:41:35.705269	28	22
+529	int fade_cos(int seq) {\n  Toy.step[0] = Toy.step[1] = Toy.step[2] = round(127 * cos((seq / (8*PI))-PI) + 127);\n  Toy.step[3] = 50;\n  return 1;\n}\n	Toy.addPattern(fade_cos);\n		\N	\N	\N	\N	\N	50	2015-04-27 22:22:15.247432	2015-04-27 22:22:15.247432	27	12
+530	int fadeOffset(int seq) {\n  // cos sequence takes 158 steps to run. start motor 1 a third of the way in (53 steps), start motor 2 2/3 (106 steps) of the way in.\n  Toy.step[0] = round(127 * cos((seq / (8*PI))-PI) + 127);\n  if (seq >= 58) {\n    Toy.step[1] = round(127 * cos(((seq-58) / (8*PI))-PI) + 127);\n  }\n  if (seq >= 106) {\n    Toy.step[2] = round(127 * cos(((seq-106) / (8*PI))-PI) + 127);\n  }\n  Toy.step[3] = 50;\n  return 1;\n}\n	Toy.addPattern(fadeOffset);\n		\N	\N	\N	\N	\N	50	2015-04-27 22:22:15.25355	2015-04-27 22:22:15.25355	27	13
+531	// Turn on all outputs slightly offset from each other.\nint flicker(int seq) {\n  // set all motors initially to -1, ie "leave it alone"\n  Toy.step[0] = Toy.step[1] = Toy.step[2] = -1;\n\n  if (seq > 2) {\n    Toy.step[3] = 200;\n  } else {\n    Toy.step[3] = 20;\n  }\n\n  seq %= 3;\n  Toy.step[seq] = 80;\n\n  return 1;\n}\n	Toy.addPattern(flicker);\n		\N	\N	\N	\N	\N	\N	2015-04-27 22:22:15.256084	2015-04-27 22:22:15.256084	27	17
+532	// Second motor only\nint second(int seq) {\n  Toy.step[0] = 0;\n  Toy.step[1] = 100;\n  Toy.step[2] = 0;\n  Toy.step[3] = 50;\n  return 1;\n}\n	Toy.addPattern(second);\n		0	100	0	\N	\N	50	2015-04-27 22:22:15.258473	2015-04-27 22:22:15.258473	27	15
+533	// Third motor only\nint third(int seq) {\n  Toy.step[0] = 0;\n  Toy.step[1] = 0;\n  Toy.step[2] = 184;\n  Toy.step[3] = 28;\n  return 1;\n}\n	Toy.addPattern(third);\n		0	0	184	\N	\N	28	2015-04-27 22:22:15.473181	2015-04-27 22:22:15.473181	27	16
+534	// First motor only\n// Why have a 50ms timing on the step (Toy.step[3]) ? This lets you adjust the power of the pattern,\n// so that instead of running [100, 0, 0, 50] the whole time, it might become [120, 0, 0, 50] after a button click\nint first(int seq) {\n  Toy.step[0] = 100;\n  Toy.step[1] = 0;\n  Toy.step[2] = 0;\n  Toy.step[3] = 50;\n  return 1;\n}\n	Toy.addPattern(first);\n		100	0	0	\N	\N	50	2015-04-27 22:22:15.475071	2015-04-27 22:22:15.475071	27	14
+535	// Randomly blip an output on for a short burst.\nint pulse(int seq) {\n  if (seq % 2) {\n    Toy.step[0] = Toy.step[1] = Toy.step[2] = 0;\n  } else {\n    Toy.step[random(0,3)] = 144;\n  }\n\n  Toy.step[3] = 70;\n  return 1;\n}\n	Toy.addPattern(pulse);\n		\N	\N	\N	144	0	70	2015-04-27 22:22:15.477039	2015-04-27 22:22:15.477039	27	18
+536	// Opposite of pulse() -- turn on all outputs, randomly blip one off\nint pulse2(int seq) {\n  if (seq % 2) {\n    Toy.step[0] = Toy.step[1] = Toy.step[2] = 100;\n  } else {\n    Toy.step[random(0,3)] = 0;\n  }\n\n  Toy.step[3] = 100;\n  return 1;\n}\n	Toy.addPattern(pulse2);\n		\N	\N	\N	100	0	100	2015-04-27 22:22:15.479274	2015-04-27 22:22:15.479274	27	19
+537	int sharp_ramp(int seq) {\n  // neat exponential sequence inspired by github/jgeisler0303\n  const uint8_t fadeTable[32] = {0, 1, 1, 2, 2, 2, 3, 3, 4, 5, 6, 7, 9, 10, 12, 15, 17, 21, 25, 30, 36, 43, 51, 61, 73, 87, 104, 125, 149, 178, 213, 255};\n  seq %= 32;\n  Toy.step[0] = Toy.step[1] = Toy.step[2] = fadeTable[seq];\n  Toy.step[3] = 12 ;\n}\n	Toy.addPattern(sharp_ramp);\n		\N	\N	\N	\N	\N	12	2015-04-27 22:22:15.481379	2015-04-27 22:22:15.481379	27	20
+538	int weird2(int seq) {\n  Toy.step[2] = round(127*cos(tan(tan(seq/(8*PI)))-PI/2)+127);\n  Toy.step[3] = 30;\n  return 1;\n}\n	Toy.addPattern(weird2);\n		\N	\N	\N	\N	\N	30	2015-04-27 22:22:15.483268	2015-04-27 22:22:15.483268	27	21
+539	int weird3(int seq) {\n  Toy.step[2] = round(50*(cos(seq/(8*PI)+PI/2) + sin(seq/2))+100);\n  Toy.step[3] = 30;\n  return 1;\n}\n	Toy.addPattern(weird3);\n		\N	\N	\N	\N	\N	30	2015-04-27 22:22:15.484966	2015-04-27 22:22:15.484966	27	22
+\.
+
+
+--
+-- Name: patterns_id_seq; Type: SEQUENCE SET; Schema: public; Owner: durkie
+--
+
+SELECT pg_catalog.setval('patterns_id_seq', 1, false);
+
+
+--
+-- Data for Name: schema_migrations; Type: TABLE DATA; Schema: public; Owner: durkie
+--
+
+COPY schema_migrations (version) FROM stdin;
+20150311205741
+20150312191358
+20150313202733
+20150319214831
+20150320192218
+20150324190725
+20150324193703
+20150324200507
+20150325154207
+20150325155338
+20150325162030
+20150325163434
+20150325175001
+20150325175036
+20150326191814
+20150330210915
+20150331191014
+20150401041745
+20150402142659
+20150424185504
+20150504192339
+20150630165657
+20150701221542
+20150703175442
+20150703175909
+20150707030050
+20150707032415
+20150708062239
+20150712185757
+20150717201021
+\.
+
+
+--
+-- Data for Name: sketch_histories; Type: TABLE DATA; Schema: public; Owner: durkie
+--
+
+COPY sketch_histories (id, toy_id, sketch_id, created_at, updated_at) FROM stdin;
+1	1	12	2015-03-27 02:51:09.09739	2015-03-27 02:51:09.09739
+2	1	12	2015-03-27 02:58:34.959627	2015-03-27 02:58:34.959627
+\.
+
+
+--
+-- Name: sketch_histories_id_seq; Type: SEQUENCE SET; Schema: public; Owner: durkie
+--
+
+SELECT pg_catalog.setval('sketch_histories_id_seq', 1, false);
+
+
+--
+-- Data for Name: sketches; Type: TABLE DATA; Schema: public; Owner: durkie
+--
+
+COPY sketches (id, size, build_dir, sha256, num_users, total_uses, config, created_at, updated_at) FROM stdin;
+1	\N	/home/durkie/backyard/sketches/2015-03-16-ca2bcbe7981b	\N	\N	\N	{\r\n"toy": {\r\n  "id": "BETA",\r\n  "power_scale": 0.2,\r\n  "time_scale": 0.1,\r\n  "pattern": {\r\n    "third": {},\r\n    "first": {\r\n      "motor0": 200\r\n    },\r\n    "second": {\r\n      "motor1": 100\r\n    },\r\n    "pulse": {},\r\n    "fadeCos": {},\r\n    "weird3": {},\r\n    "flicker": {},\r\n    "weird2": {},\r\n    "fadeOffset": {},\r\n    "pulse2": {}\r\n  },\r\n  "serial_console": false,\r\n  "click": "Toy.cyclePattern()",\r\n  "doubleclick": "Toy.increasePower()",\r\n  "longpressstart": "Toy.decreasePower()",\r\n  "startup_sequence": true\r\n}\r\n\r\n}	2015-03-16 16:33:54.309922	2015-03-16 18:36:51.254346
+2	\N	/home/durkie/backyard/sketches/2015-03-16-c441fa5930d2	\N	\N	\N	{\r\n"toy": {\r\n  "id": "BETA",\r\n  "power_scale": 0.2,\r\n  "time_scale": 0.1,\r\n  "pattern": {\r\n    "third": {},\r\n    "first": {\r\n      "motor0": 200\r\n    },\r\n    "second": {\r\n      "motor1": 100\r\n    },\r\n    "pulse": {},\r\n    "fadeCos": {},\r\n    "weird3": {},\r\n    "flicker": {},\r\n    "weird2": {},\r\n    "fadeOffset": {},\r\n    "pulse2": {}\r\n  },\r\n  "serial_console": false,\r\n  "click": "Toy.cyclePattern()",\r\n  "doubleclick": "Toy.increasePower()",\r\n  "longpressstart": "Toy.decreasePower()",\r\n  "startup_sequence": [\r\n    "startup_sequence",\r\n    "first"\r\n  ]\r\n}\r\n\r\n}	2015-03-16 19:39:59.751008	2015-03-16 22:11:51.842108
+3	15558	/home/durkie/backyard/sketches/2015-03-16-66703b3b981e	ce57d17db7bbede864d9d3747c5f3eba1001f7dbc57dd104d990c9a5912cb774	\N	\N	{\r\n"toy": {\r\n  "id": "BETA",\r\n  "power_scale": 0.2,\r\n  "time_scale": 0.1,\r\n  "pattern": {\r\n    "third": {},\r\n    "first": { \r\n      "motor0": 200 \r\n    },\r\n    "second": {\r\n      "motor1": 100\r\n    },\r\n    "pulse": {},\r\n    "fadeCos": {},\r\n    "weird3": {},\r\n    "flicker": {},\r\n    "weird2": {},\r\n    "fadeOffset": {},\r\n    "pulse2": {}\r\n  },\r\n  "serial_console": true,\r\n  "click": "Toy.cyclePattern()",\r\n  "doubleclick": "Toy.increasePower()",\r\n  "longpressstart": "Toy.decreasePower()",\r\n  "startup_sequence": [\r\n    "startup_pattern",\r\n    "first"\r\n  ]\r\n}\r\n\r\n}	2015-03-16 23:04:06.820803	2015-03-16 23:06:45.505047
+4	3260	/home/durkie/backyard/sketches/2015-04-02-35beeaa0e792	203472e4c8c71492d4c875e4ad31c5dda55c46ed531682b3e387c4300b92daac	\N	\N	{"patterns":{"fade_cos":{},"fadeoffset":{},"flicker":{},"second":{},"third":{},"first":{},"pulse":{},"pulse2":{},"sharp_ramp":{},"weird2":{},"weird3":{}}}	2015-04-02 17:41:35.663335	2015-06-25 21:36:02.652896
+5	3260	/home/durkie/backyard/sketches/2015-04-02-35beeaa0e792	203472e4c8c71492d4c875e4ad31c5dda55c46ed531682b3e387c4300b92daac	\N	\N	{"patterns":{"fade_cos":{},"fadeoffset":{},"flicker":{},"second":{},"third":{},"first":{},"pulse":{},"pulse2":{},"sharp_ramp":{},"weird2":{},"weird3":{}}}	2015-04-02 17:41:35.663335	2015-06-25 21:36:02.652896
+6	\N	/home/durkie/backyard/sketches/2015-03-18-20826b7ee93c	\N	\N	\N	{"toy":{"id":"BETA","pattern":{"fadecos":{},"fadeoffset":{},"first":{},"second":{},"third":{},"flicker":{},"pulse":{},"pulse2":{},"sharpramp":{},"weird2":{},"weird3":{}},"click":"cycle_pattern","doubleclick":"increase_power","longpressstart":"decrease_power","serial_console":true,"startup_sequence":["startup_sequence"]}}	2015-03-18 19:30:38.007584	2015-03-18 19:31:02.066805
+7	12748	/home/durkie/backyard/sketches/2015-03-18-83ffb55d15ab	5565f478671867b1874ae6074a269d69311147017502d6a9ba45facda7f6d797	\N	\N	{"toy":{"pattern":{"weird2":{},"weird3":{},"first":{},"second":{},"third":{},"flicker":{},"pulse":{},"pulse2":{},"sharp_ramp":{},"fade_cos":{},"fade_offset":{}},"click":"Toy.cyclePattern();","longpressstart":"Toy.increasePower();","doubleclick":"Toy.decreasePower();","serial_console":false,"startup_sequence":["startup_sequence"],"id":"BETA"}}	2015-03-18 20:33:59.513165	2015-03-18 21:03:03.824101
+8	15378	/home/durkie/backyard/sketches/2015-03-18-c141627e9dd0	f38565a540e26ccfe53290091e5e717d79efcf665bfd2256e7dcdd05ec7052de	\N	\N	{"toy":{"pattern":{"second":{},"weird2":{},"flicker":{},"fadeoffset":{},"third":{},"first":{},"pulse":{},"pulse2":{},"sharp_ramp":{},"fade_cos":{},"weird3":{}},"id":"BETA","click":"Toy.increasePower();","longpressstart":"Toy.increaseTime();","doubleclick":"Toy.cyclePattern();","serial_console":true,"startup_sequence":["startup_sequence"]}}	2015-03-18 21:06:37.722284	2015-03-18 21:06:41.217632
+9	\N	/home/durkie/backyard/sketches/2015-03-18-a619dc0361c6	\N	\N	\N	{"toy":{"pattern":{"second":{},"weird2":{},"flicker":{},"fadeoffset":{},"third":{},"first":{},"pulse":{},"pulse2":{},"sharp_ramp":{},"fade_cos":{},"weird3":{}},"id":"BETA","click":"Toy.increasePower();","longpressstart":"Toy.increaseTime();","doubleclick":"Toy.cyclePattern();","serial_console":true,"startup_sequence":["startup_sequence"]}}	2015-03-18 21:07:38.790572	2015-03-18 21:07:38.790572
+10	15378	/home/durkie/backyard/sketches/2015-03-18-b336de6ec722	f38565a540e26ccfe53290091e5e717d79efcf665bfd2256e7dcdd05ec7052de	\N	\N	{"toy":{"pattern":{"second":{},"weird2":{},"flicker":{},"fadeoffset":{},"third":{},"first":{},"pulse":{},"pulse2":{},"sharp_ramp":{},"fade_cos":{},"weird3":{}},"id":"BETA","click":"Toy.increasePower();","longpressstart":"Toy.increaseTime();","doubleclick":"Toy.cyclePattern();","serial_console":true,"startup_sequence":["startup_sequence"]}}	2015-03-18 21:08:10.589426	2015-03-18 21:08:13.841876
+11	15344	/home/durkie/backyard/sketches/2015-03-18-909573c126c8	48adc56fb380eea76e89faf17229fda8f19eae8baf7cb62039f6a192a68e4125	\N	\N	{"toy":{"pattern":{"fade_cos":{},"fadeoffset":{},"first":{},"second":{},"third":{},"flicker":{},"pulse":{},"pulse2":{},"sharp_ramp":{},"weird2":{},"weird3":{}},"id":"BETA","click":"Toy.cyclePattern();","longpress":"Toy.decreasePower();","doubleclick":"Toy.increasePower();","serial_console":true,"startup_sequence":["startup_sequence"]}}	2015-03-19 03:17:43.963319	2015-03-19 03:17:49.51259
+12	14382	/home/durkie/backyard/sketches/2015-03-18-5aca9a4d1bf6	a55ecf1265378264ba16be300000e72f882fbfca81270a75b5263935e404edab	\N	\N	{"toy":{"hid":false,"pattern":{"fade_cos":{},"fadeoffset":{},"flicker":{},"second":{},"third":{},"first":{},"pulse":{},"pulse2":{},"sharp_ramp":{},"weird2":{},"weird3":{}},"id":"ALPHA","click":"Toy.cyclePattern();","longpress":"Toy.decreasePower();","doubleclick":"Toy.increasePower();","serial_console":true,"startup_sequence":["startup_sequence"]}}	2015-03-19 03:19:15.017222	2015-03-21 17:52:13.111307
+13	\N	/home/durkie/backyard/sketches/2015-03-31-05857b2953c8	\N	\N	\N	{"toy":{"hid":false,"pattern":{"\\n      \\n        third\\n        \\n        \\n           \\n           \\n          \\n        \\n      \\n    ":{},"\\n      \\n        fadeoffset\\n        \\n        \\n           \\n           \\n          \\n        \\n      \\n    ":{},"\\n      \\n        first\\n        \\n        \\n           \\n           \\n          \\n        \\n      \\n    ":{},"\\n      \\n        second\\n        \\n        \\n           \\n           \\n          \\n        \\n      \\n    ":{},"\\n      \\n        fade\\n        \\n        \\n           \\n           \\n          \\n        \\n      \\n    ":{},"\\n      \\n        flicker\\n        \\n        \\n           \\n           \\n          \\n        \\n      \\n    ":{},"\\n      \\n        pulse\\n        \\n        \\n           \\n           \\n          \\n        \\n      \\n    ":{},"\\n      \\n        reverse pulse\\n        \\n        \\n           \\n           \\n          \\n        \\n      \\n    ":{},"\\n      \\n        sharpramp\\n        \\n        \\n           \\n           \\n          \\n        \\n      \\n    ":{},"\\n      \\n        weird 2\\n        \\n        \\n           \\n           \\n          \\n        \\n      \\n    ":{},"\\n      \\n        weird 3\\n        \\n        \\n           \\n           \\n          \\n        \\n      \\n    ":{}},"id":"BETA","click":"stop","longpress":"stop","doubleclick":"stop","serial_console":true,"startup_sequence":["startup_sequence"]}}	2015-03-31 15:04:57.806612	2015-03-31 15:04:57.806612
+14	\N	/home/durkie/backyard/sketches/2015-03-31-b1aceec42d1b	\N	\N	\N	{"toy":{"hid":false,"pattern":{"fade_cos":{},"fadeoffset":{},"first":{},"second":{},"third":{},"flicker":{},"pulse":{},"pulse2":{},"sharp_ramp":{},"weird2":{},"weird3":{}},"id":"BETA","click":"stop","longpress":"decrease_time","doubleclick":"stop","serial_console":true,"startup_sequence":["startup_sequence"]}}	2015-03-31 15:10:44.997156	2015-03-31 15:10:44.997156
+15	\N	/home/durkie/backyard/sketches/2015-03-31-1edf28774baf	\N	\N	\N	{"toy":{"hid":false,"pattern":{"flicker":{},"fadeoffset":{},"fade_cos":{},"second":{},"third":{},"first":{},"pulse":{},"pulse2":{},"sharp_ramp":{},"weird2":{},"weird3":{}},"id":"BETA","click":"cycle_pattern","longpressstart":"decrease_power","doubleclick":"increase_power;","serial_console":true,"startup_sequence":["startup_sequence"]}}	2015-03-31 17:15:31.614325	2015-03-31 18:33:33.286437
+16	\N	\N	\N	\N	\N	"{\\"toy\\":{\\"hid\\":false,\\"pattern\\":{\\"sharp_ramp\\":{},\\"pulse2\\":{},\\"first\\":{},\\"second\\":{},\\"third\\":{},\\"fade_cos\\":{},\\"pulse\\":{},\\"fadeoffset\\":{},\\"weird2\\":{},\\"flicker\\":{},\\"weird3\\":{}},\\"id\\":\\"BETA\\",\\"click\\":\\"cycle_pattern\\",\\"longpressstart\\":\\"decrease_power\\",\\"doubleclick\\":\\"increase_power;\\",\\"serial_console\\":true,\\"startup_sequence\\":[\\"startup_sequence\\"]}}"	2015-03-31 20:22:29.154557	2015-03-31 20:22:29.154557
+17	\N	/home/durkie/backyard/sketches/2015-03-31-61c0c3ef9b04	\N	\N	\N	"{\\"toy\\":{\\"hid\\":false,\\"pattern\\":{\\"sharp_ramp\\":{},\\"pulse2\\":{},\\"first\\":{},\\"second\\":{},\\"third\\":{},\\"fade_cos\\":{},\\"pulse\\":{},\\"fadeoffset\\":{},\\"weird2\\":{},\\"flicker\\":{},\\"weird3\\":{}},\\"id\\":\\"BETA\\",\\"click\\":\\"cycle_pattern\\",\\"longpressstart\\":\\"decrease_power\\",\\"doubleclick\\":\\"increase_power;\\",\\"serial_console\\":true,\\"startup_sequence\\":[\\"startup_sequence\\"]}}"	2015-03-31 20:23:03.7501	2015-03-31 20:23:03.7501
+18	\N	/home/durkie/backyard/sketches/2015-03-31-0ff8555e3743	\N	\N	\N	{"toy":{"hid":false,"pattern":{"fade_cos":{},"fadeoffset":{},"first":{},"second":{},"third":{},"flicker":{},"pulse":{},"pulse2":{},"sharp_ramp":{},"weird2":{},"weird3":{}},"serial_console":true,"startup_sequence":[null]}}	2015-03-31 22:00:08.787458	2015-03-31 22:00:08.787458
+19	14048	/home/durkie/backyard/sketches/2015-03-31-e68e41fc3335	ac9263d97e721cc6dd7e8a94d9641ee6f6115c0fcca2366729d48859e0428d87	\N	\N	{"fade_cos":{},"fadeoffset":{},"first":{},"second":{},"third":{},"flicker":{},"pulse":{},"pulse2":{},"sharp_ramp":{},"weird2":{},"weird3":{}}	2015-03-31 22:05:38.971848	2015-04-01 03:54:46.108689
+20	\N	/home/durkie/backyard/sketches/2015-04-02-126eef7231a2	\N	\N	\N	{"patterns":{"sharp_ramp":{},"fadeoffset":{},"first":{},"second":{},"third":{},"flicker":{},"pulse":{},"pulse2":{},"fade_cos":{},"weird2":{},"weird3":{}}}	2015-04-01 16:25:47.275492	2015-04-02 16:39:56.887382
+21	\N	/home/durkie/backyard/sketches/2015-04-02-7ac6f741b998	\N	\N	\N	{"patterns":{"fade_cos":{},"fadeoffset":{},"first":{},"second":{},"third":{},"flicker":{},"pulse":{},"pulse2":{},"sharp_ramp":{},"weird2":{},"weird3":{}}}	2015-04-01 16:30:17.893811	2015-04-02 16:39:13.851013
+22	14048	/home/durkie/backyard/sketches/2015-04-02-a118d4caeff4	f0d424c2c9ba35cc4ab1e6fe1fa2d8b61d17f6c9519fbe268fe451a7886b1f60	\N	\N	{"patterns":{"pulse":{"off":"236","on":"238","time":"185"},"pulse2":{"on":"100","off":"0","time":"100"},"weird2":{"time":"30"},"fade_cos":{"time":"50"},"weird3":{"time":"30"}}}	2015-04-02 14:25:04.077441	2015-04-03 18:54:24.364232
+23	3260	/home/durkie/backyard/sketches/2015-04-02-35beeaa0e792	203472e4c8c71492d4c875e4ad31c5dda55c46ed531682b3e387c4300b92daac	\N	\N	{"patterns":{"fade_cos":{},"fadeoffset":{},"flicker":{},"second":{},"third":{},"first":{},"pulse":{},"pulse2":{},"sharp_ramp":{},"weird2":{},"weird3":{}}}	2015-04-02 17:41:35.663335	2015-06-25 21:36:02.652896
+24	\N	/home/durkie/backyard/sketches/2015-04-02-41f9f08b1c81	\N	\N	\N	{"patterns":{"fade_cos":{},"fadeoffset":{},"first":{},"second":{},"third":{},"flicker":{},"pulse":{},"pulse2":{},"sharp_ramp":{},"weird2":{},"weird3":{}}}	2015-04-02 17:31:14.597546	2015-04-02 17:31:14.597546
+25	\N	/home/durkie/backyard/sketches/2015-04-02-7d5d69be472a	\N	\N	\N	{"patterns":{"fade_cos":{},"fadeoffset":{},"first":{},"second":{},"third":{},"flicker":{},"pulse":{},"pulse2":{},"sharp_ramp":{},"weird2":{},"weird3":{}}}	2015-04-02 17:33:22.279878	2015-04-02 17:33:22.279878
+26	14926	/home/durkie/backyard/sketches/2015-04-02-db7b3c3f6fb0	49c2bf25ce488cbeb61cfc20ba8b97140b0e3a708a690e79dc7c408cd383bc77	\N	\N	{"patterns":{"fade_cos":{},"fadeoffset":{},"first":{},"second":{},"third":{},"flicker":{},"pulse":{},"pulse2":{},"sharp_ramp":{},"weird2":{},"weird3":{}}}	2015-04-02 17:33:52.733235	2015-04-02 17:33:52.733235
+27	15200	/home/durkie/backyard/sketches/2015-04-02-feb7f1a257dd	4c3e9dc1c80ca6ce6f765884e93d2ea782cbb30eafb7e62b442ad0377ac757bf	\N	\N	{"patterns":{"fade_cos":{"time":"50"},"fadeoffset":{"time":"50"},"flicker":{},"second":{"motor0":"0","motor1":"100","motor2":"0","time":"50"},"third":{"motor0":"0","motor1":"0","motor2":"184","time":"28"},"first":{"motor0":"100","motor1":"0","motor2":"0","time":"50"},"pulse":{"off":"0","on":"144","time":"70"},"pulse2":{"on":"100","off":"0","time":"100"},"sharp_ramp":{"time":"12"},"weird2":{"time":"30"},"weird3":{"time":"30"}}}	2015-04-02 17:37:26.647986	2015-04-27 22:22:11.575498
+29	3260	/home/durkie/backyard/sketches/2015-06-26-0cb24a1c7adb	203472e4c8c71492d4c875e4ad31c5dda55c46ed531682b3e387c4300b92daac	\N	\N	{"general":{"patterns":{"fade_cos":{"time":"50"},"fadeoffset":{"time":"50"},"flicker":{},"second":{"motor0":"0","motor1":"100","motor2":"0","time":"50"},"third":{"motor0":"0","motor1":"0","motor2":"184","time":"28"},"first":{"motor0":"100","motor1":"0","motor2":"0","time":"50"},"pulse":{"off":"0","on":"144","time":"70"},"pulse2":{"on":"100","off":"0","time":"100"},"sharp_ramp":{"time":"12"},"weird2":{"time":"30"},"weird3":{"time":"30"}}}}	2015-06-26 21:43:24.670639	2015-06-26 21:43:24.670639
+30	3260	/home/durkie/backyard/sketches/2015-06-26-430cd0134048	203472e4c8c71492d4c875e4ad31c5dda55c46ed531682b3e387c4300b92daac	\N	\N	{"general":{"patterns":{"fade_cos":{"time":"50"},"fadeoffset":{"time":"50"},"flicker":{},"second":{"motor0":"0","motor1":"100","motor2":"0","time":"50"},"third":{"motor0":"0","motor1":"0","motor2":"184","time":"28"},"first":{"motor0":"100","motor1":"0","motor2":"0","time":"50"},"pulse":{"off":"0","on":"144","time":"70"},"pulse2":{"on":"100","off":"0","time":"100"},"sharp_ramp":{"time":"12"},"weird2":{"time":"30"},"weird3":{"time":"30"}}}}	2015-06-26 21:45:03.308152	2015-06-26 21:45:03.308152
+31	3260	/home/durkie/backyard/sketches/2015-06-26-469cfbe16fa4	203472e4c8c71492d4c875e4ad31c5dda55c46ed531682b3e387c4300b92daac	\N	\N	{"general":{"patterns":{"fade_cos":{"time":"50"},"fadeoffset":{"time":"50"},"flicker":{},"second":{"motor0":"0","motor1":"100","motor2":"0","time":"50"},"third":{"motor0":"0","motor1":"0","motor2":"184","time":"28"},"first":{"motor0":"100","motor1":"0","motor2":"0","time":"50"},"pulse":{"off":"0","on":"144","time":"70"},"pulse2":{"on":"100","off":"0","time":"100"},"sharp_ramp":{"time":"12"},"weird2":{"time":"30"},"weird3":{"time":"30"}}}}	2015-06-26 21:45:29.397622	2015-06-26 21:45:29.397622
+32	3260	/home/durkie/backyard/sketches/2015-06-26-86255cbad7bf	203472e4c8c71492d4c875e4ad31c5dda55c46ed531682b3e387c4300b92daac	\N	\N	{"general":{"patterns":{"fade_cos":{"time":"50"},"fadeoffset":{"time":"50"},"flicker":{},"second":{"motor0":"0","motor1":"100","motor2":"0","time":"50"},"third":{"motor0":"0","motor1":"0","motor2":"184","time":"28"},"first":{"motor0":"100","motor1":"0","motor2":"0","time":"50"},"pulse":{"off":"0","on":"144","time":"70"},"pulse2":{"on":"100","off":"0","time":"100"},"sharp_ramp":{"time":"12"},"weird2":{"time":"30"},"weird3":{"time":"30"}}}}	2015-06-26 21:46:56.281802	2015-06-26 21:46:56.281802
+33	3260	/home/durkie/backyard/sketches/2015-06-26-8e6224c52925	203472e4c8c71492d4c875e4ad31c5dda55c46ed531682b3e387c4300b92daac	\N	\N	{"general":{"patterns":{"fade_cos":{"time":"50"},"fadeoffset":{"time":"50"},"flicker":{},"second":{"motor0":"0","motor1":"100","motor2":"0","time":"50"},"third":{"motor0":"0","motor1":"0","motor2":"184","time":"28"},"first":{"motor0":"100","motor1":"0","motor2":"0","time":"50"},"pulse":{"off":"0","on":"144","time":"70"},"pulse2":{"on":"100","off":"0","time":"100"},"sharp_ramp":{"time":"12"},"weird2":{"time":"30"},"weird3":{"time":"30"}}}}	2015-06-26 21:49:14.366688	2015-06-26 21:49:14.366688
+34	3260	/home/durkie/backyard/sketches/2015-06-26-49a702c5a90d	203472e4c8c71492d4c875e4ad31c5dda55c46ed531682b3e387c4300b92daac	\N	\N	{"general":{"patterns":{"fade_cos":{"time":"50"},"fadeoffset":{"time":"50"},"flicker":{},"second":{"motor0":"0","motor1":"100","motor2":"0","time":"50"},"third":{"motor0":"0","motor1":"0","motor2":"184","time":"28"},"first":{"motor0":"100","motor1":"0","motor2":"0","time":"50"},"pulse":{"off":"0","on":"144","time":"70"},"pulse2":{"on":"100","off":"0","time":"100"},"sharp_ramp":{"time":"12"},"weird2":{"time":"30"},"weird3":{"time":"30"}}}}	2015-06-26 21:49:47.290339	2015-06-26 21:49:47.290339
+35	3260	/home/durkie/backyard/sketches/2015-06-26-f3bcb2a7617e	203472e4c8c71492d4c875e4ad31c5dda55c46ed531682b3e387c4300b92daac	\N	\N	{"general":{"patterns":{"fade_cos":{"time":"50"},"fadeoffset":{"time":"50"},"flicker":{},"second":{"motor0":"0","motor1":"100","motor2":"0","time":"50"},"third":{"motor0":"0","motor1":"0","motor2":"184","time":"28"},"first":{"motor0":"100","motor1":"0","motor2":"0","time":"50"},"pulse":{"off":"0","on":"144","time":"70"},"pulse2":{"on":"100","off":"0","time":"100"},"sharp_ramp":{"time":"12"},"weird2":{"time":"30"},"weird3":{"time":"30"}}}}	2015-06-26 21:51:23.22983	2015-06-26 21:51:23.22983
+36	3260	/home/durkie/backyard/sketches/2015-06-26-9911605bf053	203472e4c8c71492d4c875e4ad31c5dda55c46ed531682b3e387c4300b92daac	\N	\N	{"general":{"patterns":{"fade_cos":{"time":"50"},"fadeoffset":{"time":"50"},"flicker":{},"second":{"motor0":"0","motor1":"100","motor2":"0","time":"50"},"third":{"motor0":"0","motor1":"0","motor2":"184","time":"28"},"first":{"motor0":"100","motor1":"0","motor2":"0","time":"50"},"pulse":{"off":"0","on":"144","time":"70"},"pulse2":{"on":"100","off":"0","time":"100"},"sharp_ramp":{"time":"12"},"weird2":{"time":"30"},"weird3":{"time":"30"}}}}	2015-06-26 21:51:36.181054	2015-06-26 21:51:36.181054
+37	3260	/home/durkie/backyard/sketches/2015-06-26-179c224a56e9	203472e4c8c71492d4c875e4ad31c5dda55c46ed531682b3e387c4300b92daac	\N	\N	{"general":{"patterns":{"fade_cos":{"time":"50"},"fadeoffset":{"time":"50"},"flicker":{},"second":{"motor0":"0","motor1":"100","motor2":"0","time":"50"},"third":{"motor0":"0","motor1":"0","motor2":"184","time":"28"},"first":{"motor0":"100","motor1":"0","motor2":"0","time":"50"},"pulse":{"off":"0","on":"144","time":"70"},"pulse2":{"on":"100","off":"0","time":"100"},"sharp_ramp":{"time":"12"},"weird2":{"time":"30"},"weird3":{"time":"30"}}}}	2015-06-26 22:04:03.29127	2015-06-26 22:04:03.29127
+38	3260	/home/durkie/backyard/sketches/2015-06-26-951ccaea51c7	203472e4c8c71492d4c875e4ad31c5dda55c46ed531682b3e387c4300b92daac	\N	\N	{"general":{"patterns":{"fade_cos":{"time":"50"},"fadeoffset":{"time":"50"},"flicker":{},"second":{"motor0":"0","motor1":"100","motor2":"0","time":"50"},"third":{"motor0":"0","motor1":"0","motor2":"184","time":"28"},"first":{"motor0":"100","motor1":"0","motor2":"0","time":"50"},"pulse":{"off":"0","on":"144","time":"70"},"pulse2":{"on":"100","off":"0","time":"100"},"sharp_ramp":{"time":"12"},"weird2":{"time":"30"},"weird3":{"time":"30"}}}}	2015-06-26 22:05:04.391052	2015-06-26 22:05:04.391052
+39	3260	/home/durkie/backyard/sketches/2015-06-30-07cae0714d67	203472e4c8c71492d4c875e4ad31c5dda55c46ed531682b3e387c4300b92daac	\N	\N	{"general":{},"patterns":{"fade_cos":{"time":"50"},"fadeoffset":{"time":"50"},"flicker":{},"second":{"motor0":"0","motor1":"100","motor2":"0","time":"50"},"third":{"motor0":"0","motor1":"0","motor2":"184","time":"28"},"first":{"motor0":"100","motor1":"0","motor2":"0","time":"50"},"pulse":{"off":"0","on":"144","time":"70"},"pulse2":{"on":"100","off":"0","time":"100"},"sharp_ramp":{"time":"12"},"weird2":{"time":"30"},"weird3":{"time":"30"}}}	2015-06-30 20:26:11.364503	2015-06-30 20:26:11.364503
+40	7988	/home/durkie/backyard/sketches/2015-06-30-c0bc58ce867a	3d52bd173426b146b2de5bdc2eae1de5ee3d6d6f629eab6bf0c4b8bcbcccaddf	\N	\N	{"general":{"click":"cycle_pattern"},"patterns":{},"pattern":{"fade_cos":{"time":"50"},"fadeoffset":{"time":"50"},"flicker":{},"second":{"motor0":"0","motor1":"100","motor2":"0","time":"50"},"third":{"motor0":"0","motor1":"0","motor2":"184","time":"28"},"first":{"motor0":"100","motor1":"0","motor2":"0","time":"50"},"pulse":{"off":"0","on":"144","time":"70"},"pulse2":{"on":"100","off":"0","time":"100"},"sharp_ramp":{"time":"12"},"weird2":{"time":"30"},"weird3":{"time":"30"}}}	2015-06-30 20:29:11.715931	2015-07-14 04:12:28.453242
+41	8286	/home/durkie/backyard/sketches/2015-06-30-cebfb6f998ae	341a9223dd6a86b7d67c3eeb7cecd949e8f4ae94faa0bbe81c1234879256851d	\N	\N	{"general":{"click":"cycle_pattern","doubleclick":"decrease_power"},"patterns":{"fade_cos":{"time":"50"},"fadeoffset":{"time":"50"},"flicker":{},"second":{"motor0":"0","motor1":"100","motor2":"0","time":"50"},"third":{"motor0":"0","motor1":"0","motor2":"184","time":"28"},"first":{"motor0":"100","motor1":"0","motor2":"0","time":"50"},"pulse":{"off":"0","on":"144","time":"70"},"pulse2":{"on":"100","off":"0","time":"100"},"sharp_ramp":{"time":"12"},"weird2":{"time":"30"},"weird3":{"time":"30"}}}	2015-06-30 20:30:10.819578	2015-06-30 20:30:10.819578
+42	7506	/home/durkie/backyard/sketches/2015-06-30-e8ad7a1b7ba1	8ec844558a0257c3f53e765d2616eb6d445932367d7c1255675188ec67ec491c	\N	\N	{"general":{"click":"increase_power"}}	2015-06-30 22:03:59.79105	2015-06-30 22:03:59.79105
+43	14916	/home/durkie/backyard/sketches/2015-07-08-c396f056a343	d5d415d1a64c2988f76dc01947459da925e87770f333ec54e33c69850a7a34d7	\N	\N	{"general":{"click":"cycle_pattern","doubleclick":"increase_power","longpressstart":"decrease_power","model":"MOD","serial_console":"true"},"pattern":{"fade_cos":{"time":"50"},"fadeoffset":{"time":"50"},"flicker":{},"second":{"motor0":"0","motor1":"100","motor2":"0","time":"50"},"third":{"motor0":"0","motor1":"0","motor2":"184","time":"28"},"first":{"motor0":"100","motor1":"0","motor2":"0","time":"50"},"pulse":{"off":"0","on":"144","time":"70"},"pulse2":{"on":"100","off":"0","time":"100"},"sharp_ramp":{"time":"12"},"weird2":{"time":"30"},"weird3":{"time":"30"}}}	2015-07-08 06:27:00.75158	2015-07-08 06:27:00.75158
+44	\N	/home/durkie/backyard/sketches/2015-07-11-281d4f78a244	\N	\N	\N	\N	2015-07-11 18:14:39.772042	2015-07-11 18:14:39.772042
+45	15878	/home/durkie/backyard/sketches/2015-07-13-741f188abf38	acad8df45fa3d1b75a63c9bfe21e9378d05e447d6e52775c9348b0511ecf1cc2	\N	\N	{"general":{"hid":true,"click":"cycle_pattern","doubleclick":"increase_power","longpressstart":"decrease_power","model":"MOD","serial_console":"true"},"pattern":{"fade_cos":{"time":"50"},"fadeoffset":{"time":"50"},"flicker":{},"second":{"motor0":"0","motor1":"100","motor2":"0","time":"50"},"third":{"motor0":"0","motor1":"0","motor2":"184","time":"28"},"first":{"motor0":"100","motor1":"0","motor2":"0","time":"50"},"pulse":{"off":"0","on":"144","time":"70"},"pulse2":{"on":"100","off":"0","time":"100"},"sharp_ramp":{"time":"12"},"weird2":{"time":"30"},"weird3":{"time":"30"}}}	2015-07-13 22:49:24.11055	2015-07-13 22:49:24.11055
+46	18380	/home/durkie/backyard/sketches/2015-07-13-4772a6046622	a9f172c83491f4b4d3924dbfab9948d7158674e569a53129b6dfd8a16e82fd2d	\N	\N	{"general":{"nunchuck_header":"true","hid":true,"click":"cycle_pattern","doubleclick":"increase_power","longpressstart":"decrease_power","model":"MOD","serial_console":"true"},"pattern":{"fade_cos":{"time":"50"},"fadeoffset":{"time":"50"},"flicker":{},"second":{"motor0":"0","motor1":"100","motor2":"0","time":"50"},"third":{"motor0":"0","motor1":"0","motor2":"184","time":"28"},"first":{"motor0":"100","motor1":"0","motor2":"0","time":"50"},"pulse":{"off":"0","on":"144","time":"70"},"pulse2":{"on":"100","off":"0","time":"100"},"sharp_ramp":{"time":"12"},"weird2":{"time":"30"},"weird3":{"time":"30"}}}	2015-07-13 22:49:54.795554	2015-07-13 22:49:54.795554
+47	18406	/home/durkie/backyard/sketches/2015-07-14-fde5060d3e29	3086791d61e201fd641c3c3df16bdf288f8d3e6634dba29583b9edca9fb70437	\N	\N	{"general":{"nunchuck_header":"true","hid":true,"click":"cycle_pattern","doubleclick":"increase_power","longpressstart":"decrease_power","model":"MOD","serial_console":"true"},"pattern":{"fade_cos":{"time":"50"},"fadeoffset":{"time":"50"},"flicker":{},"second":{"motor0":"0","motor1":"100","motor2":"0","time":"50"},"third":{"motor0":"0","motor1":"0","motor2":"184","time":"28"},"first":{"motor0":"100","motor1":"0","motor2":"0","time":"50"},"pulse":{"off":"0","on":"144","time":"70"},"pulse2":{"on":"100","off":"0","time":"100"},"sharp_ramp":{"time":"12"},"weird2":{"time":"30"},"weird3":{"time":"30"}},"nunchuck":{"c_click":"increase_power"}}	2015-07-14 15:32:59.779297	2015-07-14 15:32:59.779297
+48	18410	/home/durkie/backyard/sketches/2015-07-14-0e6fed4c2290	6d8f7d8c43ebf494d29dc05fef549603402490eb98cd08dcc1716a649c123be2	\N	\N	{"general":{"nunchuck_header":"true","hid":true,"click":"cycle_pattern","doubleclick":"increase_power","longpressstart":"decrease_power","model":"MOD","serial_console":"true"},"pattern":{"fade_cos":{"time":"50"},"fadeoffset":{"time":"50"},"flicker":{},"second":{"motor0":"0","motor1":"100","motor2":"0","time":"50"},"third":{"motor0":"0","motor1":"0","motor2":"184","time":"28"},"first":{"motor0":"100","motor1":"0","motor2":"0","time":"50"},"pulse":{"off":"0","on":"144","time":"70"},"pulse2":{"on":"100","off":"0","time":"100"},"sharp_ramp":{"time":"12"},"weird2":{"time":"30"},"weird3":{"time":"30"}},"nunchuck":{"c_click":"increase_power"}}	2015-07-14 19:44:44.350455	2015-07-14 19:44:44.350455
+49	18410	/home/durkie/backyard/sketches/2015-07-14-b541dce91534	e8ada02b80a9f950f0088eb52d518fa62617655f54ed84c925af3adb726010ce	\N	\N	{"general":{"nunchuck_header":"true","hid":true,"click":"cycle_pattern","doubleclick":"increase_power","longpressstart":"decrease_power","model":"MOD","serial_console":"true"},"pattern":{"fade_cos":{"time":"50"},"fadeoffset":{"time":"50"},"flicker":{},"second":{"motor0":"0","motor1":"100","motor2":"0","time":"50"},"third":{"motor0":"0","motor1":"0","motor2":"184","time":"28"},"first":{"motor0":"100","motor1":"0","motor2":"0","time":"50"},"pulse":{"off":"0","on":"144","time":"70"},"pulse2":{"on":"100","off":"0","time":"100"},"sharp_ramp":{"time":"12"},"weird2":{"time":"30"},"weird3":{"time":"30"}},"nunchuck":{"c_click":"increase_power"}}	2015-07-14 21:47:36.064301	2015-07-14 21:47:36.064301
+50	17726	/home/durkie/backyard/sketches/2015-07-14-733882b11574	53127cdb74f1d69fa205ed439a39998e56f785b6efb0b48726ed9526e28a1a6e	\N	\N	{"general":{"nunchuck_header":"true","hid":true,"click":"cycle_pattern","doubleclick":"increase_power","longpressstart":"decrease_power","serial_console":"true"},"pattern":{"fade_cos":{"time":"50"},"fadeoffset":{"time":"50"},"flicker":{},"second":{"motor0":"0","motor1":"100","motor2":"0","time":"50"},"third":{"motor0":"0","motor1":"0","motor2":"184","time":"28"},"first":{"motor0":"100","motor1":"0","motor2":"0","time":"50"},"pulse":{"off":"0","on":"144","time":"70"},"pulse2":{"on":"100","off":"0","time":"100"},"sharp_ramp":{"time":"12"},"weird2":{"time":"30"},"weird3":{"time":"30"}},"nunchuck":{"c_click":"increase_power"}}	2015-07-14 22:11:19.833606	2015-07-14 22:11:19.833606
+51	17938	/home/durkie/backyard/sketches/2015-07-14-511e6215729c	daea996ec087a10e5752c39b7c862b3be4aae8e061411ea4aff81e3f6404894f	\N	\N	{"general":{"nunchuck_header":"true","hid":"true","click":"cycle_pattern","doubleclick":"increase_power","longpressstart":"decrease_power","startup_sequence":"true","serial_console":"true"},"pattern":{"fade_cos":{"time":"50"},"fadeoffset":{"time":"50"},"flicker":{},"second":{"motor0":"0","motor1":"100","motor2":"0","time":"50"},"third":{"motor0":"0","motor1":"0","motor2":"184","time":"28"},"first":{"motor0":"100","motor1":"0","motor2":"0","time":"50"},"pulse":{"off":"0","on":"144","time":"70"},"pulse2":{"on":"100","off":"0","time":"100"},"sharp_ramp":{"time":"12"},"weird2":{"time":"30"},"weird3":{"time":"30"}},"nunchuck":{"c_click":"increase_power"}}	2015-07-14 22:18:24.466211	2015-07-14 22:18:24.466211
+52	14844	/home/durkie/backyard/sketches/2015-07-16-bec01b198070	a733a37b33669069880d94671e2f928249d3c305ea00fcefac4ce47a89c5bebb	\N	\N	{"general":{"click":"cycle_pattern","doubleclick":"increase_power","longpressstart":"decrease_power","model":"MOD","serial_console":"true"},"pattern":{"fade_cos":{"time":"50"},"fadeoffset":{"time":"50"},"flicker":{},"second":{"motor0":"0","motor1":"100","motor2":"0","time":"50"},"third":{"motor0":"0","motor1":"0","motor2":"184","time":"28"},"first":{"motor0":"100","motor1":"0","motor2":"0","time":"50"},"pulse":{"off":"0","on":"144","time":"70"},"pulse2":{"on":"100","off":"0","time":"100"},"sharp_ramp":{"time":"12"},"weird2":{"time":"30"},"weird3":{"time":"30"}}}	2015-07-16 21:09:48.350265	2015-07-16 21:09:48.350265
+53	18322	/home/durkie/backyard/sketches/2015-07-16-b85f5088d0b0	5d56136d246350e0d1ea550d22ff5cd80331be0a298ee93448ea5767de66de64	\N	\N	{"general":{"nunchuck_header":true,"hid":true,"click":"cycle_pattern","doubleclick":"increase_power","longpressstart":"decrease_power","startup_sequence":false,"serial_console":"true"},"pattern":{"fade_cos":{"time":"50"},"fadeoffset":{"time":"50"},"flicker":{},"second":{"motor0":"0","motor1":"100","motor2":"0","time":"50"},"third":{"motor0":"0","motor1":"0","motor2":"184","time":"28"},"first":{"motor0":"100","motor1":"0","motor2":"0","time":"50"},"pulse":{"off":"0","on":"144","time":"70"},"pulse2":{"on":"100","off":"0","time":"100"},"sharp_ramp":{"time":"12"},"weird2":{"time":"30"},"weird3":{"time":"30"}},"nunchuck":{"c_click":"increase_power"}}	2015-07-16 22:23:26.072753	2015-07-16 22:23:26.072753
+\.
+
+
+--
+-- Name: sketches_id_seq; Type: SEQUENCE SET; Schema: public; Owner: durkie
+--
+
+SELECT pg_catalog.setval('sketches_id_seq', 1, false);
+
+
+--
+-- Data for Name: threshold_functions; Type: TABLE DATA; Schema: public; Owner: durkie
+--
+
+COPY threshold_functions (id, source, step_size, base_thresh_low, base_thresh_high, thresh, source_function, increase, c_needed, increase_with_c, z_needed, increase_with_z, decrease, decrease_with_c, decrease_with_z, created_at, updated_at, nunchuck_id) FROM stdin;
+\.
+
+
+--
+-- Name: threshold_functions_id_seq; Type: SEQUENCE SET; Schema: public; Owner: durkie
+--
+
+SELECT pg_catalog.setval('threshold_functions_id_seq', 1, false);
+
+
+--
+-- Data for Name: toys; Type: TABLE DATA; Schema: public; Owner: durkie
+--
+
+COPY toys (id, user_id, sketch_id, color, model, created_at, updated_at, nickname) FROM stdin;
+1	1	12	Blue	Mod	2015-03-26 19:17:05.326654	2015-03-27 02:58:34.963594	\N
+\.
+
+
+--
+-- Name: toys_id_seq; Type: SEQUENCE SET; Schema: public; Owner: durkie
+--
+
+SELECT pg_catalog.setval('toys_id_seq', 1, false);
+
+
+--
+-- Data for Name: users; Type: TABLE DATA; Schema: public; Owner: durkie
+--
+
+COPY users (id, email, encrypted_password, reset_password_token, reset_password_sent_at, remember_created_at, sign_in_count, current_sign_in_at, last_sign_in_at, current_sign_in_ip, last_sign_in_ip, created_at, updated_at, address, avatar, username, hashed_authentication_token, token_expires_at) FROM stdin;
+1	craig@comingle.io	$2a$10$mMnHSjMW2BHxwSQI17jafeweXuUlJJbd1i7mEdKFBqLJKhW0Zn4hi	\N	\N	2015-04-17 14:51:56.710544	19	2015-06-25 20:58:41.904642	2015-06-25 20:53:33.85302	127.0.0.1	127.0.0.1	2015-03-25 15:49:45.769484	2015-07-17 18:40:59.139411	\N	\N	durkie	1000$8$7$aa3b34d10cf88ade$49c411eb6e486079ab203c78fcef0e4334fac141dcf4c1de922c4e67125ce0b5	\N
+2	dougs@gmail.com	$2a$10$kXXlzHMhtpGxuc2FEmQrb.7ifHzYajCqLLU7GE0DVU5gsOo71S1My	\N	\N	\N	0	\N	\N	\N	\N	2015-07-14 04:51:47.553882	2015-07-17 17:26:10.494933	\N	asdf	dougs	1000$8$9$23e09a7093492cfa$9a5653fd2daa6cbe37fa3b65056f05fae64127480a722acd372bdee59555f574	\N
+3	dougs@example.com	$2a$10$jOAw1dhm0qma9RDDXFDvquscX0.4Suk5IjAUJukxfj/df6MOQlOR2	\N	\N	\N	0	\N	\N	\N	\N	2015-07-17 17:28:05.719633	2015-07-17 17:38:31.969009	\N	asdf	dougs2	1000$8$9$7d06bf6656dd9a03$c860fd82e83bb79cad91192a39f11b9d0084fb61485d0ee6c57f5e8e50da50e4	\N
+\.
+
+
+--
+-- Name: users_id_seq; Type: SEQUENCE SET; Schema: public; Owner: durkie
+--
+
+SELECT pg_catalog.setval('users_id_seq', 1, false);
+
+
+--
+-- Data for Name: variables; Type: TABLE DATA; Schema: public; Owner: durkie
+--
+
+COPY variables (id, name, description, min, max, created_at, updated_at) FROM stdin;
+1	time	The duration of each pattern step. Higher values mean slower patterns.	10	200	2015-07-01 22:20:45.494034	2015-07-01 22:50:17.934381
+2	click	A function that will be run after a button single-click. Default behavior is to advance to the next pattern.	\N	\N	2015-07-01 22:24:00.586154	2015-07-09 21:21:22.232315
+3	doubleclick	A function that will be run after a button double-click. Usually set to increase power.	\N	\N	2015-07-01 22:24:00.590498	2015-07-09 21:20:38.207924
+4	longpressstart	A function that will be run after the button is held down for 1 second	\N	\N	2015-07-01 22:24:00.593812	2015-07-17 21:31:08.721806
+6	motor0	The power level for motor 1	0	255	2015-07-01 22:24:00.59897	2015-07-01 22:51:06.400735
+7	motor1	The power level for motor 2	0	255	2015-07-01 22:24:00.601759	2015-07-01 22:51:25.214476
+8	motor2	The power level for motor 3	0	255	2015-07-01 22:24:00.604663	2015-07-01 22:51:46.151687
+9	off	The power level level of an 'off' motor. Usually 0.	0	255	2015-07-01 22:24:00.607972	2015-07-09 21:22:57.006072
+10	on	The power level of an 'on' motor.	0	255	2015-07-01 22:24:00.611768	2015-07-09 21:22:43.347619
+11	c_click	The function to be run when the C button is pressed on the Nunchuck.	\N	\N	2015-07-01 22:24:00.614229	2015-07-09 21:23:26.482704
+12	z_click	The function to be run when the Z button is pressed on the Nunchuck.	\N	\N	2015-07-01 22:24:00.617263	2015-07-09 21:23:40.553617
+13	step_size	\N	\N	\N	2015-07-01 22:24:00.62079	2015-07-01 22:24:00.62079
+14	base_thresh_low	\N	\N	\N	2015-07-01 22:24:00.623765	2015-07-01 22:24:00.623765
+15	base_thresh_high	\N	\N	\N	2015-07-01 22:24:00.628791	2015-07-01 22:24:00.628791
+16	c_needed	Flag to require C button to be held for action	\N	\N	2015-07-01 22:24:00.632502	2015-07-09 21:26:08.14146
+17	increase_with_c	\N	\N	\N	2015-07-01 22:24:00.635693	2015-07-01 22:24:00.635693
+18	z_needed	Flag to require Z button to be held for action.	\N	\N	2015-07-01 22:24:00.638522	2015-07-09 21:26:22.940381
+19	increase_with_z	\N	\N	\N	2015-07-01 22:24:00.641457	2015-07-01 22:24:00.641457
+20	decrease_with_c	\N	\N	\N	2015-07-01 22:24:00.643835	2015-07-01 22:24:00.643835
+21	decrease_with_z	\N	\N	\N	2015-07-01 22:24:00.647699	2015-07-01 22:24:00.647699
+22	model	What type of toy you're using. Usually a Mod.	\N	\N	2015-07-01 22:24:00.651055	2015-07-09 21:27:49.804518
+23	power_scale	\N	\N	\N	2015-07-01 22:24:00.653458	2015-07-01 22:24:00.653458
+24	time_scale	\N	\N	\N	2015-07-01 22:24:00.656225	2015-07-01 22:24:00.656225
+37	thresh	\N	\N	\N	2015-07-09 20:57:50.555512	2015-07-09 20:57:50.555512
+38	source_function	\N	\N	\N	2015-07-09 20:57:50.560693	2015-07-09 20:57:50.560693
+39	source	\N	\N	\N	2015-07-09 20:57:50.568213	2015-07-09 20:57:50.568213
+40	micro_power_scale	\N	\N	\N	2015-07-20 14:45:37.803197	2015-07-20 14:45:37.803197
+41	micro_time_scale	\N	\N	\N	2015-07-20 14:45:37.810731	2015-07-20 14:45:37.810731
+\.
+
+
+--
+-- Name: variables_id_seq; Type: SEQUENCE SET; Schema: public; Owner: durkie
+--
+
+SELECT pg_catalog.setval('variables_id_seq', 1, false);
+
+
+--
+-- Name: components_pkey; Type: CONSTRAINT; Schema: public; Owner: durkie; Tablespace: 
+--
+
+ALTER TABLE ONLY components
+    ADD CONSTRAINT components_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: manifests_pkey; Type: CONSTRAINT; Schema: public; Owner: durkie; Tablespace: 
+--
+
+ALTER TABLE ONLY manifests
+    ADD CONSTRAINT manifests_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: nunchucks_pkey; Type: CONSTRAINT; Schema: public; Owner: durkie; Tablespace: 
+--
+
+ALTER TABLE ONLY nunchucks
+    ADD CONSTRAINT nunchucks_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: options_pkey; Type: CONSTRAINT; Schema: public; Owner: durkie; Tablespace: 
+--
+
+ALTER TABLE ONLY options
+    ADD CONSTRAINT options_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: pattern_options_pkey; Type: CONSTRAINT; Schema: public; Owner: durkie; Tablespace: 
+--
+
+ALTER TABLE ONLY pattern_options
+    ADD CONSTRAINT pattern_options_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: patterns_pkey; Type: CONSTRAINT; Schema: public; Owner: durkie; Tablespace: 
+--
+
+ALTER TABLE ONLY patterns
+    ADD CONSTRAINT patterns_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: sketch_histories_pkey; Type: CONSTRAINT; Schema: public; Owner: durkie; Tablespace: 
+--
+
+ALTER TABLE ONLY sketch_histories
+    ADD CONSTRAINT sketch_histories_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: sketches_pkey; Type: CONSTRAINT; Schema: public; Owner: durkie; Tablespace: 
+--
+
+ALTER TABLE ONLY sketches
+    ADD CONSTRAINT sketches_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: threshold_functions_pkey; Type: CONSTRAINT; Schema: public; Owner: durkie; Tablespace: 
+--
+
+ALTER TABLE ONLY threshold_functions
+    ADD CONSTRAINT threshold_functions_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: toys_pkey; Type: CONSTRAINT; Schema: public; Owner: durkie; Tablespace: 
+--
+
+ALTER TABLE ONLY toys
+    ADD CONSTRAINT toys_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: users_pkey; Type: CONSTRAINT; Schema: public; Owner: durkie; Tablespace: 
+--
+
+ALTER TABLE ONLY users
+    ADD CONSTRAINT users_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: variables_pkey; Type: CONSTRAINT; Schema: public; Owner: durkie; Tablespace: 
+--
+
+ALTER TABLE ONLY variables
+    ADD CONSTRAINT variables_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: index_manifests_on_component_id; Type: INDEX; Schema: public; Owner: durkie; Tablespace: 
+--
+
+CREATE INDEX index_manifests_on_component_id ON manifests USING btree (component_id);
+
+
+--
+-- Name: index_manifests_on_sketch_id; Type: INDEX; Schema: public; Owner: durkie; Tablespace: 
+--
+
+CREATE INDEX index_manifests_on_sketch_id ON manifests USING btree (sketch_id);
+
+
+--
+-- Name: index_nunchucks_on_user_id; Type: INDEX; Schema: public; Owner: durkie; Tablespace: 
+--
+
+CREATE INDEX index_nunchucks_on_user_id ON nunchucks USING btree (user_id);
+
+
+--
+-- Name: index_options_on_component_id; Type: INDEX; Schema: public; Owner: durkie; Tablespace: 
+--
+
+CREATE INDEX index_options_on_component_id ON options USING btree (component_id);
+
+
+--
+-- Name: index_options_on_sketch_id; Type: INDEX; Schema: public; Owner: durkie; Tablespace: 
+--
+
+CREATE INDEX index_options_on_sketch_id ON options USING btree (sketch_id);
+
+
+--
+-- Name: index_patterns_on_component_id; Type: INDEX; Schema: public; Owner: durkie; Tablespace: 
+--
+
+CREATE INDEX index_patterns_on_component_id ON patterns USING btree (component_id);
+
+
+--
+-- Name: index_patterns_on_sketch_id; Type: INDEX; Schema: public; Owner: durkie; Tablespace: 
+--
+
+CREATE INDEX index_patterns_on_sketch_id ON patterns USING btree (sketch_id);
+
+
+--
+-- Name: index_sketch_histories_on_sketch_id; Type: INDEX; Schema: public; Owner: durkie; Tablespace: 
+--
+
+CREATE INDEX index_sketch_histories_on_sketch_id ON sketch_histories USING btree (sketch_id);
+
+
+--
+-- Name: index_sketch_histories_on_toy_id; Type: INDEX; Schema: public; Owner: durkie; Tablespace: 
+--
+
+CREATE INDEX index_sketch_histories_on_toy_id ON sketch_histories USING btree (toy_id);
+
+
+--
+-- Name: index_threshold_functions_on_nunchuck_id; Type: INDEX; Schema: public; Owner: durkie; Tablespace: 
+--
+
+CREATE INDEX index_threshold_functions_on_nunchuck_id ON threshold_functions USING btree (nunchuck_id);
+
+
+--
+-- Name: index_toys_on_sketch_id; Type: INDEX; Schema: public; Owner: durkie; Tablespace: 
+--
+
+CREATE INDEX index_toys_on_sketch_id ON toys USING btree (sketch_id);
+
+
+--
+-- Name: index_toys_on_user_id; Type: INDEX; Schema: public; Owner: durkie; Tablespace: 
+--
+
+CREATE INDEX index_toys_on_user_id ON toys USING btree (user_id);
+
+
+--
+-- Name: index_users_on_email; Type: INDEX; Schema: public; Owner: durkie; Tablespace: 
+--
+
+CREATE UNIQUE INDEX index_users_on_email ON users USING btree (email);
+
+
+--
+-- Name: index_users_on_reset_password_token; Type: INDEX; Schema: public; Owner: durkie; Tablespace: 
+--
+
+CREATE UNIQUE INDEX index_users_on_reset_password_token ON users USING btree (reset_password_token);
+
+
+--
+-- Name: index_users_on_username; Type: INDEX; Schema: public; Owner: durkie; Tablespace: 
+--
+
+CREATE UNIQUE INDEX index_users_on_username ON users USING btree (username);
+
+
+--
+-- Name: unique_schema_migrations; Type: INDEX; Schema: public; Owner: durkie; Tablespace: 
+--
+
+CREATE UNIQUE INDEX unique_schema_migrations ON schema_migrations USING btree (version);
+
+
+--
+-- Name: public; Type: ACL; Schema: -; Owner: postgres
+--
+
+REVOKE ALL ON SCHEMA public FROM PUBLIC;
+REVOKE ALL ON SCHEMA public FROM postgres;
+GRANT ALL ON SCHEMA public TO postgres;
+GRANT ALL ON SCHEMA public TO PUBLIC;
+
+
+--
+-- PostgreSQL database dump complete
+--
+
